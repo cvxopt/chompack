@@ -1,0 +1,55 @@
+{% extends "!layout.html" %}
+{% set reldelim1 = ' ' %}
+
+{%- block footer %}
+    <div class="footer">
+    {%- if show_sphinx %}
+      {% trans sphinx_version=sphinx_version|e %}Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> {{ sphinx_version }}.{% endtrans %}   
+    {%- endif %}
+    </div>
+
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try{
+var pageTracker = _gat._getTracker("UA-2894407-1");
+pageTracker._trackPageview();
+} catch(err) {}
+</script>
+
+{%- endblock %}
+
+{%- block sidebartoc %}
+    <h3>Contents</h3>
+    <ul>
+    <l1><a href="{{pathto('index')}}">Top</a></li>
+    <ul>
+    <li><a href="{{pathto('copyright')}}">Copyright and License</a></li>
+    <li><a href="{{pathto('terminology')}}">Terminology</a></li>
+    <li><a href="{{pathto('pythonapi')}}">Python Interface</a></li>
+    <li><a href="{{pathto('pythonexamples')}}">Python Examples</a></li>
+    <li><a href="{{pathto('capi')}}">C Interface</a></li>
+    <li><a href="{{pathto('installation')}}">Installation Guide</a></li>
+    <li><a href="{{pathto('download')}}">Download</a></li>
+    </ul>
+    </ul>
+    {%- if display_toc %}
+        <h3>This page</h3> {{ toc }}
+    {%- endif %}
+{%- endblock %}
+
+{%- block sidebarsearch %}
+    {%- if 0 %}
+    <h3>{% if builder == 'web' %}{{ _('Keyword search')}}{% else %}{{ _('Search site') }}{% endif %}</h3>
+    <form class="search" action="{{ pathto('search') }}" method="get">
+        <input type="text" name="q" size="18" /> <input type="submit" value="{{ _('Go') }}" />
+        <input type="hidden" name="check_keywords" value="yes" />
+        <input type="hidden" name="area" value="default" />
+     </form>
+     {%- if builder == 'web' %}
+     <p style="font-size: 90%">{{ _('Enter a module, class or function name.') }}</p>
+     {%- endif %}
+     {%- endif %}
+{%- endblock %}

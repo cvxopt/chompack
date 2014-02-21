@@ -1,0 +1,7 @@
+include LICENSE
+include INSTALL
+include README.md
+include *.h
+recursive-include cvxopt-1.1.6 *
+recursive-include doc-sphinx *
+exclude .DS_Store 

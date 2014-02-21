@@ -1,0 +1,798 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Python Interface &mdash; CHOMPACK</title>
+    <link rel="stylesheet" href="_static/cvxopt.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  false
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="copyright" title="Copyright" href="copyright.html" />
+    <link rel="top" title="CHOMPACK" href="index.html" />
+    <link rel="next" title="Python Examples" href="pythonexamples.html" />
+    <link rel="prev" title="Terminology" href="terminology.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="pythonexamples.html" title="Python Examples"
+             accesskey="N">next</a></li>
+        <li class="right" >
+          <a href="terminology.html" title="Terminology"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">CHOMPACK - Chordal Matrix Package</a> </li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="python-interface">
+<span id="c-pythonapi"></span><h1>Python Interface<a class="headerlink" href="#python-interface" title="Permalink to this headline">¶</a></h1>
+<p>The Python interface extends the Python
+<a class="reference external" href="http://abel.ee.ucla.edu/cvxopt">CVXOPT</a>
+package with functions from the CHOMPACK library.
+It is based on the CVXOPT dense and sparse matrix types,
+and two new Python objects: a <em>chordal matrix</em> object for storing
+symmetric chordal matrices, and a <em>chordal factor</em> object for storing
+Cholesky factors of positive definite chordal matrices.  These two data
+types can be created and manipulated, and converted to CVXOPT matrices.
+using the functions described below.  They can be thought of as opaque
+objects that contain the values of the matrix, plus the sparsity pattern
+and a perfect elimination ordering for the sparsity pattern.</p>
+<p>When the following documentation states a requirement that two chordal
+matrix objects and/orfactors have the same sparsity pattern, we mean by
+this that they were created from the same chordal matrix object via a
+series of calls to functions that create a new chordal matrix or factor
+from an existing one (such as <a class="reference internal" href="#cholesky" title="cholesky"><tt class="xref py py-func docutils literal"><span class="pre">cholesky</span></tt></a>, <a class="reference internal" href="#completion" title="completion"><tt class="xref py py-func docutils literal"><span class="pre">completion</span></tt></a>,
+<a class="reference internal" href="#copy" title="copy"><tt class="xref py py-func docutils literal"><span class="pre">copy</span></tt></a>, <a class="reference internal" href="#llt" title="llt"><tt class="xref py py-func docutils literal"><span class="pre">llt</span></tt></a>, <a class="reference internal" href="#partial_inv" title="partial_inv"><tt class="xref py py-func docutils literal"><span class="pre">partial_inv</span></tt></a>, or <a class="reference internal" href="#project" title="project"><tt class="xref py py-func docutils literal"><span class="pre">project</span></tt></a>).
+Chordal matrices that were created from CVXOPT matrices via the function
+<a class="reference internal" href="#embed" title="embed"><tt class="xref py py-func docutils literal"><span class="pre">embed</span></tt></a> are not recognized to have the same sparsity pattern, even
+though their sparsity patterns may be equal (mathematically).</p>
+<p>CVXOPT integer matrices are used to represent permutation matrices.  The
+relation between the CVXOPT integer matrix <tt class="docutils literal"><span class="pre">p</span></tt> (a permutation of the
+column matrix with entries <cite>0</cite>, <cite>1</cite>, ..., <cite>n-1</cite>) and the permutation matrix
+<img class="math" src="_images/math/4b4cade9ca8a2c8311fafcf040bc5b15ca507f52.png" alt="P"/> it represents is as follows: if the CVXOPT matrix <tt class="docutils literal"><span class="pre">X</span></tt> has
+value <img class="math" src="_images/math/6a47ca0fe7cb276abc022af6ac88ddae1a9d6894.png" alt="X"/>, then the CVXOPT matrix <tt class="docutils literal"><span class="pre">X[p,</span> <span class="pre">p]</span></tt> has value <img class="math" src="_images/math/83a1cdf8d1e94eebc701a5b3141636ec4df701ca.png" alt="P^TXP"/>.</p>
+<div class="section" id="functions">
+<h2>Functions<a class="headerlink" href="#functions" title="Permalink to this headline">¶</a></h2>
+<p>The functions in the package can be divided in different groups.</p>
+<ol class="arabic simple">
+<li>Conversion from CVXOPT matrices to chordal matrix objects and vice-versa.<ul>
+<li><a class="reference internal" href="#embed" title="embed"><tt class="xref py py-func docutils literal"><span class="pre">embed</span></tt></a>: finds a chordal embedding of the sparsity pattern of a
+non-chordal symmetric sparse CVXOPT matrix, projects the matrix
+on the embedding, and returns the result as a chordal matrix.</li>
+<li><a class="reference internal" href="#project" title="project"><tt class="xref py py-func docutils literal"><span class="pre">project</span></tt></a>: projects a non-chordal symmetric sparse CVXOPT matrix
+on a given chordal sparsity pattern, and returns the result as a
+chordal matrix.</li>
+<li><a class="reference internal" href="#sparse" title="sparse"><tt class="xref py py-func docutils literal"><span class="pre">sparse</span></tt></a>: converts a chordal matrix or factor to a CVXOPT
+sparse matrix.</li>
+</ul>
+</li>
+<li>Main computational routines.<ul>
+<li><a class="reference internal" href="#cholesky" title="cholesky"><tt class="xref py py-func docutils literal"><span class="pre">cholesky</span></tt></a>: Cholesky factorization of a positive definite
+symmetric chordal matrix.</li>
+<li><a class="reference internal" href="#solve" title="solve"><tt class="xref py py-func docutils literal"><span class="pre">solve</span></tt></a>: multiplication with a Cholesky factor or its inverse.</li>
+<li><a class="reference internal" href="#completion" title="completion"><tt class="xref py py-func docutils literal"><span class="pre">completion</span></tt></a>: maximum determinant positive definite completion of
+of a symmetric chordal matrix.</li>
+<li><a class="reference internal" href="#partial_inv" title="partial_inv"><tt class="xref py py-func docutils literal"><span class="pre">partial_inv</span></tt></a>: projection of the inverse of a positive definite
+chordal matrix on its sparsity pattern.</li>
+<li><a class="reference internal" href="#hessian" title="hessian"><tt class="xref py py-func docutils literal"><span class="pre">hessian</span></tt></a>: evaluates the hessian or inverse hessian of the
+logarithmic barrier function for the positive definite matrices with
+a given chordal sparsity pattern.</li>
+</ul>
+</li>
+<li>Auxiliary routines for chordal matrices.<ul>
+<li><a class="reference internal" href="#copy" title="copy"><tt class="xref py py-func docutils literal"><span class="pre">copy</span></tt></a>: makes a copy of a chordal matrix.</li>
+<li><a class="reference internal" href="#scal" title="scal"><tt class="xref py py-func docutils literal"><span class="pre">scal</span></tt></a>: scales a chordal matrix by a scalar.</li>
+<li><a class="reference internal" href="#axpy" title="axpy"><tt class="xref py py-func docutils literal"><span class="pre">axpy</span></tt></a> adds a multiple of a chordal matrix to a chordal
+matrix with the same sparsity pattern.</li>
+<li><a class="reference internal" href="#dot" title="dot"><tt class="xref py py-func docutils literal"><span class="pre">dot</span></tt></a>: inner product of two chordal matrices with the same
+sparsity pattern.</li>
+<li><a class="reference internal" href="#syr2" title="syr2"><tt class="xref py py-func docutils literal"><span class="pre">syr2</span></tt></a>: computes projected rank 2 update of a chordal matrix.</li>
+<li><a class="reference internal" href="#llt" title="llt"><tt class="xref py py-func docutils literal"><span class="pre">llt</span></tt></a>: computes a chordal matrix from its Cholesky factor.</li>
+<li><a class="reference internal" href="#logdet" title="logdet"><tt class="xref py py-func docutils literal"><span class="pre">logdet</span></tt></a>: returns log(det(L)) for a Cholesky factor L.</li>
+<li><a class="reference internal" href="#info" title="info"><tt class="xref py py-func docutils literal"><span class="pre">info</span></tt></a>: returns a dictionary with information about a chordal
+sparsity pattern.</li>
+</ul>
+</li>
+<li>Auxiliary routines for CVXOPT sparse matrices.<ul>
+<li><a class="reference internal" href="#symmetrize" title="symmetrize"><tt class="xref py py-func docutils literal"><span class="pre">symmetrize</span></tt></a>: computes X + X&#8217; - diag(diag(X)) for a lower
+triangular sparse CVXOPT matrix X.</li>
+<li><a class="reference internal" href="#perm" title="perm"><tt class="xref py py-func docutils literal"><span class="pre">perm</span></tt></a>: an efficient method for computing a symmetric reordering
+X[p, p] of a CVXOPT sparse matrix X.</li>
+<li><a class="reference internal" href="#tril" title="tril"><tt class="xref py py-func docutils literal"><span class="pre">tril</span></tt></a>: returns the lower triangular part of a square CVXOPT
+sparse matrix.</li>
+<li><a class="reference internal" href="#peo" title="peo"><tt class="xref py py-func docutils literal"><span class="pre">peo</span></tt></a>: checks whether a given permutation is a perfect
+elimination ordering for a CVXOPT sparse matrix.</li>
+<li><a class="reference internal" href="#maxcardsearch" title="maxcardsearch"><tt class="xref py py-func docutils literal"><span class="pre">maxcardsearch</span></tt></a>: returns the maximum cardinality search
+reordering of a chordal sparse CVXOPT matrix.</li>
+<li><a class="reference internal" href="#maxchord" title="maxchord"><tt class="xref py py-func docutils literal"><span class="pre">maxchord</span></tt></a>: computes a maximal chordal subgraph from a
+sparse  CVXOPT matrix and returns chordal matrix.</li>
+</ul>
+</li>
+</ol>
+</div>
+<div class="section" id="conversion-to-from-cvxopt">
+<h2>Conversion to/from CVXOPT<a class="headerlink" href="#conversion-to-from-cvxopt" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="embed">
+<tt class="descname">embed</tt><big>(</big><em>X</em><span class="optional">[</span>, <em>p = None</em><span class="optional">]</span><big>)</big><a class="headerlink" href="#embed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes a chordal embedding of a sparse matrix.</p>
+<p><tt class="samp docutils literal"><span class="pre">Y,</span> <span class="pre">nfill</span> <span class="pre">=</span> <span class="pre">embed(X,</span> <span class="pre">p</span> <span class="pre">=</span> <span class="pre">None)</span></tt></p>
+<p>Returns a chordal embedding of the sparsity pattern of <tt class="docutils literal"><span class="pre">X</span></tt>, projects
+<tt class="docutils literal"><span class="pre">X</span></tt> on the embedding, and returns the result as a chordal matrix
+object.  The argument <tt class="docutils literal"><span class="pre">p</span></tt> is a permutation with as default value
+the natural ordering <tt class="samp docutils literal"><span class="pre">matrix([0,</span> <span class="pre">1,</span> <span class="pre">...,</span> <span class="pre">n-1])</span></tt>.  The embedding
+is computed via a symbolic Cholesky factorization of <tt class="samp docutils literal"><span class="pre">X[p,</span> <span class="pre">p]</span></tt>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>X</strong> &#8211; CVXOPT sparse square matrix of doubles.  Only the lower
+triangular part of the matrix is accessed</li>
+<li><strong>p</strong> &#8211; CVXOPT dense integer matrix of length <cite>n</cite>, if <cite>n</cite> is the order
+of <em>X</em></li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">tuple (<em>Y</em>, <em>nfill</em>) with <tt class="docutils literal"><span class="pre">Y</span></tt> a chordal matrix embedding
+and <tt class="docutils literal"><span class="pre">nfill</span></tt> the number of nonzero entries added in the
+embedding</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="project">
+<tt class="descname">project</tt><big>(</big><em>X</em>, <em>Y</em><big>)</big><a class="headerlink" href="#project" title="Permalink to this definition">¶</a></dt>
+<dd><p>Projects a CVXOPT sparse matrix on a chordal sparsity pattern.</p>
+<p><tt class="samp docutils literal"><span class="pre">C</span> <span class="pre">=</span> <span class="pre">project(X,</span> <span class="pre">Y)</span></tt></p>
+<p>Projects the CVXOPT sparse matrix <tt class="docutils literal"><span class="pre">Y</span></tt> on the sparsity pattern of the
+chordal matrix <tt class="docutils literal"><span class="pre">X</span></tt>, and returns the result as a chordal matrix.
+Only the lower triangular part of <tt class="docutils literal"><span class="pre">X</span></tt> is referenced.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>X</strong> &#8211; chordal matrix</li>
+<li><strong>Y</strong> &#8211; square CVXOPT sparse matrix of doubles</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">chordal matrix with the same sparsity pattern as <tt class="docutils literal"><span class="pre">X</span></tt></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="sparse">
+<tt class="descname">sparse</tt><big>(</big><em>X</em><big>)</big><a class="headerlink" href="#sparse" title="Permalink to this definition">¶</a></dt>
+<dd><p>Converts a chordal matrix or factor to a CVXOPT sparse matrix.</p>
+<p><tt class="samp docutils literal"><span class="pre">L</span> <span class="pre">=</span> <span class="pre">sparse(X)</span></tt></p>
+<p>If <tt class="docutils literal"><span class="pre">X</span></tt> is a chordal matrix, the function returns the lower triangular
+part of <tt class="docutils literal"><span class="pre">X[p,</span> <span class="pre">p]</span></tt> as a CVXOPT sparse matrix.  If <tt class="docutils literal"><span class="pre">X</span></tt> is
+a chordal factor for a Cholesky factorization <a href="#equation-e-chol">(1)</a> the
+function returns the lower triangular sparse matrix <tt class="docutils literal"><span class="pre">L</span></tt>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><strong>X</strong> &#8211; chordal matrix or factor</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body">lower triangular CVXOPT sparse square matrix of doubles</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="computational-routines">
+<h2>Computational routines<a class="headerlink" href="#computational-routines" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="cholesky">
+<tt class="descname">cholesky</tt><big>(</big><em>X</em><big>)</big><a class="headerlink" href="#cholesky" title="Permalink to this definition">¶</a></dt>
+<dd><p>Cholesky factorization.</p>
+<p><tt class="samp docutils literal"><span class="pre">L</span> <span class="pre">=</span> <span class="pre">cholesky(X)</span></tt></p>
+<p>Computes a zero fill-in Cholesky factorization</p>
+<div class="math" id="equation-e-chol">
+<p><span class="eqno">(1)</span><img src="_images/math/1ddcd3badc623635525a63390413167c3738adc1.png" alt="P^TXP = LL^T" /></p>
+</div><p>of a positive definite chordal matrix <tt class="docutils literal"><span class="pre">X</span></tt>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><strong>X</strong> &#8211; chordal matrix</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body">chordal factor if the factorization was successful</td>
+</tr>
+<tr class="field"><th class="field-name">Raises :</th><td class="field-body">an <cite>ArithmethicError</cite> if the matrix  is not positive definite</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="solve">
+<tt class="descname">solve</tt><big>(</big><em>L</em>, <em>X</em><span class="optional">[</span>, <em>mode = 0</em><span class="optional">]</span><big>)</big><a class="headerlink" href="#solve" title="Permalink to this definition">¶</a></dt>
+<dd><p>Solves a factored set of equations, or multiplies with Cholesky factors</p>
+<p><tt class="samp docutils literal"><span class="pre">solve(L,</span> <span class="pre">X,</span> <span class="pre">mode</span> <span class="pre">=</span> <span class="pre">0)</span></tt></p>
+<p><tt class="docutils literal"><span class="pre">L</span></tt> contains the factors of a factorization <a href="#equation-e-chol">(1)</a> of a
+positive definite sparse chordal matrix.  <tt class="docutils literal"><span class="pre">X</span></tt> is a CVXOPT dense matrix
+of doubles with the same number of rows as <tt class="docutils literal"><span class="pre">L</span></tt>.
+On exit, <tt class="docutils literal"><span class="pre">X</span></tt> is overwritten with one of the four matrices in the
+table.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="85%" />
+<col width="15%" />
+</colgroup>
+<thead valign="bottom">
+<tr><th class="head">action</th>
+<th class="head">mode</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr><td><img class="math" src="_images/math/17b796e00c93d699d89089bddf68d435cc75015a.png" alt="X := L^{-1}P^TX"/></td>
+<td>0</td>
+</tr>
+<tr><td><img class="math" src="_images/math/4c5a7cf16503e5d1006711b30bd0b054469dfeb7.png" alt="X := PL^{-T}X"/></td>
+<td>1</td>
+</tr>
+<tr><td><img class="math" src="_images/math/7eaec72bdafecc4391c0f480a8f7d44cbfcdddd7.png" alt="X := PLX"/></td>
+<td>2</td>
+</tr>
+<tr><td><img class="math" src="_images/math/7811c924ea4969c873fd6b6e463c91b5b32aab17.png" alt="X := L^TP^TX"/></td>
+<td>3</td>
+</tr>
+</tbody>
+</table>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>L</strong> &#8211; chordal factor</li>
+<li><strong>X</strong> &#8211; CVXOPT dense matrix of doubles with <cite>n</cite> rows if <cite>n</cite> is the
+order of <cite>L</cite></li>
+<li><strong>mode</strong> &#8211; integer</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="completion">
+<tt class="descname">completion</tt><big>(</big><em>X</em><big>)</big><a class="headerlink" href="#completion" title="Permalink to this definition">¶</a></dt>
+<dd><p>Maximum-determinant positive definite completion.</p>
+<p><tt class="samp docutils literal"><span class="pre">L</span> <span class="pre">=</span> <span class="pre">completion(X)</span></tt></p>
+<p>Returns the Cholesky factor of the inverse of the maximum-determinant
+positive definite completion of a symmetric chordal matrix <tt class="docutils literal"><span class="pre">X</span></tt>, ie,
+the Cholesky factor of the inverse of the solution of</p>
+<div class="math">
+<p><img src="_images/math/6942b1b429d69a0cdc29950c1cd818168b6900e9.png" alt="\begin{array}{ll}
+\mbox{maximize}   &amp;  \det W \\
+\mbox{subject to} &amp;  \mbox{proj}(W) = X \\
+                  &amp;  W \succ 0.
+\end{array}" /></p>
+</div><p>The inverse <img class="math" src="_images/math/1e907103216b460c5590059230b0e9483ffd4ce4.png" alt="Z = W^{-1}"/> has the same sparsity pattern as
+<img class="math" src="_images/math/6a47ca0fe7cb276abc022af6ac88ddae1a9d6894.png" alt="X"/> and satisfies the nonlinear equation</p>
+<div class="math">
+<p><img src="_images/math/9ee3cb90761eb248921db1f986dfd42e4cf564e0.png" alt="\mbox{proj}(Z^{-1}) = X." /></p>
+</div><p><a class="reference internal" href="#completion" title="completion"><tt class="xref py py-func docutils literal"><span class="pre">completion</span></tt></a> returns the factor in the factorization
+<img class="math" src="_images/math/ba8b1e725bb9680a3ba0a06e282d759de1ce9437.png" alt="P^T Z P = L L^T"/>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><strong>X</strong> &#8211; chordal matrix</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body">chordal factor with the same sparsity pattern as <cite>X</cite></td>
+</tr>
+<tr class="field"><th class="field-name">Raises :</th><td class="field-body">an <cite>ArithmethicError</cite> if the matrix does not have a positive
+definite completion</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="partial_inv">
+<tt class="descname">partial_inv</tt><big>(</big><em>L</em><big>)</big><a class="headerlink" href="#partial_inv" title="Permalink to this definition">¶</a></dt>
+<dd><p>Evaluates the projection of the inverse of the matrix
+<img class="math" src="_images/math/fa4a4aa5c6a2073de6c57234f710278de245b2ab.png" alt="X = PLL^TP^T"/> on the sparsity pattern of <img class="math" src="_images/math/6a47ca0fe7cb276abc022af6ac88ddae1a9d6894.png" alt="X"/>.</p>
+<p><tt class="samp docutils literal"><span class="pre">Y</span> <span class="pre">=</span> <span class="pre">partial_inv(L)</span></tt></p>
+<p>Computes</p>
+<div class="math">
+<p><img src="_images/math/bfa333e17e119aaebbfa7f176e724ac5166bc15a.png" alt="Y = \mathrm{proj}(X^{-1})" /></p>
+</div><p>where <img class="math" src="_images/math/6a47ca0fe7cb276abc022af6ac88ddae1a9d6894.png" alt="X"/> is a positive definite chordal matrix specified by
+its Cholesky factor <img class="math" src="_images/math/a4416737524aba32772e9cc0915899c77c91aa93.png" alt="P^TXP = LL^T"/>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><strong>L</strong> &#8211; chordal factor</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body">chordal matrix with the same sparsity pattern as <tt class="docutils literal"><span class="pre">L</span></tt></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="hessian">
+<tt class="descname">hessian</tt><big>(</big><em>L</em>, <em>Y</em>, <em>U</em><span class="optional">[</span>, <em>adj = False</em><span class="optional">[</span>, <em>inv = False</em><span class="optional">]</span><span class="optional">]</span><big>)</big><a class="headerlink" href="#hessian" title="Permalink to this definition">¶</a></dt>
+<dd><p>The mapping</p>
+<div class="math">
+<p><img src="_images/math/0dd9dbb6f23a8374843022a473de433b8405d1d0.png" alt="\mathcal{H}_X(U) = \mathrm{proj}(X^{-1} U X^{-1})" /></p>
+</div><p>is the Hessian of the log-det barrier at a positive definite chordal
+matrix <img class="math" src="_images/math/6a47ca0fe7cb276abc022af6ac88ddae1a9d6894.png" alt="X"/>, applied to a symmetric chordal matrix <img class="math" src="_images/math/e2bbebb3bd73f1ae5c64098ab0244f739abf7ca4.png" alt="U"/>.
+The Hessian operator can be factored as</p>
+<div class="math">
+<p><img src="_images/math/9e9b0ad3fb858a0dc8fa2aaa308a096b40e347da.png" alt="\mathcal H_X(U) = \mathcal G_X^\mathrm{adj} ( \mathcal G_X( U ))," /></p>
+</div><p>where the mappings on the right hand side are adjoint mappings that map
+chordal symmetric matrices to chordal symmetric matrices.</p>
+<p><tt class="samp docutils literal"><span class="pre">hessian(L,</span> <span class="pre">Y,</span> <span class="pre">U,</span> <span class="pre">adj</span> <span class="pre">=</span> <span class="pre">False,</span> <span class="pre">inv</span> <span class="pre">=</span> <span class="pre">False)</span></tt></p>
+<p>evaluates these mappings or their inverses for a list of symmetric
+chordal matrices <tt class="docutils literal"><span class="pre">U</span> <span class="pre">=</span> <span class="pre">[</span> <span class="pre">U[0],</span> <span class="pre">...,</span> <span class="pre">U[N-1]</span> <span class="pre">]</span></tt>, and overwrites the
+matrices with the results.   The following table lists the possible
+actions.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="83%" />
+<col width="9%" />
+<col width="9%" />
+</colgroup>
+<thead valign="bottom">
+<tr><th class="head">Action</th>
+<th class="head">adj</th>
+<th class="head">inv</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr><td><img class="math" src="_images/math/079c6522bc7b35261a63e6bfe8a1dda1430aaf82.png" alt="U_i:={\cal G}_X(U_i)"/></td>
+<td>False</td>
+<td>False</td>
+</tr>
+<tr><td><img class="math" src="_images/math/600535760f33de797343020b8db004f5b3e63bdd.png" alt="U_i:={\cal G}_X^{-1}(U_i)"/></td>
+<td>False</td>
+<td>True</td>
+</tr>
+<tr><td><img class="math" src="_images/math/6a372a41fccbfd5d7cea2a6206b8b497ba2eb093.png" alt="U_i:={\cal G}_X^\mathrm{adj}(U_i)"/></td>
+<td>True</td>
+<td>False</td>
+</tr>
+<tr><td><img class="math" src="_images/math/7abb5d35e0e90fb8207de18de71879457f2ceb70.png" alt="U_i:=({\cal G}_X^\mathrm{adj})^{-1}(U_i)"/></td>
+<td>True</td>
+<td>True</td>
+</tr>
+</tbody>
+</table>
+<p>The input argument <tt class="docutils literal"><span class="pre">L</span></tt> is the Cholesky factor of <img class="math" src="_images/math/6a47ca0fe7cb276abc022af6ac88ddae1a9d6894.png" alt="X"/>,
+as computed by the command <tt class="samp docutils literal"><span class="pre">L</span> <span class="pre">=</span> <span class="pre">cholesky(X)</span></tt>.
+The input argument <tt class="docutils literal"><span class="pre">Y</span></tt> is the partial inverse of the inverse of
+<img class="math" src="_images/math/6a47ca0fe7cb276abc022af6ac88ddae1a9d6894.png" alt="X"/>, as computed by the command <tt class="samp docutils literal"><span class="pre">Y</span> <span class="pre">=</span> <span class="pre">partial_inv(L)</span></tt>.
+The input argument <tt class="docutils literal"><span class="pre">U</span></tt> is a list of chordal matrices with the
+same sparsity pattern as <tt class="docutils literal"><span class="pre">L</span></tt> and <tt class="docutils literal"><span class="pre">Y</span></tt>.</p>
+<p>The matrices <img class="math" src="_images/math/160d0f2d863f6b0f18acff41c90d17c1808c2017.png" alt="\mathcal H_X(U_i)"/> can be computed by two calls</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">hessian</span><span class="p">(</span><span class="n">L</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">U</span><span class="p">,</span> <span class="n">adj</span> <span class="o">=</span> <span class="bp">False</span><span class="p">,</span> <span class="n">inv</span> <span class="o">=</span> <span class="bp">False</span><span class="p">)</span>
+<span class="n">hessian</span><span class="p">(</span><span class="n">L</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">U</span><span class="p">,</span> <span class="n">adj</span> <span class="o">=</span> <span class="bp">True</span><span class="p">,</span> <span class="n">inv</span> <span class="o">=</span> <span class="bp">False</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The matrices <img class="math" src="_images/math/768b6d0dc5221f02fe9793ac0638c40554d6766f.png" alt="\mathcal H_X^{-1}(U_i)"/> can be computed as</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">hessian</span><span class="p">(</span><span class="n">L</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">U</span><span class="p">,</span> <span class="n">adj</span> <span class="o">=</span> <span class="bp">True</span><span class="p">,</span> <span class="n">inv</span> <span class="o">=</span> <span class="bp">True</span><span class="p">)</span>
+<span class="n">hessian</span><span class="p">(</span><span class="n">L</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">U</span><span class="p">,</span> <span class="n">adj</span> <span class="o">=</span> <span class="bp">False</span><span class="p">,</span> <span class="n">inv</span> <span class="o">=</span> <span class="bp">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>L</strong> &#8211; chordal factor</li>
+<li><strong>Y</strong> &#8211; chordal matrix with the same sparsity pattern as <tt class="docutils literal"><span class="pre">L</span></tt>.</li>
+<li><strong>U</strong> &#8211; list of chordal matrices with the same sparsity pattern
+as <tt class="docutils literal"><span class="pre">L</span></tt> and <tt class="docutils literal"><span class="pre">Y</span></tt></li>
+<li><strong>adj</strong> &#8211; True/False</li>
+<li><strong>inv</strong> &#8211; True/False</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="auxiliary-routines-for-chordal-matrices">
+<h2>Auxiliary routines for chordal matrices<a class="headerlink" href="#auxiliary-routines-for-chordal-matrices" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="copy">
+<tt class="descname">copy</tt><big>(</big><em>X</em><big>)</big><a class="headerlink" href="#copy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a copy of a chordal matrix.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><strong>X</strong> &#8211; chordal matrix</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body">chordal matrix with the same sparsity pattern and
+numerical values as <tt class="docutils literal"><span class="pre">X</span></tt></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="scal">
+<tt class="descname">scal</tt><big>(</big><em>alpha</em>, <em>X</em><big>)</big><a class="headerlink" href="#scal" title="Permalink to this definition">¶</a></dt>
+<dd><p>Evaluates</p>
+<div class="math">
+<p><img src="_images/math/20e9363552f85a8488d21e0da8373e3a5c43e217.png" alt="X := \alpha X." /></p>
+</div><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>alpha</strong> &#8211; scaling factor</li>
+<li><strong>X</strong> &#8211; chordal matrix</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="axpy">
+<tt class="descname">axpy</tt><big>(</big><em>X</em>, <em>Y</em>, <em>alpha</em><big>)</big><a class="headerlink" href="#axpy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Evaluates</p>
+<div class="math">
+<p><img src="_images/math/21fab4c9bcb5c9e7cd667eae856bfc5b624d5d22.png" alt="Y := \alpha X + Y." /></p>
+</div><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>X</strong> &#8211; chordal matrix</li>
+<li><strong>Y</strong> &#8211; chordal matrix with the same sparsity pattern as <tt class="docutils literal"><span class="pre">X</span></tt></li>
+<li><strong>alpha</strong> &#8211; float</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="dot">
+<tt class="descname">dot</tt><big>(</big><em>X</em>, <em>Y</em><big>)</big><a class="headerlink" href="#dot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Inner product of symmetric chordal sparse matrices.</p>
+<p>Returns the inner product</p>
+<div class="math">
+<p><img src="_images/math/59163f40ab23e06d6a472657e580dd7ca9df6385.png" alt="\mathrm{tr}(XY)" /></p>
+</div><p>of two symmetric sparse matrices with the same chordal sparsity pattern.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>X</strong> &#8211; chordal matrix</li>
+<li><strong>Y</strong> &#8211; chordal matrix with have the same sparsity pattern as <tt class="docutils literal"><span class="pre">X</span></tt></li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">float</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="syr2">
+<tt class="descname">syr2</tt><big>(</big><em>X</em>, <em>y</em>, <em>z</em>, <em>alpha=1.0</em>, <em>beta=1.0</em><big>)</big><a class="headerlink" href="#syr2" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes projected rank 2 update of a chordal matrix</p>
+<div class="math">
+<p><img src="_images/math/d25507f98aa0e5c4cabbd0a2054d16d25df5464b.png" alt="X := \alpha \mathrm{proj}(yz^T + zy^T) + \beta X" /></p>
+</div><p>where <img class="math" src="_images/math/6a47ca0fe7cb276abc022af6ac88ddae1a9d6894.png" alt="X"/> is of order <cite>n</cite>, and <img class="math" src="_images/math/092e364e1d9d19ad5fffb0b46ef4cc7f2da02c1c.png" alt="y"/> and <img class="math" src="_images/math/b13f21416d84e13708696f34dea81026cda583c9.png" alt="z"/> are <cite>n</cite>-vectors.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>X</strong> &#8211; chordal matrix</li>
+<li><strong>y</strong> &#8211; CVXOPT dense matrix of doubles of length <tt class="docutils literal"><span class="pre">n</span></tt></li>
+<li><strong>z</strong> &#8211; CVXOPT dense matrix of doubles of length <tt class="docutils literal"><span class="pre">n</span></tt></li>
+<li><strong>alpha</strong> &#8211; float</li>
+<li><strong>beta</strong> &#8211; float</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">float</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="llt">
+<tt class="descname">llt</tt><big>(</big><em>L</em><big>)</big><a class="headerlink" href="#llt" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes a symmetric matrix from its Cholesky factorization</p>
+<p><tt class="samp docutils literal"><span class="pre">X</span> <span class="pre">=</span> <span class="pre">llt(L)</span></tt></p>
+<p>Computes X from its Cholesky factorization <img class="math" src="_images/math/7cca0d98c542b01e7d7fbb40fa8450c2c2f093e4.png" alt="P^T X P = L L^T"/>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><strong>L</strong> &#8211; chordal factor</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body">chordal matrix with the same sparsity pattern as <tt class="docutils literal"><span class="pre">L</span></tt></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="logdet">
+<tt class="descname">logdet</tt><big>(</big><em>L</em><big>)</big><a class="headerlink" href="#logdet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the logarithm of the determinant of a Cholesky factor <tt class="docutils literal"><span class="pre">L</span></tt>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><strong>L</strong> &#8211; chordal factor</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body">float</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="info">
+<tt class="descname">info</tt><big>(</big><em>X</em><big>)</big><a class="headerlink" href="#info" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a dictionary with information about a chordal sparsity pattern.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><strong>X</strong> &#8211; chordal matrix or factor</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body">python dictionary representation of the sparsity pattern</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="auxiliary-routines-for-cvxopt-matrices">
+<h2>Auxiliary routines for CVXOPT matrices<a class="headerlink" href="#auxiliary-routines-for-cvxopt-matrices" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="maxcardsearch">
+<tt class="descname">maxcardsearch</tt><big>(</big><em>X</em><big>)</big><a class="headerlink" href="#maxcardsearch" title="Permalink to this definition">¶</a></dt>
+<dd><p>Maximum cardinality search ordering of a sparse chordal matrix.</p>
+<p>Returns the maximum cardinality search ordering of a symmetric chordal
+matrix <tt class="docutils literal"><span class="pre">X</span></tt>.  The maximum cardinality search ordering is a perfect
+elimination ordering for the Cholesky factorization.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><strong>X</strong> &#8211; CVXOPT sparse square matrix of doubles.  Only the sparsity
+pattern of the lower triangular part of the matrix is accessed</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body">CVXOPT dense integer matrix of length <tt class="docutils literal"><span class="pre">n</span></tt>, if <tt class="docutils literal"><span class="pre">n</span></tt> is the
+order of <tt class="docutils literal"><span class="pre">X</span></tt></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="peo">
+<tt class="descname">peo</tt><big>(</big><em>X</em>, <em>p</em><big>)</big><a class="headerlink" href="#peo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks whether an ordering is a perfect elmimination order.</p>
+<p>Returns <cite>True</cite> if the permutation <tt class="docutils literal"><span class="pre">p</span></tt> is a perfect elimination order
+for a Cholesky factorization of <tt class="docutils literal"><span class="pre">X</span></tt>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>X</strong> &#8211; CVXOPT sparse square matrix of doubles.  Only the sparsity
+pattern of the lower triangular part is accessed</li>
+<li><strong>p</strong> &#8211; CVXOPT dense integer matrix of length <cite>n</cite>, if <cite>n</cite> is the order
+of <tt class="docutils literal"><span class="pre">X</span></tt></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="perm">
+<tt class="descname">perm</tt><big>(</big><em>X</em>, <em>p</em><big>)</big><a class="headerlink" href="#perm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Performs a symmetric permutation of a square sparse matrix.</p>
+<p><tt class="samp docutils literal"><span class="pre">Y</span> <span class="pre">=</span> <span class="pre">perm(X,</span> <span class="pre">p)</span></tt></p>
+<p>This is equivalent to but more efficient than <tt class="samp docutils literal"><span class="pre">Y</span> <span class="pre">=</span> <span class="pre">X[p,</span> <span class="pre">p]</span></tt>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>X</strong> &#8211; CVXOPT sparse square matrix of doubles</li>
+<li><strong>p</strong> &#8211; CVXOPT dense integer matrix of length <tt class="docutils literal"><span class="pre">n</span></tt>, if <tt class="docutils literal"><span class="pre">n</span></tt> is the
+order of <tt class="docutils literal"><span class="pre">X</span></tt></li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">CVXOPT sparse square matrix of doubles</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="symmetrize">
+<tt class="descname">symmetrize</tt><big>(</big><em>X</em><big>)</big><a class="headerlink" href="#symmetrize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Symmetrizes a lower triangular matrix.  Returns</p>
+<div class="math">
+<p><img src="_images/math/49e8a65cc7ec8a077081f3075157de70018f95c2.png" alt="Y := X + X^T - \mathrm{diag}(\mathrm{diag}(X))" /></p>
+</div><p>where <img class="math" src="_images/math/6a47ca0fe7cb276abc022af6ac88ddae1a9d6894.png" alt="X"/> is a lower triangular matrix.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><strong>X</strong> &#8211; CVXOPT sparse square matrix of doubles.  Must be lower
+triangular</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body">CVXOPT sparse square matrix of doubles</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="tril">
+<tt class="descname">tril</tt><big>(</big><em>X</em><big>)</big><a class="headerlink" href="#tril" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the lower triangular part of a sparse matrix <tt class="docutils literal"><span class="pre">X</span></tt>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><strong>X</strong> &#8211; CVXOPT sparse square matrix of doubles</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body">CVXOPT sparse square matrix of doubles</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="maxchord">
+<tt class="descname">maxchord</tt><big>(</big><em>X</em>, <em>k</em><big>)</big><a class="headerlink" href="#maxchord" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes maximal chordal subgraph of sparsity graph and returns the
+projection of X on the chordal subgraph as a chordal matrix. The
+optional parameter <cite>k</cite> determines the last vertex in a perfect
+elimination ordering of the maximal chordal subgraph. A node of
+maximum degree is chosen if <cite>k</cite> is not specified.</p>
+<blockquote>
+<div><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">param X:</th><td class="field-body">CVXOPT sparse square matrix of doubles.  Only the sparsity
+pattern of the lower triangular part of the matrix is
+accessed.</td>
+</tr>
+<tr class="field"><th class="field-name">param k:</th><td class="field-body">integer between <img class="math" src="_images/math/bc1f9d9bf8a1b606a4188b5ce9a2af1809e27a89.png" alt="0"/> and <img class="math" src="_images/math/4bdca93962a2beaffc172ca394e04fe05bd74ffd.png" alt="n-1"/> if <img class="math" src="_images/math/174fadd07fd54c9afe288e96558c92e0c1da733a.png" alt="n"/>
+is the order of <tt class="docutils literal"><span class="pre">X</span></tt></td>
+</tr>
+<tr class="field"><th class="field-name">returns:</th><td class="field-body">chordal matrix</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+    <h3>Contents</h3>
+    <ul>
+    <l1><a href="index.html">Top</a></li>
+    <ul>
+    <li><a href="copyright.html">Copyright and License</a></li>
+    <li><a href="terminology.html">Terminology</a></li>
+    <li><a href="#">Python Interface</a></li>
+    <li><a href="pythonexamples.html">Python Examples</a></li>
+    <li><a href="capi.html">C Interface</a></li>
+    <li><a href="installation.html">Installation Guide</a></li>
+    <li><a href="download.html">Download</a></li>
+    </ul>
+    </ul>
+        <h3>This page</h3> <ul>
+<li><a class="reference internal" href="#">Python Interface</a><ul>
+<li><a class="reference internal" href="#functions">Functions</a></li>
+<li><a class="reference internal" href="#conversion-to-from-cvxopt">Conversion to/from CVXOPT</a></li>
+<li><a class="reference internal" href="#computational-routines">Computational routines</a></li>
+<li><a class="reference internal" href="#auxiliary-routines-for-chordal-matrices">Auxiliary routines for chordal matrices</a></li>
+<li><a class="reference internal" href="#auxiliary-routines-for-cvxopt-matrices">Auxiliary routines for CVXOPT matrices</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="terminology.html"
+                        title="previous chapter">Terminology</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="pythonexamples.html"
+                        title="next chapter">Python Examples</a></p>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="pythonexamples.html" title="Python Examples"
+             >next</a></li>
+        <li class="right" >
+          <a href="terminology.html" title="Terminology"
+             >previous</a> |</li>
+        <li><a href="index.html">CHOMPACK - Chordal Matrix Package</a> </li> 
+      </ul>
+    </div>
+    <div class="footer">
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try{
+var pageTracker = _gat._getTracker("UA-2894407-1");
+pageTracker._trackPageview();
+} catch(err) {}
+</script>
+  </body>
+</html>

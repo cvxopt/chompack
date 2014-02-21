@@ -1,0 +1,893 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>C Interface &mdash; CHOMPACK</title>
+    <link rel="stylesheet" href="_static/cvxopt.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  false
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="copyright" title="Copyright" href="copyright.html" />
+    <link rel="top" title="CHOMPACK" href="index.html" />
+    <link rel="next" title="Installation" href="installation.html" />
+    <link rel="prev" title="Python Examples" href="pythonexamples.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="installation.html" title="Installation"
+             accesskey="N">next</a></li>
+        <li class="right" >
+          <a href="pythonexamples.html" title="Python Examples"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">CHOMPACK - Chordal Matrix Package</a> </li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="c-interface">
+<span id="c-capi"></span><h1>C Interface<a class="headerlink" href="#c-interface" title="Permalink to this headline">¶</a></h1>
+<p>The CHOMPACK routines are available as a standard C library.</p>
+<div class="section" id="creating-chordal-matrices">
+<h2>Creating chordal matrices<a class="headerlink" href="#creating-chordal-matrices" title="Permalink to this headline">¶</a></h2>
+<p>The two most basic data-structures in CHOMPACK are a <a class="reference internal" href="#cliqueforest" title="cliqueforest"><tt class="xref c c-type docutils literal"><span class="pre">cliqueforest</span></tt></a>, which represents
+the sparsity pattern of symmetric matrix, and a <a class="reference internal" href="#chordalmatrix" title="chordalmatrix"><tt class="xref c c-type docutils literal"><span class="pre">chordalmatrix</span></tt></a> which attaches
+numerical values to a sparsity pattern defined by a <a class="reference internal" href="#cliqueforest" title="cliqueforest"><tt class="xref c c-type docutils literal"><span class="pre">cliqueforest</span></tt></a>.</p>
+<p>A clique-forest is created using the <a class="reference internal" href="#cliqueforest_create" title="cliqueforest_create"><tt class="xref c c-func docutils literal"><span class="pre">cliqueforest_create</span></tt></a> function.</p>
+<dl class="function">
+<dt id="cliqueforest_create">
+int <tt class="descname">cliqueforest_create</tt><big>(</big><a class="reference internal" href="#cliqueforest" title="cliqueforest">cliqueforest</a><em>&nbsp;**F</em>, const <a class="reference internal" href="#ccs" title="ccs">ccs</a><em>&nbsp;*X</em>, const int_t<em>&nbsp;*p</em><big>)</big><a class="headerlink" href="#cliqueforest_create" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a <a class="reference internal" href="#cliqueforest" title="cliqueforest"><tt class="xref c c-type docutils literal"><span class="pre">cliqueforest</span></tt></a> from a <a class="reference internal" href="#ccs" title="ccs"><tt class="xref c c-type docutils literal"><span class="pre">ccs</span></tt></a> matrix.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>F</strong> &#8211; is overwritten with a pointer to the created <a class="reference internal" href="#cliqueforest" title="cliqueforest"><tt class="xref c c-type docutils literal"><span class="pre">cliqueforest</span></tt></a> object.</li>
+<li><strong>X</strong> &#8211; ccs matrix. <cite>X</cite> must be chordal (e.g., created by <a class="reference internal" href="#chordalembedding" title="chordalembedding"><tt class="xref c c-func docutils literal"><span class="pre">chordalembedding</span></tt></a>).</li>
+<li><strong>p</strong> &#8211; permutation associated with <cite>X</cite> of order <cite>n</cite>, if <cite>n</cite> is the order of <cite>X</cite>.
+Typically, <cite>p</cite> is a fill-in reducing permutation used for creating <cite>X</cite> with
+<a class="reference internal" href="#chordalembedding" title="chordalembedding"><tt class="xref c c-func docutils literal"><span class="pre">chordalembedding</span></tt></a>.</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">a status integer <cite>CHOMPACK_OK</cite>, or <cite>CHOMPACK_NOMEMORY</cite>.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<p>A clique-forest is destroyed using the function:</p>
+<dl class="function">
+<dt id="cliqueforest_destroy">
+void <tt class="descname">cliqueforest_destroy</tt><big>(</big><a class="reference internal" href="#cliqueforest" title="cliqueforest">cliqueforest</a><em>&nbsp;*F</em><big>)</big><a class="headerlink" href="#cliqueforest_destroy" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<p>We can create a <a class="reference internal" href="#chordalmatrix" title="chordalmatrix"><tt class="xref c c-type docutils literal"><span class="pre">chordalmatrix</span></tt></a> for a particular <a class="reference internal" href="#cliqueforest" title="cliqueforest"><tt class="xref c c-type docutils literal"><span class="pre">cliqueforest</span></tt></a> using
+the routine:</p>
+<dl class="function">
+<dt id="ccs_to_chordalmatrix">
+<a class="reference internal" href="#chordalmatrix" title="chordalmatrix">chordalmatrix</a> * <tt class="descname">ccs_to_chordalmatrix</tt><big>(</big>const <a class="reference internal" href="#cliqueforest" title="cliqueforest">cliqueforest</a><em>&nbsp;*F</em>, const <a class="reference internal" href="#ccs" title="ccs">ccs</a><em>&nbsp;*X</em><big>)</big><a class="headerlink" href="#ccs_to_chordalmatrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a chordal matrix by projecting a sparse matrix <cite>X</cite> onto the sparsity pattern
+defined by the clique-forest <cite>F</cite>. Elements in <cite>X</cite> outside the chordal sparsity pattern
+in <cite>F</cite> are ignored.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>F</strong> &#8211; a <a class="reference internal" href="#cliqueforest" title="cliqueforest"><tt class="xref c c-type docutils literal"><span class="pre">cliqueforest</span></tt></a> object specifying a chordal sparsity pattern.</li>
+<li><strong>X</strong> &#8211; a sparse <a class="reference internal" href="#ccs" title="ccs"><tt class="xref c c-type docutils literal"><span class="pre">ccs</span></tt></a> matrix with the numerical values.</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">a chordal matrix object, or <cite>NULL</cite> if a memory error occured.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<p>and a <a class="reference internal" href="#chordalmatrix" title="chordalmatrix"><tt class="xref c c-type docutils literal"><span class="pre">chordalmatrix</span></tt></a> object is destroyed using the routine:</p>
+<dl class="function">
+<dt>
+<tt class="descname">void chordalmatrix_destroy(chordalmatrix *X);</tt></dt>
+<dd></dd></dl>
+
+<p>Internally, CHOMPACK does not distinguish between chordal matrices and factors; the
+user of the library must make that distinction. In the following we will refer to
+a symmetric <a class="reference internal" href="#chordalmatrix" title="chordalmatrix"><tt class="xref c c-type docutils literal"><span class="pre">chordalmatrix</span></tt></a> object as a <cite>chordal matrix</cite> and a factor
+stored in a <a class="reference internal" href="#chordalmatrix" title="chordalmatrix"><tt class="xref c c-type docutils literal"><span class="pre">chordalmatrix</span></tt></a> as a <cite>chordal factor</cite>.</p>
+<p>A chordal matrix is converted to
+<a class="reference internal" href="#ccs" title="ccs"><tt class="xref c c-type docutils literal"><span class="pre">ccs</span></tt></a> format using the routine:</p>
+<dl class="function">
+<dt id="chordalmatrix_to_ccs">
+<a class="reference internal" href="#ccs" title="ccs">ccs</a> * <tt class="descname">chordalmatrix_to_ccs</tt><big>(</big>const <a class="reference internal" href="#chordalmatrix" title="chordalmatrix">chordalmatrix</a><em>&nbsp;*A</em><big>)</big><a class="headerlink" href="#chordalmatrix_to_ccs" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<p>and a chordal factor is converted using the routine:</p>
+<dl class="function">
+<dt id="chordalfactor_to_ccs">
+<a class="reference internal" href="#ccs" title="ccs">ccs</a> * <tt class="descname">chordalfactor_to_ccs</tt><big>(</big>const <a class="reference internal" href="#chordalmatrix" title="chordalmatrix">chordalmatrix</a><em>&nbsp;*A</em><big>)</big><a class="headerlink" href="#chordalfactor_to_ccs" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<p>Finally, a copy of a <a class="reference internal" href="#chordalmatrix" title="chordalmatrix"><tt class="xref c c-type docutils literal"><span class="pre">chordalmatrix</span></tt></a> is created using the routine:</p>
+<dl class="function">
+<dt id="chordalmatrix_copy">
+<a class="reference internal" href="#chordalmatrix" title="chordalmatrix">chordalmatrix</a> * <tt class="descname">chordalmatrix_copy</tt><big>(</big>const <a class="reference internal" href="#chordalmatrix" title="chordalmatrix">chordalmatrix</a><em>&nbsp;*A</em><big>)</big><a class="headerlink" href="#chordalmatrix_copy" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="computational-routines">
+<h2>Computational routines<a class="headerlink" href="#computational-routines" title="Permalink to this headline">¶</a></h2>
+<p>The CHOMPACK library provides the following computational routines.</p>
+<dl class="function">
+<dt id="cholesky">
+int <tt class="descname">cholesky</tt><big>(</big><a class="reference internal" href="#chordalmatrix" title="chordalmatrix">chordalmatrix</a><em>&nbsp;*X</em><big>)</big><a class="headerlink" href="#cholesky" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes a zero fill-in Cholesky factorization</p>
+<div class="math" id="equation-e-chol">
+<p><span class="eqno">(1)</span><img src="_images/math/1ddcd3badc623635525a63390413167c3738adc1.png" alt="P^TXP = LL^T" /></p>
+</div><p>of a positive definite chordal matrix <tt class="docutils literal"><span class="pre">X</span></tt>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>X</strong> &#8211; a chordal matrix. On entry, <tt class="docutils literal"><span class="pre">X</span></tt> contains a positive definite chordal matrix,
+and on exit it is overwritten with its Cholesky factor.</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><cite>CHOMPACK_OK</cite> if the factorization was successful,
+<cite>CHOMPACK_FACTORIZATION_ERR</cite> if the factorization failed, or
+<cite>CHOMPACK_NOMEMORY</cite>.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="solve">
+int <tt class="descname">solve</tt><big>(</big>const <a class="reference internal" href="#chordalmatrix" title="chordalmatrix">chordalmatrix</a><em>&nbsp;*L</em>, double<em>&nbsp;*X</em>, int<em>&nbsp;m</em>, int<em>&nbsp;sys</em><big>)</big><a class="headerlink" href="#solve" title="Permalink to this definition">¶</a></dt>
+<dd><p>Solves a factored set of equations, or multiplies with Cholesky factors.</p>
+<p><tt class="docutils literal"><span class="pre">L</span></tt> contains the factors of a factorization <a href="#equation-e-chol">(1)</a> of a
+positive definite sparse chordal matrix.  <tt class="docutils literal"><span class="pre">X</span></tt> is a dense matrix
+of doubles with the same number of rows as <tt class="docutils literal"><span class="pre">L</span></tt>, stored as a
+contigious array on column-major-order.
+On exit, <tt class="docutils literal"><span class="pre">X</span></tt> is overwritten with one of the four matrices in the
+table.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="85%" />
+<col width="15%" />
+</colgroup>
+<thead valign="bottom">
+<tr><th class="head">action</th>
+<th class="head">sys</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr><td><img class="math" src="_images/math/17b796e00c93d699d89089bddf68d435cc75015a.png" alt="X := L^{-1}P^TX"/></td>
+<td>0</td>
+</tr>
+<tr><td><img class="math" src="_images/math/4c5a7cf16503e5d1006711b30bd0b054469dfeb7.png" alt="X := PL^{-T}X"/></td>
+<td>1</td>
+</tr>
+<tr><td><img class="math" src="_images/math/7eaec72bdafecc4391c0f480a8f7d44cbfcdddd7.png" alt="X := PLX"/></td>
+<td>2</td>
+</tr>
+<tr><td><img class="math" src="_images/math/7811c924ea4969c873fd6b6e463c91b5b32aab17.png" alt="X := L^TP^TX"/></td>
+<td>3</td>
+</tr>
+</tbody>
+</table>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>L</strong> &#8211; chordal factor</li>
+<li><strong>X</strong> &#8211; dense matrix of doubles stored in columm-major-order with <cite>n</cite> rows, if <cite>n</cite> is the order of <cite>L</cite></li>
+<li><strong>m</strong> &#8211; number of columns of <tt class="docutils literal"><span class="pre">X</span></tt></li>
+<li><strong>sys</strong> &#8211; integer</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="completion">
+<a class="reference internal" href="#chordalmatrix" title="chordalmatrix">chordalmatrix</a> * <tt class="descname">completion</tt><big>(</big>const <a class="reference internal" href="#chordalmatrix" title="chordalmatrix">chordalmatrix</a><em>&nbsp;*X</em>, int<em>&nbsp;*info</em><big>)</big><a class="headerlink" href="#completion" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the Cholesky factor of the inverse of the maximum-determinant
+positive definite completion of a symmetric chordal matrix <tt class="docutils literal"><span class="pre">X</span></tt>, ie,
+the Cholesky factor of the inverse of the solution of</p>
+<div class="math">
+<p><img src="_images/math/6942b1b429d69a0cdc29950c1cd818168b6900e9.png" alt="\begin{array}{ll}
+\mbox{maximize}   &amp;  \det W \\
+\mbox{subject to} &amp;  \mbox{proj}(W) = X \\
+                  &amp;  W \succ 0.
+\end{array}" /></p>
+</div><p>The inverse <img class="math" src="_images/math/1e907103216b460c5590059230b0e9483ffd4ce4.png" alt="Z = W^{-1}"/> has the same sparsity pattern as
+<img class="math" src="_images/math/6a47ca0fe7cb276abc022af6ac88ddae1a9d6894.png" alt="X"/> and satisfies the nonlinear equation</p>
+<div class="math">
+<p><img src="_images/math/9ee3cb90761eb248921db1f986dfd42e4cf564e0.png" alt="\mbox{proj}(Z^{-1}) = X." /></p>
+</div><p><a class="reference internal" href="pythonapi.html#completion" title="completion"><tt class="xref py py-func docutils literal"><span class="pre">completion</span></tt></a> returns the factor in the factorization
+<img class="math" src="_images/math/ba8b1e725bb9680a3ba0a06e282d759de1ce9437.png" alt="P^T Z P = L L^T"/>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>X</strong> &#8211; chordal matrix</li>
+<li><strong>info</strong> &#8211; status integer overwritten with
+<cite>CHOMPACK_OK</cite>, <cite>CHOMPACK_FACTORIZATION_ERR</cite> or <cite>CHOMPACK_NOMEMORY</cite></li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">chordal factor with the same sparsity pattern as <cite>X</cite></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="partial_inv">
+int <tt class="descname">partial_inv</tt><big>(</big><a class="reference internal" href="#chordalmatrix" title="chordalmatrix">chordalmatrix</a><em>&nbsp;*L</em><big>)</big><a class="headerlink" href="#partial_inv" title="Permalink to this definition">¶</a></dt>
+<dd><p>Evaluates the projection of the inverse of the matrix
+<img class="math" src="_images/math/fa4a4aa5c6a2073de6c57234f710278de245b2ab.png" alt="X = PLL^TP^T"/> on the sparsity pattern of <img class="math" src="_images/math/6a47ca0fe7cb276abc022af6ac88ddae1a9d6894.png" alt="X"/>.</p>
+<p>Overwrites <tt class="docutils literal"><span class="pre">L</span></tt> with lower-triangular part of</p>
+<div class="math">
+<p><img src="_images/math/bfa333e17e119aaebbfa7f176e724ac5166bc15a.png" alt="Y = \mathrm{proj}(X^{-1})" /></p>
+</div><p>where <img class="math" src="_images/math/6a47ca0fe7cb276abc022af6ac88ddae1a9d6894.png" alt="X"/> is a positive definite chordal matrix specified by
+its Cholesky factor <img class="math" src="_images/math/a4416737524aba32772e9cc0915899c77c91aa93.png" alt="P^TXP = LL^T"/>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>L</strong> &#8211; chordal factor</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><cite>CHOMPACK_OK</cite>, <cite>CHOMPACK_FACTORIZATION_ERR</cite> or <cite>CHOMPACK_NOMEMORY</cite></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="hessian_factor">
+int <tt class="descname">hessian_factor</tt><big>(</big>const <a class="reference internal" href="#chordalmatrix" title="chordalmatrix">chordalmatrix</a><em>&nbsp;*L</em>, const <a class="reference internal" href="#chordalmatrix" title="chordalmatrix">chordalmatrix</a><em>&nbsp;*Y</em>, <a class="reference internal" href="#chordalmatrix" title="chordalmatrix">chordalmatrix</a><em>&nbsp;**U</em>, int<em>&nbsp;adj</em>, int<em>&nbsp;inv</em>, int<em>&nbsp;m</em><big>)</big><a class="headerlink" href="#hessian_factor" title="Permalink to this definition">¶</a></dt>
+<dd><p>The mapping</p>
+<div class="math">
+<p><img src="_images/math/0dd9dbb6f23a8374843022a473de433b8405d1d0.png" alt="\mathcal{H}_X(U) = \mathrm{proj}(X^{-1} U X^{-1})" /></p>
+</div><p>is the Hessian of the log-det barrier at a positive definite chordal
+matrix <img class="math" src="_images/math/6a47ca0fe7cb276abc022af6ac88ddae1a9d6894.png" alt="X"/>, applied to a symmetric chordal matrix <img class="math" src="_images/math/e2bbebb3bd73f1ae5c64098ab0244f739abf7ca4.png" alt="U"/>.
+The Hessian operator can be factored as</p>
+<div class="math">
+<p><img src="_images/math/9e9b0ad3fb858a0dc8fa2aaa308a096b40e347da.png" alt="\mathcal H_X(U) = \mathcal G_X^\mathrm{adj} ( \mathcal G_X( U ))," /></p>
+</div><p>where the mappings on the right hand side are adjoint mappings that map
+chordal symmetric matrices to chordal symmetric matrices.</p>
+<p>The <a class="reference internal" href="#hessian_factor" title="hessian_factor"><tt class="xref c c-func docutils literal"><span class="pre">hessian_factor</span></tt></a> function
+evaluates these mappings or their inverses for a list of symmetric
+chordal matrices <tt class="docutils literal"><span class="pre">**U</span></tt>, and overwrites the
+matrices with the results.   The following table lists the possible
+actions.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="89%" />
+<col width="6%" />
+<col width="6%" />
+</colgroup>
+<thead valign="bottom">
+<tr><th class="head">Action</th>
+<th class="head">adj</th>
+<th class="head">inv</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr><td><img class="math" src="_images/math/079c6522bc7b35261a63e6bfe8a1dda1430aaf82.png" alt="U_i:={\cal G}_X(U_i)"/></td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr><td><img class="math" src="_images/math/600535760f33de797343020b8db004f5b3e63bdd.png" alt="U_i:={\cal G}_X^{-1}(U_i)"/></td>
+<td>0</td>
+<td>1</td>
+</tr>
+<tr><td><img class="math" src="_images/math/6a372a41fccbfd5d7cea2a6206b8b497ba2eb093.png" alt="U_i:={\cal G}_X^\mathrm{adj}(U_i)"/></td>
+<td>1</td>
+<td>0</td>
+</tr>
+<tr><td><img class="math" src="_images/math/7abb5d35e0e90fb8207de18de71879457f2ceb70.png" alt="U_i:=({\cal G}_X^\mathrm{adj})^{-1}(U_i)"/></td>
+<td>1</td>
+<td>1</td>
+</tr>
+</tbody>
+</table>
+<p>The input argument <tt class="docutils literal"><span class="pre">L</span></tt> is the Cholesky factor of <img class="math" src="_images/math/6a47ca0fe7cb276abc022af6ac88ddae1a9d6894.png" alt="X"/>,
+as computed by the <a class="reference internal" href="#cholesky" title="cholesky"><tt class="xref c c-func docutils literal"><span class="pre">cholesky</span></tt></a> function.
+The input argument <tt class="docutils literal"><span class="pre">Y</span></tt> is the partial inverse of the inverse of
+<img class="math" src="_images/math/6a47ca0fe7cb276abc022af6ac88ddae1a9d6894.png" alt="X"/>, as computed by the <a class="reference internal" href="#partial_inv" title="partial_inv"><tt class="xref c c-func docutils literal"><span class="pre">partial_inv</span></tt></a> function.
+The input argument <tt class="docutils literal"><span class="pre">U</span></tt> is a list of CHOMPACK matrices with the
+same sparsity pattern as <tt class="docutils literal"><span class="pre">L</span></tt> and <tt class="docutils literal"><span class="pre">Y</span></tt>.</p>
+<p>The matrices <img class="math" src="_images/math/160d0f2d863f6b0f18acff41c90d17c1808c2017.png" alt="\mathcal H_X(U_i)"/> can be computed by two calls</p>
+<div class="highlight-c"><div class="highlight"><pre><span class="n">hessian_factor</span><span class="p">(</span><span class="n">L</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">U</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+<span class="n">hessian_factor</span><span class="p">(</span><span class="n">L</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">U</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>The matrices <img class="math" src="_images/math/768b6d0dc5221f02fe9793ac0638c40554d6766f.png" alt="\mathcal H_X^{-1}(U_i)"/> can be computed as</p>
+<div class="highlight-c"><div class="highlight"><pre><span class="n">hessian_factor</span><span class="p">(</span><span class="n">L</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">U</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+<span class="n">hessian_factor</span><span class="p">(</span><span class="n">L</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">U</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>L</strong> &#8211; chordal factor</li>
+<li><strong>Y</strong> &#8211; chordal matrix with the same sparsity pattern as <tt class="docutils literal"><span class="pre">L</span></tt>.</li>
+<li><strong>U</strong> &#8211; list of CHOMPACK matrices with the same sparsity pattern
+as <tt class="docutils literal"><span class="pre">L</span></tt> and <tt class="docutils literal"><span class="pre">Y</span></tt></li>
+<li><strong>adj</strong> &#8211; 0/1</li>
+<li><strong>inv</strong> &#8211; 0/1</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="auxiliary-routines">
+<h2>Auxiliary routines<a class="headerlink" href="#auxiliary-routines" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="scal">
+void <tt class="descname">scal</tt><big>(</big>double<em>&nbsp;a</em>, <a class="reference internal" href="#chordalmatrix" title="chordalmatrix">chordalmatrix</a><em>&nbsp;*X</em><big>)</big><a class="headerlink" href="#scal" title="Permalink to this definition">¶</a></dt>
+<dd><p>Evaluates</p>
+<div class="math">
+<p><img src="_images/math/20e9363552f85a8488d21e0da8373e3a5c43e217.png" alt="X := \alpha X." /></p>
+</div><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>alpha</strong> &#8211; scaling factor</li>
+<li><strong>X</strong> &#8211; chordal matrix</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="axpy">
+void <tt class="descname">axpy</tt><big>(</big>const <a class="reference internal" href="#chordalmatrix" title="chordalmatrix">chordalmatrix</a><em>&nbsp;*X</em>, <a class="reference internal" href="#chordalmatrix" title="chordalmatrix">chordalmatrix</a><em>&nbsp;*Y</em>, double<em>&nbsp;a</em><big>)</big><a class="headerlink" href="#axpy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Evaluates</p>
+<div class="math">
+<p><img src="_images/math/21fab4c9bcb5c9e7cd667eae856bfc5b624d5d22.png" alt="Y := \alpha X + Y." /></p>
+</div><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>X</strong> &#8211; chordal matrix</li>
+<li><strong>Y</strong> &#8211; chordal matrix with the same sparsity pattern as <tt class="docutils literal"><span class="pre">X</span></tt></li>
+<li><strong>alpha</strong> &#8211; float</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="llt">
+int <tt class="descname">llt</tt><big>(</big><a class="reference internal" href="#chordalmatrix" title="chordalmatrix">chordalmatrix</a><em>&nbsp;*L</em><big>)</big><a class="headerlink" href="#llt" title="Permalink to this definition">¶</a></dt>
+<dd><p>On entry <cite>L</cite> contains a Cholesky factor of <img class="math" src="_images/math/7cca0d98c542b01e7d7fbb40fa8450c2c2f093e4.png" alt="P^T X P = L L^T"/>.
+On exit, <cite>L</cite> is overwritten with <cite>X</cite>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><cite>CHOMPACK_OK</cite> or <cite>CHOMPACK_NOMEMORY</cite></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="dot">
+double <tt class="descname">dot</tt><big>(</big>const <a class="reference internal" href="#chordalmatrix" title="chordalmatrix">chordalmatrix</a><em>&nbsp;*X</em>, const <a class="reference internal" href="#chordalmatrix" title="chordalmatrix">chordalmatrix</a><em>&nbsp;*Y</em><big>)</big><a class="headerlink" href="#dot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the inner product</p>
+<div class="math">
+<p><img src="_images/math/59163f40ab23e06d6a472657e580dd7ca9df6385.png" alt="\mathrm{tr}(XY)" /></p>
+</div><p>of two symmetric sparse matrices with the same chordal sparsity pattern.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>X</strong> &#8211; chordal matrix</li>
+<li><strong>Y</strong> &#8211; chordal matrix with have the same sparsity pattern as <tt class="docutils literal"><span class="pre">X</span></tt></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="logdet">
+double <tt class="descname">logdet</tt><big>(</big>const <a class="reference internal" href="#chordalmatrix" title="chordalmatrix">chordalmatrix</a><em>&nbsp;*L</em><big>)</big><a class="headerlink" href="#logdet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the logarithm of the determinant of a Cholesky factor <tt class="docutils literal"><span class="pre">L</span></tt>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>L</strong> &#8211; chordal factor</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="routines-for-sparse-ccs-matrices">
+<h2>Routines for sparse CCS matrices<a class="headerlink" href="#routines-for-sparse-ccs-matrices" title="Permalink to this headline">¶</a></h2>
+<p>Sparse matrices are specified in <cite>compressed-column-storage</cite> using the (<a class="reference internal" href="#ccs" title="ccs"><tt class="xref c c-type docutils literal"><span class="pre">ccs</span></tt></a>)
+data-structure. For a general <cite>nrows</cite> by <cite>ncols</cite> sparse matrix with <cite>nnz</cite> nonzero
+entries this means the following.  The sparsity pattern and the nonzero values are
+stored in three fields:</p>
+<dl class="docutils">
+<dt><tt class="xref c c-member docutils literal"><span class="pre">values</span></tt></dt>
+<dd>A <tt class="xref c c-type docutils literal"><span class="pre">double</span></tt> array with the
+nonzero entries of the matrix stored columnwise.</dd>
+<dt><tt class="xref c c-member docutils literal"><span class="pre">rowind</span></tt></dt>
+<dd>An array of integers of length <cite>nnz</cite> containing the row indices of
+the nonzero entries sorted in increasing order, stored in the same
+order as <tt class="xref c c-member docutils literal"><span class="pre">values</span></tt>.</dd>
+<dt><tt class="xref c c-member docutils literal"><span class="pre">colptr</span></tt></dt>
+<dd>An array of integers of length <cite>ncols</cite> + 1 with for each column of the
+matrix the index of the first element in <tt class="xref c c-member docutils literal"><span class="pre">values</span></tt> from that
+column.  More precisely, <tt class="docutils literal"><span class="pre">colptr[0]</span></tt> is <tt class="xref py py-const docutils literal"><span class="pre">0</span></tt>, and for
+k = 0, 1, ..., <cite>ncols</cite> - 1, <tt class="docutils literal"><span class="pre">colptr[k+1]</span></tt> is equal to
+<tt class="docutils literal"><span class="pre">colptr[k]</span></tt> plus the number of nonzeros in column <cite>k</cite> of the
+matrix.  Thus, <tt class="docutils literal"><span class="pre">colptr[ncols]</span></tt> is equal to <cite>nnz</cite>, the number of
+nonzero entries.</dd>
+</dl>
+<p>For example, for the matrix</p>
+<div class="math">
+<p><img src="_images/math/f4cc3b4324f3f4bb12a7db934c2c5c5acc98fe66.png" alt="A=\left [\begin{array}{cccc}
+    1 &amp; 0 &amp; 0 &amp; 5\\
+    2 &amp; 0 &amp; 4 &amp; 0\\
+    0 &amp; 0 &amp; 0 &amp; 6\\
+    3 &amp; 0 &amp; 0 &amp; 0
+\end{array}\right]" /></p>
+</div><p>the elements of <tt class="xref c c-member docutils literal"><span class="pre">values</span></tt>, <tt class="xref c c-member docutils literal"><span class="pre">rowind</span></tt>, and <tt class="xref c c-member docutils literal"><span class="pre">colptr</span></tt>
+are:</p>
+<dl class="docutils">
+<dt><tt class="xref c c-member docutils literal"><span class="pre">values</span></tt>:</dt>
+<dd>1.0, 2.0, 3.0, 4.0, 5.0, 6.0</dd>
+<dt><tt class="xref c c-member docutils literal"><span class="pre">rowind</span></tt>:</dt>
+<dd>0, 1,3, 1, 0, 2</dd>
+<dt><tt class="xref c c-member docutils literal"><span class="pre">colptr</span></tt>:</dt>
+<dd>0, 3, 3, 4, 6.</dd>
+</dl>
+<p>A <a class="reference internal" href="#ccs" title="ccs"><tt class="xref c c-type docutils literal"><span class="pre">ccs</span></tt></a> data-structure can be allocated using the routine:</p>
+<dl class="function">
+<dt id="alloc_ccs">
+<a class="reference internal" href="#ccs" title="ccs">ccs</a> * <tt class="descname">alloc_ccs</tt><big>(</big>int_t<em>&nbsp;nrows</em>, int_t<em>&nbsp;ncols</em>, int<em>&nbsp;nnz</em><big>)</big><a class="headerlink" href="#alloc_ccs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Allocates a <cite>nrows</cite> times <cite>ncols</cite> <a class="reference internal" href="#ccs" title="ccs"><tt class="xref c c-type docutils literal"><span class="pre">ccs</span></tt></a> matrix with <cite>nnz</cite> non-zero elements.</p>
+</dd></dl>
+
+<p>and a <a class="reference internal" href="#ccs" title="ccs"><tt class="xref c c-type docutils literal"><span class="pre">ccs</span></tt></a> structure can be freed with the routine:</p>
+<dl class="function">
+<dt id="free_ccs">
+void <tt class="descname">free_ccs</tt><big>(</big><a class="reference internal" href="#ccs" title="ccs">ccs</a><em>&nbsp;*obj</em><big>)</big><a class="headerlink" href="#free_ccs" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<p>A given <a class="reference internal" href="#ccs" title="ccs"><tt class="xref c c-type docutils literal"><span class="pre">ccs</span></tt></a> can be embedded into a chordal sparsity pattern (i.e., it can
+be triangulated) using the routine:</p>
+<dl class="function">
+<dt id="chordalembedding">
+<a class="reference internal" href="#ccs" title="ccs">ccs</a> * <tt class="descname">chordalembedding</tt><big>(</big>const <a class="reference internal" href="#ccs" title="ccs">ccs</a><em>&nbsp;*X</em>, int<em>&nbsp;*nfill</em><big>)</big><a class="headerlink" href="#chordalembedding" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>X</strong> &#8211; a <a class="reference internal" href="#ccs" title="ccs"><tt class="xref c c-type docutils literal"><span class="pre">ccs</span></tt></a> matrix to be triangulated.</li>
+<li><strong>nfill</strong> &#8211; an integer that will be overwritten with the amount of fill-in
+(i.e., the number of edges added in the triangulation process).</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">a chordal embedding of <cite>X</cite> as a <a class="reference internal" href="#ccs" title="ccs"><tt class="xref c c-type docutils literal"><span class="pre">ccs</span></tt></a> matrix.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<p>Additionally,  a number of auxilliary routines for <a class="reference internal" href="#ccs" title="ccs"><tt class="xref c c-type docutils literal"><span class="pre">ccs</span></tt></a> matrices are available.</p>
+<dl class="function">
+<dt id="perm">
+<a class="reference internal" href="#ccs" title="ccs">ccs</a> * <tt class="descname">perm</tt><big>(</big><a class="reference internal" href="#ccs" title="ccs">ccs</a><em>&nbsp;*A</em>, int_t<em>&nbsp;*p</em><big>)</big><a class="headerlink" href="#perm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a symmetric permutation <img class="math" src="_images/math/bf6914a1cbba2e36d149f6ed9c555f045c084f1d.png" alt="P^TAP"/> where
+<cite>P</cite> is a permutation and <cite>A</cite> is a square matrix of dimension <cite>n</cite>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>A</strong> &#8211; <a class="reference internal" href="#ccs" title="ccs"><tt class="xref c c-type docutils literal"><span class="pre">ccs</span></tt></a> matrix.</li>
+<li><strong>p</strong> &#8211; a valid permutation of order <cite>n</cite>, if <cite>n</cite> is the dimension of <cite>A</cite>.</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">a symmetric permutation of the rows and columns of <cite>A</cite>.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="symmetrize">
+<a class="reference internal" href="#ccs" title="ccs">ccs</a> * <tt class="descname">symmetrize</tt><big>(</big>const <a class="reference internal" href="#ccs" title="ccs">ccs</a><em>&nbsp;*A</em><big>)</big><a class="headerlink" href="#symmetrize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Symmetrizes a lower triangular matrix <cite>A</cite>, i.e., computes</p>
+<div class="math">
+<p><img src="_images/math/4d20cf17e9456a5b95ff6475c30db2da7ad8d531.png" alt="A+A^T-\mathbf{diag}(\mathbf{diag}(A))" /></p>
+</div><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>A</strong> &#8211; a lower triangular matrix.</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">a symmetric matrix, with <cite>A</cite> as lower triangular part.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="tril">
+<a class="reference internal" href="#ccs" title="ccs">ccs</a> * <tt class="descname">tril</tt><big>(</big>const <a class="reference internal" href="#ccs" title="ccs">ccs</a><em>&nbsp;*A</em><big>)</big><a class="headerlink" href="#tril" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the lower-triangular part of a sparse matrix.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>A</strong> &#8211; <a class="reference internal" href="#ccs" title="ccs"><tt class="xref c c-type docutils literal"><span class="pre">ccs</span></tt></a> matrix.</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">a <a class="reference internal" href="#ccs" title="ccs"><tt class="xref c c-type docutils literal"><span class="pre">ccs</span></tt></a> matrix, with <cite>A</cite> as lower triangular part, and zeros
+elsewhere.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="overview-of-data-structures">
+<h2>Overview of data-structures<a class="headerlink" href="#overview-of-data-structures" title="Permalink to this headline">¶</a></h2>
+<dl class="type">
+<dt id="ccs">
+<tt class="descname">ccs</tt><a class="headerlink" href="#ccs" title="Permalink to this definition">¶</a></dt>
+<dd><div class="highlight-c"><div class="highlight"><pre><span class="k">typedef</span> <span class="k">struct</span> <span class="p">{</span>
+    <span class="kt">void</span>  <span class="o">*</span><span class="n">values</span><span class="p">;</span>      <span class="cm">/* value list */</span>
+    <span class="n">int_t</span> <span class="o">*</span><span class="n">colptr</span><span class="p">;</span>      <span class="cm">/* column pointer list */</span>
+    <span class="n">int_t</span> <span class="o">*</span><span class="n">rowind</span><span class="p">;</span>      <span class="cm">/* row index list */</span>
+    <span class="n">int_t</span> <span class="n">nrows</span><span class="p">,</span> <span class="n">ncols</span><span class="p">;</span> <span class="cm">/* number of rows and columns */</span>
+    <span class="kt">int</span>   <span class="n">id</span><span class="p">;</span>           <span class="cm">/* not currently used */</span>
+<span class="p">}</span> <span class="n">ccs</span><span class="p">;</span>
+</pre></div>
+</div>
+<dl class="member">
+<dt id="ccs.nrows">
+<tt class="descname">nrows</tt><a class="headerlink" href="#ccs.nrows" title="Permalink to this definition">¶</a></dt>
+<dd><p>number of rows</p>
+</dd></dl>
+
+<dl class="member">
+<dt id="ccs.ncols">
+<tt class="descname">ncols</tt><a class="headerlink" href="#ccs.ncols" title="Permalink to this definition">¶</a></dt>
+<dd><p>number of columns</p>
+</dd></dl>
+
+<dl class="member">
+<dt id="ccs.values">
+<tt class="descname">values</tt><a class="headerlink" href="#ccs.values" title="Permalink to this definition">¶</a></dt>
+<dd><p>length <cite>colptr[ncols]</cite> <tt class="xref c c-type docutils literal"><span class="pre">double</span></tt> array with numerical values.</p>
+</dd></dl>
+
+<dl class="member">
+<dt id="ccs.colptr">
+<tt class="descname">colptr</tt><a class="headerlink" href="#ccs.colptr" title="Permalink to this definition">¶</a></dt>
+<dd><p>length <cite>ncols+1</cite> array with compressed column-indices.</p>
+</dd></dl>
+
+<dl class="member">
+<dt id="ccs.rowind">
+<tt class="descname">rowind</tt><a class="headerlink" href="#ccs.rowind" title="Permalink to this definition">¶</a></dt>
+<dd><p>length <cite>colptr[ncols]</cite> array with row-indices.</p>
+</dd></dl>
+
+<dl class="member">
+<dt id="ccs.id">
+<tt class="descname">id</tt><a class="headerlink" href="#ccs.id" title="Permalink to this definition">¶</a></dt>
+<dd><p>included for compatibility with CVXOPT; not currently used.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="type">
+<dt id="cliqueforest">
+<tt class="descname">cliqueforest</tt><a class="headerlink" href="#cliqueforest" title="Permalink to this definition">¶</a></dt>
+<dd><div class="highlight-c"><div class="highlight"><pre><span class="k">typedef</span> <span class="k">struct</span> <span class="n">cliqueforest</span> <span class="p">{</span>
+
+  <span class="kt">int</span> <span class="n">nRoots</span><span class="p">,</span> <span class="n">nCliques</span><span class="p">,</span> <span class="n">n</span><span class="p">;</span>
+  <span class="k">struct</span> <span class="n">clique</span> <span class="o">**</span><span class="n">roots</span><span class="p">,</span> <span class="o">**</span><span class="n">list</span><span class="p">,</span> <span class="o">*</span><span class="n">location</span><span class="p">;</span>
+  <span class="n">int_t</span> <span class="o">*</span><span class="n">p</span><span class="p">,</span> <span class="o">*</span><span class="n">ip</span><span class="p">;</span>
+
+<span class="p">}</span> <span class="n">cliqueforest</span><span class="p">;</span>
+</pre></div>
+</div>
+<dl class="member">
+<dt id="cliqueforest.nRoots">
+<tt class="descname">nRoots</tt><a class="headerlink" href="#cliqueforest.nRoots" title="Permalink to this definition">¶</a></dt>
+<dd><p>number of clique-trees in the clique-forest</p>
+</dd></dl>
+
+<dl class="member">
+<dt id="cliqueforest.nCliques">
+<tt class="descname">nCliques</tt><a class="headerlink" href="#cliqueforest.nCliques" title="Permalink to this definition">¶</a></dt>
+<dd><p>number of cliques in the clique-forest</p>
+</dd></dl>
+
+<dl class="member">
+<dt id="cliqueforest.n">
+<tt class="descname">n</tt><a class="headerlink" href="#cliqueforest.n" title="Permalink to this definition">¶</a></dt>
+<dd><p>number of nodes (dimension of the matrix)</p>
+</dd></dl>
+
+<dl class="member">
+<dt id="cliqueforest.roots">
+<tt class="descname">roots</tt><a class="headerlink" href="#cliqueforest.roots" title="Permalink to this definition">¶</a></dt>
+<dd><p>array of pointers to each root element</p>
+</dd></dl>
+
+<dl class="member">
+<dt id="cliqueforest.list">
+<tt class="descname">list</tt><a class="headerlink" href="#cliqueforest.list" title="Permalink to this definition">¶</a></dt>
+<dd><p>array of pointers to each clique numbers in reverse topological order</p>
+</dd></dl>
+
+<dl class="member">
+<dt id="cliqueforest.p">
+<tt class="descname">p</tt><a class="headerlink" href="#cliqueforest.p" title="Permalink to this definition">¶</a></dt>
+<dd><p>permutation used for creating the clique-forst</p>
+</dd></dl>
+
+<dl class="member">
+<dt id="cliqueforest.ip">
+<tt class="descname">ip</tt><a class="headerlink" href="#cliqueforest.ip" title="Permalink to this definition">¶</a></dt>
+<dd><p>inverse permutation</p>
+</dd></dl>
+
+<dl class="member">
+<dt id="cliqueforest.location">
+<tt class="descname">location</tt><a class="headerlink" href="#cliqueforest.location" title="Permalink to this definition">¶</a></dt>
+<dd><p>used internally by CHOMPACK</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="type">
+<dt id="chordalmatrix">
+<tt class="descname">chordalmatrix</tt><a class="headerlink" href="#chordalmatrix" title="Permalink to this definition">¶</a></dt>
+<dd><div class="highlight-c"><div class="highlight"><pre><span class="k">typedef</span> <span class="k">struct</span> <span class="p">{</span>
+
+  <span class="n">cliqueforest</span> <span class="o">*</span><span class="n">F</span><span class="p">;</span>
+  <span class="kt">double</span> <span class="o">**</span><span class="n">US</span><span class="p">;</span>
+  <span class="kt">double</span> <span class="o">**</span><span class="n">SS</span><span class="p">;</span>
+  <span class="kt">double</span> <span class="o">**</span><span class="n">UU</span><span class="p">;</span>
+  <span class="kt">void</span> <span class="o">*</span><span class="n">F_py</span><span class="p">;</span>
+
+<span class="p">}</span> <span class="n">chordalmatrix</span><span class="p">;</span>
+</pre></div>
+</div>
+<dl class="member">
+<dt id="chordalmatrix.F">
+<tt class="descname">F</tt><a class="headerlink" href="#chordalmatrix.F" title="Permalink to this definition">¶</a></dt>
+<dd><p>clique-forest representing sparsity pattern of matrix</p>
+</dd></dl>
+
+<dl class="member">
+<dt id="chordalmatrix.US">
+<tt class="descname">US</tt><a class="headerlink" href="#chordalmatrix.US" title="Permalink to this definition">¶</a></dt>
+<dd><p>array of matrices corresponding the <img class="math" src="_images/math/f33f8289878eeb8ac77f543dd6c6f499cdc292e5.png" alt="\{U_k,S_k\}"/> blocks of the chordal matrix</p>
+</dd></dl>
+
+<dl class="member">
+<dt id="chordalmatrix.SS">
+<tt class="descname">SS</tt><a class="headerlink" href="#chordalmatrix.SS" title="Permalink to this definition">¶</a></dt>
+<dd><p>array of matrices corresponding the <img class="math" src="_images/math/c2bb279416db6625969fbeb624a0721f9ab8bffb.png" alt="\{S_k,S_k\}"/> blocks of the chordal matrix</p>
+</dd></dl>
+
+<dl class="member">
+<dt id="chordalmatrix.UU">
+<tt class="descname">UU</tt><a class="headerlink" href="#chordalmatrix.UU" title="Permalink to this definition">¶</a></dt>
+<dd><p>array of matrices corresponding the <img class="math" src="_images/math/80f1af603ac7dac2e098bda257b1c5a80dbc221a.png" alt="\{U_k,U_k\}"/> blocks of the chordal matrix</p>
+</dd></dl>
+
+<dl class="member">
+<dt id="chordalmatrix.F_py">
+<tt class="descname">F_py</tt><a class="headerlink" href="#chordalmatrix.F_py" title="Permalink to this definition">¶</a></dt>
+<dd><p>included for compatibility with CVXOPT</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<p>The following example computes the partial inverse of the chordal matrix</p>
+<div class="math">
+<p><img src="_images/math/b9f765a7829241a3f8e631d3b9d87ee76ec674ae.png" alt="A=\left [\begin{array}{ccccc}
+    1 &amp; 0 &amp; 0 &amp; 0 &amp; 1\\
+    0 &amp; 10 &amp; 0 &amp; 0 &amp; 1\\
+    0 &amp; 0 &amp; 10 &amp; 0 &amp; 1\\
+    0 &amp; 0 &amp; 0 &amp; 10 &amp; 1\\
+    1 &amp; 1 &amp; 1 &amp; 1 &amp; 10
+\end{array}\right]" /></p>
+</div><div class="highlight-c"><div class="highlight"><pre><span class="cp">#include &lt;stdio.h&gt;</span>
+<span class="cp">#include &quot;chompack.h&quot;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+
+  <span class="kt">int</span> <span class="n">j</span><span class="p">,</span> <span class="n">k</span><span class="p">;</span>
+  <span class="kt">double</span> <span class="n">Aval</span><span class="p">[]</span> <span class="o">=</span> <span class="p">{</span><span class="mf">10.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">};</span>
+  <span class="n">int_t</span>  <span class="n">Acol</span><span class="p">[]</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">9</span><span class="p">};</span>
+  <span class="n">int_t</span>  <span class="n">Arow</span><span class="p">[]</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">};</span>
+  <span class="n">ccs</span>    <span class="n">A</span> <span class="o">=</span> <span class="p">{</span> <span class="p">.</span><span class="n">values</span> <span class="o">=</span> <span class="n">Aval</span><span class="p">,</span> <span class="p">.</span><span class="n">colptr</span> <span class="o">=</span> <span class="n">Acol</span><span class="p">,</span> <span class="p">.</span><span class="n">rowind</span> <span class="o">=</span> <span class="n">Arow</span><span class="p">,</span> <span class="p">.</span><span class="n">nrows</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span> <span class="p">.</span><span class="n">ncols</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">0</span> <span class="p">};</span>
+
+  <span class="n">printf</span><span class="p">(</span><span class="s">&quot;creating cliquetree</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+  <span class="n">cliqueforest</span> <span class="o">*</span><span class="n">F</span><span class="p">;</span>
+  <span class="n">cliqueforest_create</span><span class="p">(</span><span class="o">&amp;</span><span class="n">F</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">A</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
+
+  <span class="n">printf</span><span class="p">(</span><span class="s">&quot;creating chordal matrix</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+  <span class="n">chordalmatrix</span> <span class="o">*</span><span class="n">X</span> <span class="o">=</span> <span class="n">ccs_to_chordalmatrix</span> <span class="p">(</span><span class="n">F</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">A</span><span class="p">);</span>
+
+  <span class="n">printf</span><span class="p">(</span><span class="s">&quot;performing factorization</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+  <span class="n">cholesky</span><span class="p">(</span><span class="n">X</span><span class="p">);</span>
+
+  <span class="n">printf</span><span class="p">(</span><span class="s">&quot;computing partial inverse</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+  <span class="n">partial_inv</span><span class="p">(</span><span class="n">X</span><span class="p">);</span>
+
+  <span class="n">ccs</span> <span class="o">*</span><span class="n">Y</span> <span class="o">=</span> <span class="n">chordalmatrix_to_ccs</span><span class="p">(</span><span class="n">X</span><span class="p">);</span>
+
+  <span class="n">printf</span><span class="p">(</span><span class="s">&quot;partial inverse:</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+  <span class="k">for</span> <span class="p">(</span><span class="n">j</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">j</span><span class="o">&lt;</span><span class="n">Y</span><span class="o">-&gt;</span><span class="n">ncols</span><span class="p">;</span> <span class="n">j</span><span class="o">++</span><span class="p">)</span>
+    <span class="k">for</span> <span class="p">(</span><span class="n">k</span><span class="o">=</span><span class="n">Y</span><span class="o">-&gt;</span><span class="n">colptr</span><span class="p">[</span><span class="n">j</span><span class="p">];</span> <span class="n">k</span><span class="o">&lt;</span><span class="n">Y</span><span class="o">-&gt;</span><span class="n">colptr</span><span class="p">[</span><span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="p">];</span> <span class="n">k</span><span class="o">++</span><span class="p">)</span>
+      <span class="n">printf</span><span class="p">(</span><span class="s">&quot;(%i,%i): % 3.2e</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="p">(</span><span class="kt">int</span><span class="p">)</span><span class="n">Y</span><span class="o">-&gt;</span><span class="n">rowind</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">j</span><span class="p">,</span> <span class="p">((</span><span class="kt">double</span> <span class="o">*</span><span class="p">)</span><span class="n">Y</span><span class="o">-&gt;</span><span class="n">values</span><span class="p">)[</span><span class="n">k</span><span class="p">]);</span>
+
+  <span class="n">chordalmatrix_destroy</span><span class="p">(</span><span class="n">X</span><span class="p">);</span>
+  <span class="n">cliqueforest_destroy</span><span class="p">(</span><span class="n">F</span><span class="p">);</span>
+  <span class="n">free_ccs</span><span class="p">(</span><span class="n">Y</span><span class="p">);</span>
+
+  <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+    <h3>Contents</h3>
+    <ul>
+    <l1><a href="index.html">Top</a></li>
+    <ul>
+    <li><a href="copyright.html">Copyright and License</a></li>
+    <li><a href="terminology.html">Terminology</a></li>
+    <li><a href="pythonapi.html">Python Interface</a></li>
+    <li><a href="pythonexamples.html">Python Examples</a></li>
+    <li><a href="#">C Interface</a></li>
+    <li><a href="installation.html">Installation Guide</a></li>
+    <li><a href="download.html">Download</a></li>
+    </ul>
+    </ul>
+        <h3>This page</h3> <ul>
+<li><a class="reference internal" href="#">C Interface</a><ul>
+<li><a class="reference internal" href="#creating-chordal-matrices">Creating chordal matrices</a></li>
+<li><a class="reference internal" href="#computational-routines">Computational routines</a></li>
+<li><a class="reference internal" href="#auxiliary-routines">Auxiliary routines</a></li>
+<li><a class="reference internal" href="#routines-for-sparse-ccs-matrices">Routines for sparse CCS matrices</a></li>
+<li><a class="reference internal" href="#overview-of-data-structures">Overview of data-structures</a></li>
+<li><a class="reference internal" href="#examples">Examples</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="pythonexamples.html"
+                        title="previous chapter">Python Examples</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="installation.html"
+                        title="next chapter">Installation</a></p>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="installation.html" title="Installation"
+             >next</a></li>
+        <li class="right" >
+          <a href="pythonexamples.html" title="Python Examples"
+             >previous</a> |</li>
+        <li><a href="index.html">CHOMPACK - Chordal Matrix Package</a> </li> 
+      </ul>
+    </div>
+    <div class="footer">
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try{
+var pageTracker = _gat._getTracker("UA-2894407-1");
+pageTracker._trackPageview();
+} catch(err) {}
+</script>
+  </body>
+</html>
