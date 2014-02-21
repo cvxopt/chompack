@@ -1,7 +1,7 @@
 include LICENSE
-include INSTALL
 include README.md
-include *.h
-recursive-include cvxopt-1.1.6 *
-recursive-include doc-sphinx *
-exclude .DS_Store 
+include src/C/cvxopt.h
+include src/C/blas_redefines.h
+recursive-include examples/*
+recursive-include doc/build/html *
+excluse .DS_Store 

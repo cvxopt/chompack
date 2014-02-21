@@ -1,51 +1,40 @@
 from distutils.core import setup, Extension
-import sys, glob
-
-ATLAS_LIB_DIR = '/usr/lib'
+import os, sys
 
 MACROS = []
-CVXOPT_SRC = 'cvxopt-1.1.6/src/C'    
-if sys.maxsize > 2**31: MACROS += [('DLONG','')]
+LIBRARIES = []
+EXTRA_COMPILE_ARGS = []
+EXT_MODULES = []
 
-LIBRARIES = ['lapack','blas','gomp']
-EXTRA_COMPILE_ARGS = ['-fopenmp']
+# Install Python-only reference implementation? (default: False)
+py_only = os.environ.get('CHOMPACK_PY_ONLY',False)
+if type(py_only) is str:
+    if py_only in ['true','True','1','yes','Yes','Y','y']: py_only = True
+    else: py_only = False
 
-AMD_SRC = glob.glob(CVXOPT_SRC + '/SuiteSparse/AMD/Source/*.c')
-AMD_DIR = [CVXOPT_SRC + '/SuiteSparse/AMD/Include/',
-           CVXOPT_SRC + '/SuiteSparse/SuiteSparse_config/']
- 
-# Compile without OpenMP under Mac OS
-if sys.platform.startswith('darwin'):
-    LIBRARIES.remove('gomp')
-    EXTRA_COMPILE_ARGS.remove('-fopenmp')
-EXTRA_COMPILE_ARGS.append('-msse3')
-EXTRA_COMPILE_ARGS.append('-O3')
-
-chompack = Extension('chompack',
-                      include_dirs = [ CVXOPT_SRC ] + AMD_DIR,
-                      libraries = LIBRARIES,
-                      library_dirs = [ ATLAS_LIB_DIR, '.' ],
-                      define_macros = MACROS,
-                      extra_compile_args = EXTRA_COMPILE_ARGS,
-                      sources = ['pychompack.c',
-                                 'chompack.c',
-                                 'maxcardsearch.c',
-                                 'cliquetree.c',
-                                 'sparse.c',
-                                 'adjgraph.c',
-                                 'cholupdate.c',
-                                 'pf_cholesky.c',
-                                 'maxchord.c'] + AMD_SRC
-                    )
-
-setup (name = 'chompack', 
-    version = '1.1.1',
-    description = 'Library for chordal matrix computations',
-    ext_modules = [chompack],
-    author = 'Joachim Dahl, Lieven Vandenberghe, Martin Andersen',
-    author_email = 'dahl.joachim@gmail.com, vandenbe@ee.ucla.edu, martin.skovgaard.andersen@gmail.com',
-    url = 'http://abel.ee.ucla.edu/chompack',
+# C extensions
+cmisc = Extension('cmisc',
+                  libraries = LIBRARIES,
+                  define_macros = MACROS,
+                  extra_compile_args = EXTRA_COMPILE_ARGS,
+                  sources = ['src/C/cmisc.c'])
+if not py_only: EXT_MODULES.append(cmisc)
+    
+setup(name='chompack',
+    version='2.0.0',
+    description='Library for chordal matrix computations',
+    author='Martin S. Andersen, Lieven Vandenberghe',
+    author_email='martin.skovgaard.andersen@gmail.com, vandenbe@ee.ucla.edu',
+    url='http://cvxopt.github.io/chompack/',
+    download_url='https://github.com/cvxopt/chompack/tarball/2.0.0',
+    license = 'GNU GPL version 3',
+    package_dir = {"chompack": "src/python"},
+    packages = ["chompack"],
+    ext_package = "chompack",
+    ext_modules = EXT_MODULES,
     install_requires = ['cvxopt>=1.1.6'],
-    classifiers=['Development Status :: 5 - Production/Stable',
+    classifiers=['Development Status :: 4 - Beta',
                  'Programming Language :: Python',
                  'Programming Language :: C'])
+
+

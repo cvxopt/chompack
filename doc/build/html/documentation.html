@@ -1,0 +1,1071 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Documentation &mdash; Chompack 2.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '2.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Chompack 2.0 documentation" href="index.html" />
+    <link rel="prev" title="Installation" href="install.html" /> 
+  </head>
+  <body>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-chompack">
+<span id="documentation"></span><h1>Documentation<a class="headerlink" href="#module-chompack" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="quick-start">
+<h2>Quick start<a class="headerlink" href="#quick-start" title="Permalink to this headline">¶</a></h2>
+<p>The core functionality of CHOMPACK is contained in two types of
+objects: the <a class="reference internal" href="#chompack.symbolic" title="chompack.symbolic"><tt class="xref py py-class docutils literal"><span class="pre">symbolic</span></tt></a> object and the <a class="reference internal" href="#chompack.cspmatrix" title="chompack.cspmatrix"><tt class="xref py py-class docutils literal"><span class="pre">cspmatrix</span></tt></a>
+(chordal sparse matrix) object. A <a class="reference internal" href="#chompack.symbolic" title="chompack.symbolic"><tt class="xref py py-class docutils literal"><span class="pre">symbolic</span></tt></a> object
+represents a symbolic factorization of a sparse symmetric matrix
+<img class="math" src="_images/math/937abf0036e3f773123ec44111199b356cf0ab10.png" alt="A" style="vertical-align: 0px"/>, and it can be created as follows:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">cvxopt</span> <span class="kn">import</span> <span class="n">spmatrix</span><span class="p">,</span> <span class="n">amd</span>
+<span class="kn">import</span> <span class="nn">chompack</span> <span class="kn">as</span> <span class="nn">cp</span>
+
+<span class="c"># generate sparse matrix</span>
+<span class="n">I</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">]</span>
+<span class="n">J</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">]</span>
+<span class="n">A</span> <span class="o">=</span> <span class="n">spmatrix</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">I</span><span class="p">,</span> <span class="n">J</span><span class="p">,</span> <span class="p">(</span><span class="mi">7</span><span class="p">,</span><span class="mi">7</span><span class="p">))</span>
+
+<span class="c"># compute symbolic factorization using AMD ordering</span>
+<span class="n">symb</span> <span class="o">=</span> <span class="n">cp</span><span class="o">.</span><span class="n">symbolic</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="n">amd</span><span class="o">.</span><span class="n">order</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The argument <img class="math" src="_images/math/c5b47cd114d1cd218d587260b667ed59b7ace4a0.png" alt="p" style="vertical-align: -4px"/> is a so-called elimination order, and it can
+be either an ordering routine or a permutation vector. In the above
+example we used the &#8220;approximate minimum degree&#8221; (AMD) ordering
+routine. Note that <img class="math" src="_images/math/937abf0036e3f773123ec44111199b356cf0ab10.png" alt="A" style="vertical-align: 0px"/> is a lower-triangular sparse matrix that represents a
+symmetric matrix; upper-triangular entries in <img class="math" src="_images/math/937abf0036e3f773123ec44111199b356cf0ab10.png" alt="A" style="vertical-align: 0px"/> are ignored in the
+symbolic factorization.</p>
+<p>Now let&#8217;s inspect the sparsity pattern of <cite>A</cite> and its chordal
+embedding (i.e., the filled pattern):</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">A</span><span class="p">)</span>
+<span class="go">[ 1.00e+00     0         0         0         0         0         0    ]</span>
+<span class="go">[ 1.00e+00  1.00e+00     0         0         0         0         0    ]</span>
+<span class="go">[    0         0      1.00e+00     0         0         0         0    ]</span>
+<span class="go">[ 1.00e+00     0         0      1.00e+00     0         0         0    ]</span>
+<span class="go">[    0         0         0      1.00e+00  1.00e+00     0         0    ]</span>
+<span class="go">[    0      1.00e+00     0      1.00e+00  1.00e+00  1.00e+00     0    ]</span>
+<span class="go">[    0         0      1.00e+00     0      1.00e+00     0      1.00e+00]</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">symb</span><span class="o">.</span><span class="n">sparsity_pattern</span><span class="p">(</span><span class="n">reordered</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">symmetric</span><span class="o">=</span><span class="bp">False</span><span class="p">))</span>
+<span class="go">[ 1.00e+00     0         0         0         0         0         0    ]</span>
+<span class="go">[ 1.00e+00  1.00e+00     0         0         0         0         0    ]</span>
+<span class="go">[    0         0      1.00e+00     0         0         0         0    ]</span>
+<span class="go">[ 1.00e+00     0         0      1.00e+00     0         0         0    ]</span>
+<span class="go">[    0         0         0      1.00e+00  1.00e+00     0         0    ]</span>
+<span class="go">[ 1.00e+00  1.00e+00     0      1.00e+00  1.00e+00  1.00e+00     0    ]</span>
+<span class="go">[    0         0      1.00e+00     0      1.00e+00     0      1.00e+00]</span>
+</pre></div>
+</div>
+<p>The reordered pattern and its cliques can be inspected using the
+following commands:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">symb</span><span class="p">)</span>
+<span class="go">[X X          ]</span>
+<span class="go">[X X X        ]</span>
+<span class="go">[  X X X   X  ]</span>
+<span class="go">[    X X   X X]</span>
+<span class="go">[        X X X]</span>
+<span class="go">[    X X X X X]</span>
+<span class="go">[      X X X X]</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">symb</span><span class="o">.</span><span class="n">cliques</span><span class="p">())</span>
+<span class="go">[[0, 1], [1, 2], [2, 3, 5], [3, 5, 6], [4, 5, 6]]</span>
+</pre></div>
+</div>
+<p>Similarly, the clique tree, the supernodes, and the separator sets are:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">symb</span><span class="o">.</span><span class="n">parent</span><span class="p">())</span>
+<span class="go">[1, 2, 3, -1, 3]</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">symb</span><span class="o">.</span><span class="n">supernodes</span><span class="p">())</span>
+<span class="go">[[0], [1], [2], [3, 5, 6], [4]]</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">symb</span><span class="o">.</span><span class="n">separators</span><span class="p">())</span>
+<span class="go">[[1], [2], [3, 5], [], [5, 6]]</span>
+</pre></div>
+</div>
+<p>The <a class="reference internal" href="#chompack.cspmatrix" title="chompack.cspmatrix"><tt class="xref py py-class docutils literal"><span class="pre">cspmatrix</span></tt></a> object represents a chordal sparse matrix,
+and it contains lower-triangular numerical values as well as a
+reference to a symbolic factorization that defines the sparsity
+pattern. Given a <a class="reference internal" href="#chompack.symbolic" title="chompack.symbolic"><tt class="xref py py-class docutils literal"><span class="pre">symbolic</span></tt></a> object <cite>symb</cite> and a sparse
+matrix <img class="math" src="_images/math/937abf0036e3f773123ec44111199b356cf0ab10.png" alt="A" style="vertical-align: 0px"/>, we can create a <a class="reference internal" href="#chompack.cspmatrix" title="chompack.cspmatrix"><tt class="xref py py-class docutils literal"><span class="pre">cspmatrix</span></tt></a> as follows:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">cvxopt</span> <span class="kn">import</span> <span class="n">spmatrix</span><span class="p">,</span> <span class="n">amd</span><span class="p">,</span> <span class="n">printing</span>
+<span class="kn">import</span> <span class="nn">chompack</span> <span class="kn">as</span> <span class="nn">cp</span>
+<span class="n">printing</span><span class="o">.</span><span class="n">options</span><span class="p">[</span><span class="s">&#39;dformat&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;</span><span class="si">%3.1f</span><span class="s">&#39;</span>
+
+<span class="c"># generate sparse matrix and compute symbolic factorization</span>
+<span class="n">I</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">]</span>
+<span class="n">J</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">]</span>
+<span class="n">A</span> <span class="o">=</span> <span class="n">spmatrix</span><span class="p">([</span><span class="mf">1.0</span><span class="o">*</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">15</span><span class="p">)],</span> <span class="n">I</span><span class="p">,</span> <span class="n">J</span><span class="p">,</span> <span class="p">(</span><span class="mi">7</span><span class="p">,</span><span class="mi">7</span><span class="p">))</span>
+<span class="n">symb</span> <span class="o">=</span> <span class="n">cp</span><span class="o">.</span><span class="n">symbolic</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="n">amd</span><span class="o">.</span><span class="n">order</span><span class="p">)</span>
+
+<span class="n">L</span> <span class="o">=</span> <span class="n">cp</span><span class="o">.</span><span class="n">cspmatrix</span><span class="p">(</span><span class="n">symb</span><span class="p">)</span>
+<span class="n">L</span> <span class="o">+=</span> <span class="n">A</span>
+</pre></div>
+</div>
+<p>Now let us take a look at  <img class="math" src="_images/math/937abf0036e3f773123ec44111199b356cf0ab10.png" alt="A" style="vertical-align: 0px"/> and <img class="math" src="_images/math/53a7d99088c1cbd146ec8640b7c6360998cfa86f.png" alt="L" style="vertical-align: 0px"/>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">A</span><span class="p">)</span>
+<span class="go">[ 0.0  0    0    0    0    0    0  ]</span>
+<span class="go">[ 1.0  3.0  0    0    0    0    0  ]</span>
+<span class="go">[ 0    0    5.0  0    0    0    0  ]</span>
+<span class="go">[ 2.0  0    0    7.0  0    0    0  ]</span>
+<span class="go">[ 0    0    0    8.0 10.0  0    0  ]</span>
+<span class="go">[ 0    4.0  0    9.0 11.0 13.0  0  ]</span>
+<span class="go">[ 0    0    6.0  0   12.0  0   14.0]</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">L</span><span class="p">)</span>
+<span class="go">[ 5.0  0    0    0    0    0    0  ]</span>
+<span class="go">[ 6.0 14.0  0    0    0    0    0  ]</span>
+<span class="go">[ 0   12.0 10.0  0    0    0    0  ]</span>
+<span class="go">[ 0    0    8.0  7.0  0    0    0  ]</span>
+<span class="go">[ 0    0    0    0    3.0  0    0  ]</span>
+<span class="go">[ 0    0   11.0  9.0  4.0 13.0  0  ]</span>
+<span class="go">[ 0    0    0    2.0  1.0  0.0  0.0]</span>
+</pre></div>
+</div>
+<p>Notice that <img class="math" src="_images/math/53a7d99088c1cbd146ec8640b7c6360998cfa86f.png" alt="L" style="vertical-align: 0px"/> is a reordered lower-triangular representation
+of <img class="math" src="_images/math/937abf0036e3f773123ec44111199b356cf0ab10.png" alt="A" style="vertical-align: 0px"/>. We can convert <img class="math" src="_images/math/53a7d99088c1cbd146ec8640b7c6360998cfa86f.png" alt="L" style="vertical-align: 0px"/> to an <tt class="xref py py-class docutils literal"><span class="pre">spmatrix</span></tt> using
+the <cite>spmatrix()</cite> method:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">L</span><span class="o">.</span><span class="n">spmatrix</span><span class="p">(</span><span class="n">reordered</span> <span class="o">=</span> <span class="bp">False</span><span class="p">))</span>
+<span class="go">[ 0.0  0    0    0    0    0    0  ]</span>
+<span class="go">[ 1.0  3.0  0    0    0    0    0  ]</span>
+<span class="go">[ 0    0    5.0  0    0    0    0  ]</span>
+<span class="go">[ 2.0  0    0    7.0  0    0    0  ]</span>
+<span class="go">[ 0    0    0    8.0 10.0  0    0  ]</span>
+<span class="go">[ 0.0  4.0  0    9.0 11.0 13.0  0  ]</span>
+<span class="go">[ 0    0    6.0  0   12.0  0   14.0]</span>
+</pre></div>
+</div>
+<p>Notice that this returns an <tt class="xref py py-class docutils literal"><span class="pre">spmatrix</span></tt> with the same ordering
+as <img class="math" src="_images/math/937abf0036e3f773123ec44111199b356cf0ab10.png" alt="A" style="vertical-align: 0px"/>, i.e., the inverse permutation is applied to <img class="math" src="_images/math/53a7d99088c1cbd146ec8640b7c6360998cfa86f.png" alt="L" style="vertical-align: 0px"/>.</p>
+<p>The following example illustrates how to use the Cholesky routine:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">cvxopt</span> <span class="kn">import</span> <span class="n">spmatrix</span><span class="p">,</span> <span class="n">amd</span><span class="p">,</span> <span class="n">normal</span>
+<span class="kn">from</span> <span class="nn">chompack</span> <span class="kn">import</span> <span class="n">symbolic</span><span class="p">,</span> <span class="n">cspmatrix</span><span class="p">,</span> <span class="n">cholesky</span>
+
+<span class="c"># generate sparse matrix and compute symbolic factorization</span>
+<span class="n">I</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">]</span>
+<span class="n">J</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">]</span>
+<span class="n">A</span> <span class="o">=</span> <span class="n">spmatrix</span><span class="p">([</span><span class="mf">0.1</span><span class="o">*</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">15</span><span class="p">)],</span> <span class="n">I</span><span class="p">,</span> <span class="n">J</span><span class="p">,</span> <span class="p">(</span><span class="mi">7</span><span class="p">,</span><span class="mi">7</span><span class="p">))</span> <span class="o">+</span> <span class="n">spmatrix</span><span class="p">(</span><span class="mf">10.0</span><span class="p">,</span><span class="nb">range</span><span class="p">(</span><span class="mi">7</span><span class="p">),</span><span class="nb">range</span><span class="p">(</span><span class="mi">7</span><span class="p">))</span>
+<span class="n">symb</span> <span class="o">=</span> <span class="n">symbolic</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="n">amd</span><span class="o">.</span><span class="n">order</span><span class="p">)</span>
+
+<span class="c"># create cspmatrix</span>
+<span class="n">L</span> <span class="o">=</span> <span class="n">cspmatrix</span><span class="p">(</span><span class="n">symb</span><span class="p">)</span>
+<span class="n">L</span> <span class="o">+=</span> <span class="n">A</span>
+
+<span class="c"># compute numeric factorization</span>
+<span class="n">cholesky</span><span class="p">(</span><span class="n">L</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">L</span><span class="p">)</span>
+<span class="go">[ 3.26e+00     0         0         0         0         0         0    ]</span>
+<span class="go">[ 2.15e-01  3.38e+00     0         0         0         0         0    ]</span>
+<span class="go">[    0      3.84e-01  3.31e+00     0         0         0         0    ]</span>
+<span class="go">[    0         0      2.72e-01  3.28e+00     0         0         0    ]</span>
+<span class="go">[    0         0         0         0      3.22e+00     0         0    ]</span>
+<span class="go">[    0         0      3.63e-01  2.75e-01  1.55e-01  3.34e+00     0    ]</span>
+<span class="go">[    0         0         0      9.16e-02  6.20e-02 -1.04e-02  3.18e+00]</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">cvxopt</span> <span class="kn">import</span> <span class="n">spmatrix</span><span class="p">,</span> <span class="n">printing</span>
+<span class="n">printing</span><span class="o">.</span><span class="n">options</span><span class="p">[</span><span class="s">&#39;width&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+<span class="kn">import</span> <span class="nn">chompack</span> <span class="kn">as</span> <span class="nn">cp</span>
+
+<span class="c"># Define chordal sparse matrix</span>
+<span class="n">I</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mi">17</span><span class="p">)</span><span class="o">+</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">14</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">14</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">14</span><span class="p">,</span><span class="mi">15</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">15</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">14</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">14</span><span class="p">,</span><span class="mi">14</span><span class="p">,</span>\
+             <span class="mi">15</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">12</span><span class="p">,</span><span class="mi">13</span><span class="p">,</span><span class="mi">16</span><span class="p">,</span><span class="mi">12</span><span class="p">,</span><span class="mi">13</span><span class="p">,</span><span class="mi">16</span><span class="p">,</span><span class="mi">12</span><span class="p">,</span><span class="mi">13</span><span class="p">,</span><span class="mi">15</span><span class="p">,</span><span class="mi">16</span><span class="p">,</span><span class="mi">13</span><span class="p">,</span><span class="mi">15</span><span class="p">,</span><span class="mi">16</span><span class="p">,</span><span class="mi">15</span><span class="p">,</span><span class="mi">16</span><span class="p">,</span><span class="mi">15</span><span class="p">,</span><span class="mi">16</span><span class="p">,</span><span class="mi">16</span><span class="p">]</span>
+<span class="n">J</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mi">17</span><span class="p">)</span><span class="o">+</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span>\
+             <span class="mi">8</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">11</span><span class="p">,</span><span class="mi">11</span><span class="p">,</span><span class="mi">11</span><span class="p">,</span><span class="mi">11</span><span class="p">,</span><span class="mi">12</span><span class="p">,</span><span class="mi">12</span><span class="p">,</span><span class="mi">12</span><span class="p">,</span><span class="mi">13</span><span class="p">,</span><span class="mi">13</span><span class="p">,</span><span class="mi">14</span><span class="p">,</span><span class="mi">14</span><span class="p">,</span><span class="mi">15</span><span class="p">]</span>
+<span class="n">A</span> <span class="o">=</span> <span class="n">spmatrix</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span><span class="n">I</span><span class="p">,</span><span class="n">J</span><span class="p">,(</span><span class="mi">17</span><span class="p">,</span><span class="mi">17</span><span class="p">))</span>
+
+<span class="c"># Compute maximum cardinality search</span>
+<span class="n">p</span> <span class="o">=</span> <span class="n">cp</span><span class="o">.</span><span class="n">maxcardsearch</span><span class="p">(</span><span class="n">A</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">cp</span><span class="o">.</span><span class="n">peo</span><span class="p">(</span><span class="n">A</span><span class="p">,</span><span class="n">p</span><span class="p">)</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">p</span><span class="p">))</span>
+<span class="go">[0, 9, 10, 11, 12, 13, 5, 6, 7, 1, 2, 3, 4, 8, 14, 15, 16]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">symb</span> <span class="o">=</span> <span class="n">cp</span><span class="o">.</span><span class="n">symbolic</span><span class="p">(</span><span class="n">A</span><span class="p">,</span><span class="n">p</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">symb</span><span class="p">)</span>
+<span class="go">[X                   X            ]</span>
+<span class="go">[  X X   X X                     X]</span>
+<span class="go">[  X X   X X                     X]</span>
+<span class="go">[      X X X                   X X]</span>
+<span class="go">[  X X X X X                   X X]</span>
+<span class="go">[  X X X X X                   X X]</span>
+<span class="go">[            X             X   X  ]</span>
+<span class="go">[              X X         X X    ]</span>
+<span class="go">[              X X         X X    ]</span>
+<span class="go">[                  X X X          ]</span>
+<span class="go">[X                 X X X X   X    ]</span>
+<span class="go">[                  X X X X   X    ]</span>
+<span class="go">[                    X X X X X X  ]</span>
+<span class="go">[            X X X       X X X X  ]</span>
+<span class="go">[              X X   X X X X X X X]</span>
+<span class="go">[      X X X X           X X X X X]</span>
+<span class="go">[  X X X X X                 X X X]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">symb</span><span class="o">.</span><span class="n">fill</span><span class="p">)</span>
+<span class="go">(0, 0)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="symbolic-factorization">
+<h2>Symbolic factorization<a class="headerlink" href="#symbolic-factorization" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="chompack.symbolic">
+<em class="property">class </em><tt class="descclassname">chompack.</tt><tt class="descname">symbolic</tt><big>(</big><em>A</em>, <em>p=None</em>, <em>merge_function=None</em><big>)</big><a class="headerlink" href="#chompack.symbolic" title="Permalink to this definition">¶</a></dt>
+<dd><p>Symbolic factorization object.</p>
+<p>Computes symbolic factorization of a square sparse matrix
+<img class="math" src="_images/math/937abf0036e3f773123ec44111199b356cf0ab10.png" alt="A" style="vertical-align: 0px"/> and creates a symbolic factorization object.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>A</strong> &#8211; <tt class="xref py py-class docutils literal"><span class="pre">spmatrix</span></tt></li>
+<li><strong>p</strong> &#8211; permutation vector or ordering routine (optional)</li>
+<li><strong>merge_function</strong> &#8211; routine that implements a merge heuristic (optional)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>The optional argument <cite>p</cite> can be either a permutation vector or an
+ordering rutine that takes an <tt class="xref py py-class docutils literal"><span class="pre">spmatrix</span></tt> and returns a
+permutation vector.</p>
+<p>The optional argument <cite>merge_function</cite> allows the user to
+merge supernodes in the elimination tree in a greedy manner;
+the argument must be a routine that takes the following four arguments and
+returns either <cite>True</cite> or <cite>False</cite>:</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>cp</strong> &#8211; clique order of the parent of clique <img class="math" src="_images/math/c8ff6dc362a9a07153582909d5a26898fae59569.png" alt="k" style="vertical-align: 0px"/></li>
+<li><strong>ck</strong> &#8211; clique order of clique <img class="math" src="_images/math/c8ff6dc362a9a07153582909d5a26898fae59569.png" alt="k" style="vertical-align: 0px"/></li>
+<li><strong>np</strong> &#8211; supernode order of the parent of supernode <img class="math" src="_images/math/c8ff6dc362a9a07153582909d5a26898fae59569.png" alt="k" style="vertical-align: 0px"/></li>
+<li><strong>nk</strong> &#8211; supernode order of supernode <img class="math" src="_images/math/c8ff6dc362a9a07153582909d5a26898fae59569.png" alt="k" style="vertical-align: 0px"/></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>The clique k is merged with its parent if the return value is <cite>True</cite>.</p>
+<dl class="attribute">
+<dt id="chompack.symbolic.Nsn">
+<tt class="descname">Nsn</tt><a class="headerlink" href="#chompack.symbolic.Nsn" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of supernodes</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="chompack.symbolic.blkptr">
+<tt class="descname">blkptr</tt><a class="headerlink" href="#chompack.symbolic.blkptr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pointer array for block storage of chordal sparse matrix.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="chompack.symbolic.chidx">
+<tt class="descname">chidx</tt><a class="headerlink" href="#chompack.symbolic.chidx" title="Permalink to this definition">¶</a></dt>
+<dd><p>Integer array with indices of child vertices in etree: 
+<cite>chidx[chptr[k]:chptr[k+1]]</cite> are the indices of the children
+of supernode <img class="math" src="_images/math/c8ff6dc362a9a07153582909d5a26898fae59569.png" alt="k" style="vertical-align: 0px"/>.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="chompack.symbolic.chptr">
+<tt class="descname">chptr</tt><a class="headerlink" href="#chompack.symbolic.chptr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pointer array associated with <cite>chidx</cite>:
+<cite>chidx[chptr[k]:chptr[k+1]]</cite> are the indices of the children
+of supernode k.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="chompack.symbolic.clique_number">
+<tt class="descname">clique_number</tt><a class="headerlink" href="#chompack.symbolic.clique_number" title="Permalink to this definition">¶</a></dt>
+<dd><p>The clique number (the order of the largest clique)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="chompack.symbolic.cliques">
+<tt class="descname">cliques</tt><big>(</big><big>)</big><a class="headerlink" href="#chompack.symbolic.cliques" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of cliques (reordered pattern)</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="chompack.symbolic.fill">
+<tt class="descname">fill</tt><a class="headerlink" href="#chompack.symbolic.fill" title="Permalink to this definition">¶</a></dt>
+<dd><p>Tuple with number of lower-triangular fill edges: <cite>fill[0]</cite> is
+the fill due to symbolic factorization, and <cite>fill[1]</cite> is the
+fill due to supernodal amalgamation</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="chompack.symbolic.ip">
+<tt class="descname">ip</tt><a class="headerlink" href="#chompack.symbolic.ip" title="Permalink to this definition">¶</a></dt>
+<dd><p>Inverse permutation vector</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="chompack.symbolic.n">
+<tt class="descname">n</tt><a class="headerlink" href="#chompack.symbolic.n" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of nodes (matrix order)</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="chompack.symbolic.nnz">
+<tt class="descname">nnz</tt><a class="headerlink" href="#chompack.symbolic.nnz" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the number of lower-triangular nonzeros.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="chompack.symbolic.p">
+<tt class="descname">p</tt><a class="headerlink" href="#chompack.symbolic.p" title="Permalink to this definition">¶</a></dt>
+<dd><p>Permutation vector</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="chompack.symbolic.parent">
+<tt class="descname">parent</tt><big>(</big><big>)</big><a class="headerlink" href="#chompack.symbolic.parent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a supernodal parent list: the i&#8217;th element is equal to -1 if 
+supernode i is a root node in the clique forest, and otherwise
+the i&#8217;th element is the index of the parent of supernode i.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="chompack.symbolic.relidx">
+<tt class="descname">relidx</tt><a class="headerlink" href="#chompack.symbolic.relidx" title="Permalink to this definition">¶</a></dt>
+<dd><p>The relative index array facilitates fast &#8220;extend-add&#8221; and
+&#8220;extract&#8221; operations in the supernodal-multifrontal
+algorithms. The relative indices associated with supernode
+<img class="math" src="_images/math/c8ff6dc362a9a07153582909d5a26898fae59569.png" alt="k" style="vertical-align: 0px"/> is a list of indices <img class="math" src="_images/math/49c4156bfe77f9fb21eb7fa54bb0e2d39adc237e.png" alt="I" style="vertical-align: 0px"/> such that the frontal
+matrix <img class="math" src="_images/math/a2e96e373593e409eb0c25749625f2e8fda2a64a.png" alt="F" style="vertical-align: 0px"/> associated with the parent of node <img class="math" src="_images/math/c8ff6dc362a9a07153582909d5a26898fae59569.png" alt="k" style="vertical-align: 0px"/>
+can be updated as <cite>F[I,I] += Uj</cite>. The relative indices are
+stored in an integer array <cite>relidx</cite> with an associated pointer
+array <cite>relptr</cite>.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="chompack.symbolic.relptr">
+<tt class="descname">relptr</tt><a class="headerlink" href="#chompack.symbolic.relptr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pointer array assoicated with <cite>relidx</cite>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="chompack.symbolic.separators">
+<tt class="descname">separators</tt><big>(</big><big>)</big><a class="headerlink" href="#chompack.symbolic.separators" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of separator sets (reordered pattern)</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="chompack.symbolic.sncolptr">
+<tt class="descname">sncolptr</tt><a class="headerlink" href="#chompack.symbolic.sncolptr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pointer array associated with <cite>snrowidx</cite>.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="chompack.symbolic.snode">
+<tt class="descname">snode</tt><a class="headerlink" href="#chompack.symbolic.snode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Supernode array: supernode <img class="math" src="_images/math/c8ff6dc362a9a07153582909d5a26898fae59569.png" alt="k" style="vertical-align: 0px"/> consists of nodes
+<cite>snode[snptr[k]:snptr[k+1]]</cite> where <cite>snptr</cite> is the supernode
+pointer array</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="chompack.symbolic.snpar">
+<tt class="descname">snpar</tt><a class="headerlink" href="#chompack.symbolic.snpar" title="Permalink to this definition">¶</a></dt>
+<dd><p>Supernode parent array: supernode <img class="math" src="_images/math/c8ff6dc362a9a07153582909d5a26898fae59569.png" alt="k" style="vertical-align: 0px"/> is a root of the
+supernodal elimination tree if <cite>snpar[k]</cite> is equal to -1, and
+otherwise <cite>snpar[k]</cite> is the index of the parent of supernode
+<img class="math" src="_images/math/c8ff6dc362a9a07153582909d5a26898fae59569.png" alt="k" style="vertical-align: 0px"/> in the supernodal elimination tree</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="chompack.symbolic.snpost">
+<tt class="descname">snpost</tt><a class="headerlink" href="#chompack.symbolic.snpost" title="Permalink to this definition">¶</a></dt>
+<dd><p>Supernode post-ordering</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="chompack.symbolic.snptr">
+<tt class="descname">snptr</tt><a class="headerlink" href="#chompack.symbolic.snptr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Supernode pointer array: supernode <img class="math" src="_images/math/c8ff6dc362a9a07153582909d5a26898fae59569.png" alt="k" style="vertical-align: 0px"/> is of order
+<cite>snpptr[k+1]-snptr[k]</cite> and supernode <img class="math" src="_images/math/c8ff6dc362a9a07153582909d5a26898fae59569.png" alt="k" style="vertical-align: 0px"/> consists of nodes
+<cite>snode[snptr[k]:snptr[k+1]]</cite></p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="chompack.symbolic.snrowidx">
+<tt class="descname">snrowidx</tt><a class="headerlink" href="#chompack.symbolic.snrowidx" title="Permalink to this definition">¶</a></dt>
+<dd><p>Row indices associated with representative vertices:
+<cite>snrowidx[sncolptr[k]:sncolptr[k+1]]</cite> are the row indices in
+the column corresponding the the representative vertex of
+supernode <img class="math" src="_images/math/c8ff6dc362a9a07153582909d5a26898fae59569.png" alt="k" style="vertical-align: 0px"/>, or equivalently,
+<cite>snrowidx[sncolptr[k]:sncolptr[k+1]]</cite> is the <img class="math" src="_images/math/c8ff6dc362a9a07153582909d5a26898fae59569.png" alt="k" style="vertical-align: 0px"/>&#8216;th
+clique.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="chompack.symbolic.sparsity_pattern">
+<tt class="descname">sparsity_pattern</tt><big>(</big><em>reordered=True</em>, <em>symmetric=True</em><big>)</big><a class="headerlink" href="#chompack.symbolic.sparsity_pattern" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a sparse matrix with the filled pattern. By default,
+the routine uses the reordered pattern, and the inverse
+permutation is applied if <cite>reordered</cite> is <cite>False</cite>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>reordered</strong> &#8211; boolean (default: <cite>True</cite>)</li>
+<li><strong>symmetric</strong> &#8211; boolean (default: <cite>True</cite>)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="chompack.symbolic.supernodes">
+<tt class="descname">supernodes</tt><big>(</big><big>)</big><a class="headerlink" href="#chompack.symbolic.supernodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of supernode sets (reordered pattern)</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="chordal-sparse-matrices">
+<h2>Chordal sparse matrices<a class="headerlink" href="#chordal-sparse-matrices" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="chompack.cspmatrix">
+<em class="property">class </em><tt class="descclassname">chompack.</tt><tt class="descname">cspmatrix</tt><big>(</big><em>symb</em>, <em>blkval=None</em>, <em>factor=False</em><big>)</big><a class="headerlink" href="#chompack.cspmatrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Chordal sparse matrix object.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>symb</strong> &#8211; <a class="reference internal" href="#chompack.symbolic" title="chompack.symbolic"><tt class="xref py py-class docutils literal"><span class="pre">symbolic</span></tt></a> object</li>
+<li><strong>blkval</strong> &#8211; <tt class="xref py py-class docutils literal"><span class="pre">matrix</span></tt> with numerical values (optional)</li>
+<li><strong>factor</strong> &#8211; boolean (default is <cite>False</cite>)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>A  <a class="reference internal" href="#chompack.cspmatrix" title="chompack.cspmatrix"><tt class="xref py py-class docutils literal"><span class="pre">cspmatrix</span></tt></a> object contains a reference to a symbolic
+factorization as well as an array with numerical values which are
+stored in a compressed block storage format which is a block variant
+of the compressed column storage format.</p>
+<p><cite>A = cspmatrix(symb)</cite> creates a new chordal sparse matrix object
+with a sparsity pattern defined by the symbolic factorization
+object <cite>symb</cite>. If the optional argument <cite>blkval</cite> specified, the
+<a class="reference internal" href="#chompack.cspmatrix" title="chompack.cspmatrix"><tt class="xref py py-class docutils literal"><span class="pre">cspmatrix</span></tt></a> object will use the <cite>blkval</cite> array for numerical values
+(and not a copy!), and otherwise the  <a class="reference internal" href="#chompack.cspmatrix" title="chompack.cspmatrix"><tt class="xref py py-class docutils literal"><span class="pre">cspmatrix</span></tt></a> object is
+initialized with an all-zero array. The optional input <cite>factor</cite>
+determines whether or not the <a class="reference internal" href="#chompack.cspmatrix" title="chompack.cspmatrix"><tt class="xref py py-class docutils literal"><span class="pre">cspmatrix</span></tt></a> stores a factored
+matrix.</p>
+<dl class="method">
+<dt id="chompack.cspmatrix.copy">
+<tt class="descname">copy</tt><big>(</big><big>)</big><a class="headerlink" href="#chompack.cspmatrix.copy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a new <a class="reference internal" href="#chompack.cspmatrix" title="chompack.cspmatrix"><tt class="xref py py-class docutils literal"><span class="pre">cspmatrix</span></tt></a> object with a reference to the same
+symbolic factorization, but with a copy of the array
+that stores the numerical values.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="chompack.cspmatrix.diag">
+<tt class="descname">diag</tt><big>(</big><em>reordered=True</em><big>)</big><a class="headerlink" href="#chompack.cspmatrix.diag" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a vector with the diagonal elements of the matrix.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="chompack.cspmatrix.is_factor">
+<tt class="descname">is_factor</tt><a class="headerlink" href="#chompack.cspmatrix.is_factor" title="Permalink to this definition">¶</a></dt>
+<dd><p>This property is equal to <cite>True</cite> if the cspmatrix represents a
+Cholesky factor, and otherwise it is equal to <cite>False</cite>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="chompack.cspmatrix.spmatrix">
+<tt class="descname">spmatrix</tt><big>(</big><em>reordered=True</em>, <em>symmetric=False</em><big>)</big><a class="headerlink" href="#chompack.cspmatrix.spmatrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Converts the <a class="reference internal" href="#chompack.cspmatrix" title="chompack.cspmatrix"><tt class="xref py py-class docutils literal"><span class="pre">cspmatrix</span></tt></a> <img class="math" src="_images/math/937abf0036e3f773123ec44111199b356cf0ab10.png" alt="A" style="vertical-align: 0px"/> to a sparse matrix. A reordered
+matrix is returned if the optional argument <cite>reordered</cite> is
+<cite>True</cite>, and otherwise the inverse permutation is applied.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>reordered</strong> &#8211; boolean (default: True)</li>
+<li><strong>symmetric</strong> &#8211; boolean (default: False)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="numerical-computations">
+<h2>Numerical computations<a class="headerlink" href="#numerical-computations" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="chompack.cholesky">
+<tt class="descclassname">chompack.</tt><tt class="descname">cholesky</tt><big>(</big><em>X</em><big>)</big><a class="headerlink" href="#chompack.cholesky" title="Permalink to this definition">¶</a></dt>
+<dd><p>Supernodal multifrontal Cholesky factorization:</p>
+<div class="math">
+<p><img src="_images/math/071c72fbe6c4fd6252b2efde1543d092d4d17a43.png" alt="X = LL^T"/></p>
+</div><p>where <img class="math" src="_images/math/53a7d99088c1cbd146ec8640b7c6360998cfa86f.png" alt="L" style="vertical-align: 0px"/> is lower-triangular. On exit, the argument <img class="math" src="_images/math/0ba6ae58a72b4954369f8aa53eeeece57df6da5a.png" alt="X" style="vertical-align: 0px"/>
+contains the Cholesky factor <img class="math" src="_images/math/53a7d99088c1cbd146ec8640b7c6360998cfa86f.png" alt="L" style="vertical-align: 0px"/>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>X</strong> &#8211; <a class="reference internal" href="#chompack.cspmatrix" title="chompack.cspmatrix"><tt class="xref py py-class docutils literal"><span class="pre">cspmatrix</span></tt></a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="chompack.llt">
+<tt class="descclassname">chompack.</tt><tt class="descname">llt</tt><big>(</big><em>L</em><big>)</big><a class="headerlink" href="#chompack.llt" title="Permalink to this definition">¶</a></dt>
+<dd><p>Supernodal multifrontal Cholesky product:</p>
+<div class="math">
+<p><img src="_images/math/071c72fbe6c4fd6252b2efde1543d092d4d17a43.png" alt="X = LL^T"/></p>
+</div><p>where <img class="math" src="_images/math/53a7d99088c1cbd146ec8640b7c6360998cfa86f.png" alt="L" style="vertical-align: 0px"/> is lower-triangular. On exit, the argument <cite>L</cite>
+contains the product <img class="math" src="_images/math/0ba6ae58a72b4954369f8aa53eeeece57df6da5a.png" alt="X" style="vertical-align: 0px"/>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>L</strong> &#8211; <a class="reference internal" href="#chompack.cspmatrix" title="chompack.cspmatrix"><tt class="xref py py-class docutils literal"><span class="pre">cspmatrix</span></tt></a> (factor)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="chompack.projected_inverse">
+<tt class="descclassname">chompack.</tt><tt class="descname">projected_inverse</tt><big>(</big><em>L</em><big>)</big><a class="headerlink" href="#chompack.projected_inverse" title="Permalink to this definition">¶</a></dt>
+<dd><p>Supernodal multifrontal projected inverse. The routine computes the projected inverse</p>
+<div class="math">
+<p><img src="_images/math/c48617ca5ffc4bc3951220d663927f2fcfefbc96.png" alt="Y = P(L^{-T}L^{-1})"/></p>
+</div><p>where <img class="math" src="_images/math/53a7d99088c1cbd146ec8640b7c6360998cfa86f.png" alt="L" style="vertical-align: 0px"/> is a Cholesky factor. On exit, the argument <img class="math" src="_images/math/53a7d99088c1cbd146ec8640b7c6360998cfa86f.png" alt="L" style="vertical-align: 0px"/> contains the
+projected inverse <img class="math" src="_images/math/a369f18bebb305679d9ed8188d7f0aebb581ea57.png" alt="Y" style="vertical-align: 0px"/>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>L</strong> &#8211; <a class="reference internal" href="#chompack.cspmatrix" title="chompack.cspmatrix"><tt class="xref py py-class docutils literal"><span class="pre">cspmatrix</span></tt></a> (factor)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="chompack.completion">
+<tt class="descclassname">chompack.</tt><tt class="descname">completion</tt><big>(</big><em>X</em>, <em>factored_updates=True</em><big>)</big><a class="headerlink" href="#chompack.completion" title="Permalink to this definition">¶</a></dt>
+<dd><p>Supernodal multifrontal maximum determinant positive definite
+matrix completion. The routine computes the Cholesky factor
+<img class="math" src="_images/math/53a7d99088c1cbd146ec8640b7c6360998cfa86f.png" alt="L" style="vertical-align: 0px"/> of the inverse of the maximum determinant positive
+definite matrix completion of <img class="math" src="_images/math/0ba6ae58a72b4954369f8aa53eeeece57df6da5a.png" alt="X" style="vertical-align: 0px"/>:, i.e.,</p>
+<div class="math">
+<p><img src="_images/math/039c1b9e29a9102abca5220f4abf202640c37624.png" alt="P( S^{-1} ) = X"/></p>
+</div><p>where <img class="math" src="_images/math/bf79c327b2f40e5d03988a2e172dd4eefbf10ce4.png" alt="S = LL^T" style="vertical-align: 0px"/>. On exit, the argument <cite>X</cite> contains the
+lower-triangular Cholesky factor <img class="math" src="_images/math/53a7d99088c1cbd146ec8640b7c6360998cfa86f.png" alt="L" style="vertical-align: 0px"/>.</p>
+<p>The optional argument <cite>factored_updates</cite> can be used to enable (if
+True) or disable (if False) updating of intermediate
+factorizations.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>X</strong> &#8211; <a class="reference internal" href="#chompack.cspmatrix" title="chompack.cspmatrix"><tt class="xref py py-class docutils literal"><span class="pre">cspmatrix</span></tt></a></li>
+<li><strong>factored_updates</strong> &#8211; boolean</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="chompack.hessian">
+<tt class="descclassname">chompack.</tt><tt class="descname">hessian</tt><big>(</big><em>L</em>, <em>Y</em>, <em>U</em>, <em>adj=False</em>, <em>inv=False</em>, <em>factored_updates=False</em><big>)</big><a class="headerlink" href="#chompack.hessian" title="Permalink to this definition">¶</a></dt>
+<dd><p>Supernodal multifrontal Hessian mapping.</p>
+<p>The mapping</p>
+<div class="math">
+<p><img src="_images/math/97a8909c08ec63c5da8d1d5d2fb9ce382dac5b13.png" alt="\mathcal H_X(U) = P(X^{-1}UX^{-1})"/></p>
+</div><p>is the Hessian of the log-det barrier at a positive definite chordal
+matrix <img class="math" src="_images/math/0ba6ae58a72b4954369f8aa53eeeece57df6da5a.png" alt="X" style="vertical-align: 0px"/>, applied to a symmetric chordal matrix <img class="math" src="_images/math/718655b4c0a2142e2eb20dd5f281f4fb9a01f338.png" alt="U" style="vertical-align: 0px"/>. The Hessian operator
+can be factored as</p>
+<div class="math">
+<p><img src="_images/math/7756b77348eb7e1a87d2d5c9d603c864d35da72e.png" alt="\mathcal H_X(U) = \mathcal G_X^{\mathrm adj}( \mathcal G_X(U) )"/></p>
+</div><p>where the mappings on the right-hand side are adjoint mappings
+that map chordal symmetric matrices to chordal symmetric matrices.</p>
+<p>This routine evaluates the mapping <img class="math" src="_images/math/5323f7b2488f2ddfaabb312add2e81a7c2860f13.png" alt="G_X" style="vertical-align: -3px"/> and its adjoint
+<img class="math" src="_images/math/55557159ccbf1384e006a50c5c4b191fa85cb1cf.png" alt="G_X^{\mathrm adj}" style="vertical-align: -5px"/> as well as the corresponding inverse
+mappings. The inputs <cite>adj</cite> and <cite>inv</cite> control the action as
+follows:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="77%" />
+<col width="12%" />
+<col width="11%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Action</th>
+<th class="head"><cite>adj</cite></th>
+<th class="head"><cite>inv</cite></th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><img class="math" src="_images/math/590d5fe4d5b97d27c24522533daaa36a42d290c3.png" alt="U = \mathcal G_X(U)" style="vertical-align: -4px"/></td>
+<td>False</td>
+<td>False</td>
+</tr>
+<tr class="row-odd"><td><img class="math" src="_images/math/02478dbacd45bde19332ae0007b484a62611d688.png" alt="U = \mathcal G_X^{\mathrm adj}(U)" style="vertical-align: -5px"/></td>
+<td>True</td>
+<td>False</td>
+</tr>
+<tr class="row-even"><td><img class="math" src="_images/math/9c10f3948463672b9534b7318f9659e302660f0e.png" alt="U = \mathcal G_X^{-1}(U)" style="vertical-align: -5px"/></td>
+<td>False</td>
+<td>True</td>
+</tr>
+<tr class="row-odd"><td><img class="math" src="_images/math/6cd72622fff56405b2ce68542e438232e68e3342.png" alt="U = \mathcal (G_X^{\mathrm adj})^{-1}(U)" style="vertical-align: -5px"/></td>
+<td>True</td>
+<td>True</td>
+</tr>
+</tbody>
+</table>
+<p>The input argument <img class="math" src="_images/math/53a7d99088c1cbd146ec8640b7c6360998cfa86f.png" alt="L" style="vertical-align: 0px"/> is the Cholesky factor of
+<img class="math" src="_images/math/0ba6ae58a72b4954369f8aa53eeeece57df6da5a.png" alt="X" style="vertical-align: 0px"/>. The input argument <img class="math" src="_images/math/a369f18bebb305679d9ed8188d7f0aebb581ea57.png" alt="Y" style="vertical-align: 0px"/> is the projected inverse of
+<img class="math" src="_images/math/0ba6ae58a72b4954369f8aa53eeeece57df6da5a.png" alt="X" style="vertical-align: 0px"/>. The input argument <img class="math" src="_images/math/718655b4c0a2142e2eb20dd5f281f4fb9a01f338.png" alt="U" style="vertical-align: 0px"/> is either a chordal matrix (a
+<a class="reference internal" href="#chompack.cspmatrix" title="chompack.cspmatrix"><tt class="xref py py-class docutils literal"><span class="pre">cspmatrix</span></tt></a>) of a list of chordal matrices with the same
+sparsity pattern as <img class="math" src="_images/math/53a7d99088c1cbd146ec8640b7c6360998cfa86f.png" alt="L" style="vertical-align: 0px"/> and <img class="math" src="_images/math/a369f18bebb305679d9ed8188d7f0aebb581ea57.png" alt="Y" style="vertical-align: 0px"/>.</p>
+<p>The optional argument <cite>factored_updates</cite> can be used to enable (if
+True) or disable (if False) updating of intermediate
+factorizations.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>L</strong> &#8211; <a class="reference internal" href="#chompack.cspmatrix" title="chompack.cspmatrix"><tt class="xref py py-class docutils literal"><span class="pre">cspmatrix</span></tt></a> (factor)</li>
+<li><strong>Y</strong> &#8211; <a class="reference internal" href="#chompack.cspmatrix" title="chompack.cspmatrix"><tt class="xref py py-class docutils literal"><span class="pre">cspmatrix</span></tt></a></li>
+<li><strong>U</strong> &#8211; <a class="reference internal" href="#chompack.cspmatrix" title="chompack.cspmatrix"><tt class="xref py py-class docutils literal"><span class="pre">cspmatrix</span></tt></a> or list of <a class="reference internal" href="#chompack.cspmatrix" title="chompack.cspmatrix"><tt class="xref py py-class docutils literal"><span class="pre">cspmatrix</span></tt></a> objects</li>
+<li><strong>factored_updates</strong> &#8211; boolean</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="chompack.dot">
+<tt class="descclassname">chompack.</tt><tt class="descname">dot</tt><big>(</big><em>X</em>, <em>Y</em><big>)</big><a class="headerlink" href="#chompack.dot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes trace product of X and Y.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="chompack.trmm">
+<tt class="descclassname">chompack.</tt><tt class="descname">trmm</tt><big>(</big><em>L</em>, <em>B</em>, <em>alpha=1.0</em>, <em>trans='N'</em>, <em>nrhs=None</em>, <em>offsetB=0</em>, <em>ldB=None</em><big>)</big><a class="headerlink" href="#chompack.trmm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Multiplication with sparse triangular matrix. Computes</p>
+<div class="math">
+<p><img src="_images/math/b41cacc3df2fad3182e1b1cf51a15735921be66e.png" alt="B &amp;:= \alpha L B    \text{ if trans is 'N'}
+
+B &amp;:= \alpha L^T B  \text{ if trans is 'T'}"/></p>
+</div><p>where <img class="math" src="_images/math/53a7d99088c1cbd146ec8640b7c6360998cfa86f.png" alt="L" style="vertical-align: 0px"/> is a <a class="reference internal" href="#chompack.cspmatrix" title="chompack.cspmatrix"><tt class="xref py py-class docutils literal"><span class="pre">cspmatrix</span></tt></a> factor.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>L</strong> &#8211; <a class="reference internal" href="#chompack.cspmatrix" title="chompack.cspmatrix"><tt class="xref py py-class docutils literal"><span class="pre">cspmatrix</span></tt></a> factor</li>
+<li><strong>B</strong> &#8211; matrix</li>
+<li><strong>alpha</strong> &#8211; float (default: 1.0)</li>
+<li><strong>trans</strong> &#8211; &#8216;N&#8217; or &#8216;T&#8217; (default: &#8216;N&#8217;)</li>
+<li><strong>nrhs</strong> &#8211; number of right-hand sides (default: number of columns in <img class="math" src="_images/math/11e1462c077a60151f52020d2cabcc2fc19d3cb0.png" alt="B" style="vertical-align: 0px"/>)</li>
+<li><strong>offsetB</strong> &#8211; integer (default: 0)</li>
+<li><strong>ldB</strong> &#8211; leading dimension of <img class="math" src="_images/math/11e1462c077a60151f52020d2cabcc2fc19d3cb0.png" alt="B" style="vertical-align: 0px"/> (default: number of rows in <img class="math" src="_images/math/11e1462c077a60151f52020d2cabcc2fc19d3cb0.png" alt="B" style="vertical-align: 0px"/>)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="chompack.trsm">
+<tt class="descclassname">chompack.</tt><tt class="descname">trsm</tt><big>(</big><em>L</em>, <em>B</em>, <em>alpha=1.0</em>, <em>trans='N'</em>, <em>nrhs=None</em>, <em>offsetB=0</em>, <em>ldB=None</em><big>)</big><a class="headerlink" href="#chompack.trsm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Solves a triangular system of equations with multiple righthand
+sides. Computes</p>
+<div class="math">
+<p><img src="_images/math/09c0c906334006235a77350555e66cf9716ad747.png" alt="B &amp;:= \alpha L^{-1} B  \text{ if trans is 'N'}
+
+B &amp;:= \alpha L^{-T} B  \text{ if trans is 'T'}"/></p>
+</div><p>where <img class="math" src="_images/math/53a7d99088c1cbd146ec8640b7c6360998cfa86f.png" alt="L" style="vertical-align: 0px"/> is a <a class="reference internal" href="#chompack.cspmatrix" title="chompack.cspmatrix"><tt class="xref py py-class docutils literal"><span class="pre">cspmatrix</span></tt></a> factor.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>L</strong> &#8211; <a class="reference internal" href="#chompack.cspmatrix" title="chompack.cspmatrix"><tt class="xref py py-class docutils literal"><span class="pre">cspmatrix</span></tt></a> factor</li>
+<li><strong>B</strong> &#8211; matrix</li>
+<li><strong>alpha</strong> &#8211; float (default: 1.0)</li>
+<li><strong>trans</strong> &#8211; &#8216;N&#8217; or &#8216;T&#8217; (default: &#8216;N&#8217;)</li>
+<li><strong>nrhs</strong> &#8211; number of right-hand sides (default: number of columns in <img class="math" src="_images/math/11e1462c077a60151f52020d2cabcc2fc19d3cb0.png" alt="B" style="vertical-align: 0px"/>)</li>
+<li><strong>offsetB</strong> &#8211; integer (default: 0)</li>
+<li><strong>ldB</strong> &#8211; leading dimension of <img class="math" src="_images/math/11e1462c077a60151f52020d2cabcc2fc19d3cb0.png" alt="B" style="vertical-align: 0px"/> (default: number of rows in <img class="math" src="_images/math/11e1462c077a60151f52020d2cabcc2fc19d3cb0.png" alt="B" style="vertical-align: 0px"/>)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="chordal-conversion">
+<h2>Chordal conversion<a class="headerlink" href="#chordal-conversion" title="Permalink to this headline">¶</a></h2>
+<p>The following example illustrates how to apply the chordal conversion
+technique to a sparse SDP.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># Given: tuple with cone LP problem data</span>
+<span class="c"># prob = (c,G,h,dims,A,b)</span>
+
+<span class="c"># Solve cone LP with CVXOPT&#39;s conelp() routine</span>
+<span class="n">sol</span> <span class="o">=</span> <span class="n">cvxopt</span><span class="o">.</span><span class="n">conelp</span><span class="p">(</span><span class="o">*</span><span class="n">prob</span><span class="p">)</span>
+
+<span class="c"># Apply chordal conversion to cone LP</span>
+<span class="n">probc</span><span class="p">,</span> <span class="n">blk2sparse</span><span class="p">,</span> <span class="n">symbs</span> <span class="o">=</span> <span class="n">chompack</span><span class="o">.</span><span class="n">convert_conelp</span><span class="p">(</span><span class="o">*</span><span class="n">prob</span><span class="p">)</span>
+
+<span class="c"># Solve converted problem with CVXOPT&#39;s conelp() routine</span>
+<span class="n">solc</span> <span class="o">=</span> <span class="n">cvxopt</span><span class="o">.</span><span class="n">solvers</span><span class="o">.</span><span class="n">conelp</span><span class="p">(</span><span class="o">*</span><span class="n">probc</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="function">
+<dt id="chompack.convert_conelp">
+<tt class="descclassname">chompack.</tt><tt class="descname">convert_conelp</tt><big>(</big><em>c</em>, <em>G</em>, <em>h</em>, <em>dims</em>, <em>A=None</em>, <em>b=None</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#chompack.convert_conelp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Applies the clique conversion method of Fukuda et al. to the positive semidefinite blocks of a cone LP.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>c</strong> &#8211; <tt class="xref py py-class docutils literal"><span class="pre">matrix</span></tt></li>
+<li><strong>G</strong> &#8211; <tt class="xref py py-class docutils literal"><span class="pre">spmatrix</span></tt></li>
+<li><strong>h</strong> &#8211; <tt class="xref py py-class docutils literal"><span class="pre">matrix</span></tt></li>
+<li><strong>dims</strong> &#8211; dictionary</li>
+<li><strong>A</strong> &#8211; <tt class="xref py py-class docutils literal"><span class="pre">spmatrix</span></tt> or <tt class="xref py py-class docutils literal"><span class="pre">matrix</span></tt></li>
+<li><strong>b</strong> &#8211; <tt class="xref py py-class docutils literal"><span class="pre">matrix</span></tt></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>The following example illustrates how to convert a cone LP:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">prob</span> <span class="o">=</span> <span class="p">(</span><span class="n">c</span><span class="p">,</span><span class="n">G</span><span class="p">,</span><span class="n">h</span><span class="p">,</span><span class="n">dims</span><span class="p">,</span><span class="n">A</span><span class="p">,</span><span class="n">b</span><span class="p">)</span>
+<span class="n">probc</span><span class="p">,</span> <span class="n">blk2sparse</span><span class="p">,</span> <span class="n">symbs</span> <span class="o">=</span> <span class="n">convert_conelp</span><span class="p">(</span><span class="o">*</span><span class="n">prob</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The return value <cite>blk2sparse</cite> is a list of 4-tuples
+(<cite>blki,I,J,n</cite>) that each defines a mapping between the sparse
+matrix representation and the converted block-diagonal
+representation, and <cite>symbs</cite> is a list of symbolic factorizations
+corresponding to each of the semidefinite blocks in the original cone LP.</p>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p>M. Fukuda, M. Kojima, K. Murota, and K. Nakata, <a class="reference external" href="http://dx.doi.org/10.1137/S1052623400366218">Exploiting Sparsity
+in Semidefinite Programming via Matrix Completion I: General Framework</a>,
+SIAM Journal on Optimization, 11:3, 2001, pp. 647-674.</p>
+<p class="last">S. Kim, M. Kojima, M. Mevissen, and M. Yamashita, <a class="reference external" href="http://dx.doi.org/10.1007/s10107-010-0402-6">Exploiting Sparsity
+in Linear and Nonlinear Matrix Inequalities via Positive Semidefinite
+Matrix Completion</a>,
+Mathematical Programming, 129:1, 2011, pp.. 33-68.</p>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="chompack.convert_block">
+<tt class="descclassname">chompack.</tt><tt class="descname">convert_block</tt><big>(</big><em>G</em>, <em>h</em>, <em>dim</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#chompack.convert_block" title="Permalink to this definition">¶</a></dt>
+<dd><p>Applies the clique conversion method to a single positive
+semidefinite block of a cone linear program</p>
+<div class="math">
+<p><img src="_images/math/95b295b3ace4f4af4ab5d0946d007c33b7ed1009.png" alt="\begin{array}{ll}
+   \mbox{maximize}   &amp; -h^T z \\
+   \mbox{subject to} &amp;  G^T z + c = 0 \\
+                     &amp;  \mathbf{smat}(z)\ \ \text{psd completable}
+\end{array}"/></p>
+</div><p>After conversion, the above problem is converted to a block-diagonal one</p>
+<div class="math">
+<p><img src="_images/math/6fd193baf3edc9dd5f2f550e5997ba182683c065.png" alt="\begin{array}{ll}
+   \mbox{maximize}   &amp; -h_b^T z_b  \\
+   \mbox{subject to} &amp;  G_b^T z_b + c = 0 \\
+                     &amp;  G_c^T z_b = 0 \\
+                     &amp;  \mathbf{smat}(z_b)\ \ \text{psd block-diagonal}
+\end{array}"/></p>
+</div><p>where <img class="math" src="_images/math/1b2616cb61b0d4765ddd665e89bb8729b3e34dae.png" alt="z_b" style="vertical-align: -3px"/> is a vector representation of a block-diagonal
+matrix. The constraint <img class="math" src="_images/math/58dc31d453c16576574293959cd19abf11011ec4.png" alt="G_b^T z_b + c = 0" style="vertical-align: -5px"/> corresponds to
+the original constraint <img class="math" src="_images/math/1a45030fdd1e6a7e612f9da2d15c7cb42f904c23.png" alt="G'z + c = 0" style="vertical-align: -1px"/>, and the constraint
+<img class="math" src="_images/math/d9968ff3f41fcb68e8268ad6a98e1ad9f0fd6a1b.png" alt="G_c^T z_b = 0" style="vertical-align: -5px"/> is a coupling constraint.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>G</strong> &#8211; <tt class="xref py py-class docutils literal"><span class="pre">spmatrix</span></tt></li>
+<li><strong>h</strong> &#8211; <tt class="xref py py-class docutils literal"><span class="pre">matrix</span></tt></li>
+<li><strong>dim</strong> &#8211; integer</li>
+<li><strong>merge_function</strong> &#8211; routine that implements a merge heuristic (optional)</li>
+<li><strong>coupling</strong> &#8211; mode of conversion (optional)</li>
+<li><strong>max_density</strong> &#8211; float (default: 0.4)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>The following example illustrates how to apply the conversion method to a one-block SDP:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">block</span> <span class="o">=</span> <span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">h</span><span class="p">,</span> <span class="n">dim</span><span class="p">)</span> 
+<span class="n">blockc</span><span class="p">,</span> <span class="n">blk2sparse</span><span class="p">,</span> <span class="n">symb</span> <span class="o">=</span> <span class="n">convert_block</span><span class="p">(</span><span class="o">*</span><span class="n">block</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The return value <cite>blk2sparse</cite> is a 4-tuple
+(<cite>blki,I,J,n</cite>) that defines a mapping between the sparse
+matrix representation and the converted block-diagonal
+representation. If <cite>blkvec</cite> represents a block-diagonal matrix,
+then</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">S</span> <span class="o">=</span> <span class="n">spmatrix</span><span class="p">(</span><span class="n">blkvec</span><span class="p">[</span><span class="n">blki</span><span class="p">],</span> <span class="n">I</span><span class="p">,</span> <span class="n">J</span><span class="p">)</span> 
+</pre></div>
+</div>
+<p>maps <cite>blkvec</cite> into is a sparse matrix representation of the
+matrix. Similarly, a sparse matrix <cite>S</cite> can be converted to the
+block-diagonal matrix representation using the code</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">blkvec</span> <span class="o">=</span> <span class="n">matrix</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">S</span><span class="p">),</span><span class="mi">1</span><span class="p">),</span> <span class="n">tc</span><span class="o">=</span><span class="n">S</span><span class="o">.</span><span class="n">typecode</span><span class="p">)</span>
+<span class="n">blkvec</span><span class="p">[</span><span class="n">blki</span><span class="p">]</span> <span class="o">=</span> <span class="n">S</span><span class="o">.</span><span class="n">V</span>
+</pre></div>
+</div>
+<p>The optional argument <cite>max_density</cite> controls whether or not to perform
+conversion based on the aggregate sparsity of the block. Specifically,
+conversion is performed whenever the number of lower triangular nonzeros
+in the aggregate sparsity pattern is less than or equal to <cite>max_density*dim</cite>.</p>
+<p>The optional argument <cite>coupling</cite> controls the introduction
+of equality constraints in the conversion. Possible values
+are <em>full</em> (default), <em>sparse</em>, <em>sparse+tri</em>, and any nonnegative
+integer. Full coupling results in a conversion in which all
+coupling constraints are kept, and hence the converted problem is
+equivalent to the original problem. Sparse coupling yeilds a
+conversion in which only the coupling constraints corresponding to
+nonzero entries in the aggregate sparsity pattern are kept, and
+sparse-plus-tridiagonal (<em>sparse+tri</em>) yeilds a conversion with
+tridiagonal coupling in addition to coupling constraints corresponding
+to nonzero entries in the aggregate sparsity pattern. Setting <cite>coupling</cite>
+to a nonnegative integer <em>k</em> yields a conversion with coupling
+constraints corresponding to entries in a band with half-bandwidth <em>k</em>.</p>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last">M. S. Andersen, A. Hansson, and L. Vandenberghe, <a class="reference external" href="http://dx.doi.org/10.1109/TPWRS.2013.2294479">Reduced-Complexity
+Semidefinite Relaxations of Optimal Power Flow Problems</a>,
+IEEE Transactions on Power Systems, 2014.</p>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="auxiliary-routines">
+<h2>Auxiliary routines<a class="headerlink" href="#auxiliary-routines" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="chompack.maxcardsearch">
+<tt class="descclassname">chompack.</tt><tt class="descname">maxcardsearch</tt><big>(</big><em>A</em>, <em>ve=None</em><big>)</big><a class="headerlink" href="#chompack.maxcardsearch" title="Permalink to this definition">¶</a></dt>
+<dd><p>Maximum cardinality search ordering of a sparse chordal matrix.</p>
+<p>Returns the maximum cardinality search ordering of a symmetric
+chordal matrix <img class="math" src="_images/math/937abf0036e3f773123ec44111199b356cf0ab10.png" alt="A" style="vertical-align: 0px"/>. Only the lower triangular part of
+<img class="math" src="_images/math/937abf0036e3f773123ec44111199b356cf0ab10.png" alt="A" style="vertical-align: 0px"/> is accessed. The maximum cardinality search ordering
+is a perfect elimination ordering in the factorization
+<img class="math" src="_images/math/45c53f05ad6e627399cadfc197cb6de991b3db12.png" alt="PAP^T = LL^T" style="vertical-align: 0px"/>. The optional argument <cite>ve</cite> is the index of
+the last vertex to be eliminated (the default value is n-1).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>A</strong> &#8211; <tt class="xref py py-class docutils literal"><span class="pre">spmatrix</span></tt></li>
+<li><strong>ve</strong> &#8211; integer between 0 and <cite>A.size[0]</cite>-1 (optional)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="chompack.peo">
+<tt class="descclassname">chompack.</tt><tt class="descname">peo</tt><big>(</big><em>A</em>, <em>p</em><big>)</big><a class="headerlink" href="#chompack.peo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks whether an ordering is a perfect elmimination order.</p>
+<p>Returns <cite>True</cite> if the permutation <img class="math" src="_images/math/c5b47cd114d1cd218d587260b667ed59b7ace4a0.png" alt="p" style="vertical-align: -4px"/> is a perfect elimination order
+for a Cholesky factorization <img class="math" src="_images/math/45c53f05ad6e627399cadfc197cb6de991b3db12.png" alt="PAP^T = LL^T" style="vertical-align: 0px"/>. Only the lower
+triangular part of <img class="math" src="_images/math/937abf0036e3f773123ec44111199b356cf0ab10.png" alt="A" style="vertical-align: 0px"/> is accessed.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>A</strong> &#8211; <tt class="xref py py-class docutils literal"><span class="pre">spmatrix</span></tt></li>
+<li><strong>p</strong> &#8211; <tt class="xref py py-class docutils literal"><span class="pre">matrix</span></tt> or <tt class="xref py py-class docutils literal"><span class="pre">list</span></tt> of length <cite>A.size[0]</cite></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="chompack.maxchord">
+<tt class="descclassname">chompack.</tt><tt class="descname">maxchord</tt><big>(</big><em>A</em>, <em>ve=None</em><big>)</big><a class="headerlink" href="#chompack.maxchord" title="Permalink to this definition">¶</a></dt>
+<dd><p>Maximal chordal subgraph of sparsity graph.</p>
+<p>Returns a lower triangular sparse matrix which is the projection
+of <img class="math" src="_images/math/937abf0036e3f773123ec44111199b356cf0ab10.png" alt="A" style="vertical-align: 0px"/> on a maximal chordal subgraph and a perfect
+elimination order <img class="math" src="_images/math/c5b47cd114d1cd218d587260b667ed59b7ace4a0.png" alt="p" style="vertical-align: -4px"/>. Only the
+lower triangular part of <img class="math" src="_images/math/937abf0036e3f773123ec44111199b356cf0ab10.png" alt="A" style="vertical-align: 0px"/> is accessed. The
+optional argument <cite>ve</cite> is the index of the last vertex to be
+eliminated (the default value is <cite>n-1</cite>). If <img class="math" src="_images/math/937abf0036e3f773123ec44111199b356cf0ab10.png" alt="A" style="vertical-align: 0px"/> is chordal,
+then the matrix returned is equal to <img class="math" src="_images/math/937abf0036e3f773123ec44111199b356cf0ab10.png" alt="A" style="vertical-align: 0px"/>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>A</strong> &#8211; <tt class="xref py py-class docutils literal"><span class="pre">spmatrix</span></tt></li>
+<li><strong>ve</strong> &#8211; integer between 0 and <cite>A.size[0]</cite>-1 (optional)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last">P. M. Dearing, D. R. Shier, D. D. Warner, <a class="reference external" href="http://dx.doi.org/10.1016/0166-218X(88)90075-3">Maximal chordal
+subgraphs</a>,
+Discrete Applied Mathematics, 20:3, 1988, pp. 181-190.</p>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="chompack.merge_size_fill">
+<tt class="descclassname">chompack.</tt><tt class="descname">merge_size_fill</tt><big>(</big><em>tsize=8</em>, <em>tfill=8</em><big>)</big><a class="headerlink" href="#chompack.merge_size_fill" title="Permalink to this definition">¶</a></dt>
+<dd><p>Simple heuristic for supernodal amalgamation (clique
+merging).</p>
+<p>Returns a function that returns <cite>True</cite> if either (i) supernode k and
+supernode par(k) are both of size at most <cite>tsize</cite>, or (ii),
+merging supernodes par[k] and k induces at most <cite>tfill</cite> nonzeros
+in the lower triangular part of the sparsity pattern.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>tsize</strong> &#8211; nonnegative integer; threshold for merging based on supernode sizes</li>
+<li><strong>tfill</strong> &#8211; nonnegative integer; threshold for merging based on induced fill</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="chompack.tril">
+<tt class="descclassname">chompack.</tt><tt class="descname">tril</tt><big>(</big><em>A</em><big>)</big><a class="headerlink" href="#chompack.tril" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the lower triangular part of <img class="math" src="_images/math/937abf0036e3f773123ec44111199b356cf0ab10.png" alt="A" style="vertical-align: 0px"/>.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="chompack.triu">
+<tt class="descclassname">chompack.</tt><tt class="descname">triu</tt><big>(</big><em>A</em><big>)</big><a class="headerlink" href="#chompack.triu" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the upper triangular part of <img class="math" src="_images/math/937abf0036e3f773123ec44111199b356cf0ab10.png" alt="A" style="vertical-align: 0px"/>.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="chompack.perm">
+<tt class="descclassname">chompack.</tt><tt class="descname">perm</tt><big>(</big><em>A</em>, <em>p</em><big>)</big><a class="headerlink" href="#chompack.perm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Symmetric permutation of a symmetric sparse matrix.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>A</strong> &#8211; <tt class="xref py py-class docutils literal"><span class="pre">spmatrix</span></tt></li>
+<li><strong>p</strong> &#8211; <tt class="xref py py-class docutils literal"><span class="pre">matrix</span></tt> or <tt class="xref py py-class docutils literal"><span class="pre">list</span></tt> of length <cite>A.size[0]</cite></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="chompack.symmetrize">
+<tt class="descclassname">chompack.</tt><tt class="descname">symmetrize</tt><big>(</big><em>A</em><big>)</big><a class="headerlink" href="#chompack.symmetrize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a symmetric matrix from a sparse square matrix <img class="math" src="_images/math/937abf0036e3f773123ec44111199b356cf0ab10.png" alt="A" style="vertical-align: 0px"/>. Only the
+lower triangular entries of <img class="math" src="_images/math/937abf0036e3f773123ec44111199b356cf0ab10.png" alt="A" style="vertical-align: 0px"/> are accessed.</p>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Chompack</a></h3>
+  <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="license.html">Copyright and License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="download.html">Download</a></li>
+<li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="">Documentation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#quick-start">Quick start</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#symbolic-factorization">Symbolic factorization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#chordal-sparse-matrices">Chordal sparse matrices</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#numerical-computations">Numerical computations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#chordal-conversion">Chordal conversion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#auxiliary-routines">Auxiliary routines</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+<div class="footer">
+</div>
+<a href="https://github.com/cvxopt/chompack"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://github-camo.global.ssl.fastly.net/38ef81f8aca64bb9a64448d0d70f1308ef5341ab/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f6461726b626c75655f3132313632312e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png"></a>
+  </body>
+</html>
