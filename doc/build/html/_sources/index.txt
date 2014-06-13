@@ -2,15 +2,15 @@ Chordal Matrix Package—a library for chordal matrix computations
 ======================================================================
 
 Chompack is a library for chordal matrix computations.  It includes
-routines for 
+routines for:
 
-  - symbolic factorization;
-  - numeric Cholesky factorization;
-  - forward and back substitution;
-  - maximum determinant positive definite completion;
-  - computations with logarithmic barriers for sparse matrix cones;
-  - chordal conversion;
-  - computing maximal chordal subgraph.
+  - symbolic factorization
+  - numeric Cholesky factorization
+  - forward and back substitution
+  - maximum determinant positive definite completion
+  - computations with logarithmic barriers for sparse matrix cones
+  - chordal conversion
+  - computing maximal chordal subgraph
 
 The implementation is based on the supernodal-multifrontal algorithms
 described in this paper:
@@ -24,12 +24,9 @@ Applications of these algorithms in optimization include sparse matrix cone prog
 covariance selection, graphical models, and decomposition and relaxation methods.
 
 
-Table of contents
---------------------
-
-.. toctree::   
-     :maxdepth: 1
-
-     license
-     install
-     documentation
+.. toctree::
+   :hidden:
+      
+   license
+   install
+   documentation

@@ -17,6 +17,11 @@ The CHOMPACK Python extension can be downloaded, built, and installed by issuing
    $ cd chompack
    $ python setup.py install --user
 
+Chompack can also be installed using pip
+
+.. code-block:: bash
+   
+   $ pip install chompack --user
 
 
 Python-only installation
@@ -28,3 +33,8 @@ of CHOMPACK can be installed by setting the environtment variable `CHOMPACK_PY_O
    
    $ CHOMPACK_PY_ONLY=1 python install --user
 
+or using pip,
+
+.. code-block:: bash
+   
+   $ CHOMPACK_PY_ONLY=1 pip install chompack --user

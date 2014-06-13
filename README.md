@@ -3,4 +3,4 @@ chompack
 
 Library for chordal matrix computations
 
-Documentation available at http://cvxopt.github.io/chompack
+Documentation available at http://chompack.rtfd.org
