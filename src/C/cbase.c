@@ -204,7 +204,7 @@ static PyObject* cchol
   PyObject_SetAttrString(A, str_is_factor, Py_True);
 
   // check for errors
-  if (info) return PyErr_Format(PyExc_ValueError,"factorization failed");
+  if (info) return PyErr_Format(PyExc_ArithmeticError,"factorization failed");
 
   return Py_BuildValue("");
 }
@@ -420,7 +420,7 @@ static PyObject* cprojected_inverse
   PyObject_SetAttrString(A, str_is_factor, Py_False);
 
   // check for errors
-  if (info) return PyErr_Format(PyExc_ValueError,"partial inverse failed");
+  if (info) return PyErr_Format(PyExc_ArithmeticError,"partial inverse failed");
 
   return Py_BuildValue("");
 }
@@ -541,7 +541,7 @@ static PyObject* ccompletion
   PyObject_SetAttrString(A, str_is_factor, Py_True);
 
   // check for errors
-  if (info) return PyErr_Format(PyExc_ValueError,"completion failed");
+  if (info) return PyErr_Format(PyExc_ArithmeticError,"completion failed");
 
   return Py_BuildValue("");
 }
