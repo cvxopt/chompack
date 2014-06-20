@@ -1,7 +1,7 @@
 from cvxopt import matrix, spmatrix, normal, blas, printing
-from misc import tril, perm, symmetrize
+from chompack.misc import tril, perm, symmetrize
+from chompack.misc import lmerge
 from types import BuiltinFunctionType, FunctionType
-from misc import lmerge
 
 def __tdfs(j, k, head, next, post, stack):
     """
@@ -308,7 +308,7 @@ def amalgamate(colcount, snode, snptr, snpar, snpost, merge_function):
                 snlist[k] = None
                 colcount_[snlist[snpar_[k]][0]] = colp + nk
                 Ns -= 1
-                if ch.has_key(k):
+                if k in ch:
                     for c in ch[k]:
                         snpar_[c] = snpar_[k]
                     ch[snpar_[k]] += ch[k]
@@ -605,6 +605,27 @@ class symbolic(object):
         for i in range(len(snpar)):
             blkptr[i+1] = blkptr[i] + (snptr[i+1]-snptr[i])*(sncolptr[i+1]-sncolptr[i])
 
+        # compute storage requirements
+        stack = []
+        stack_depth = 0
+        stack_mem = 0
+        stack_tmp = 0
+        frontal_mem = 0
+        for k in snpost:
+            nn = snptr[k+1]-snptr[k]       # |Nk|
+            na = relptr[k+1]-relptr[k]     # |Ak|
+            nj = na + nn
+            frontal_mem = max(frontal_mem,nj**2)
+            for i in range(chptr[k+1]-1,chptr[k]-1,-1):
+                na_ch = stack.pop()
+                stack_tmp -= na_ch**2
+            if na > 0:
+                stack.append(na)
+                stack_tmp += na**2
+                stack_mem = max(stack_tmp,stack_mem)
+            stack_depth = max(stack_depth,len(stack))
+            
+                
         self.__n = len(snode)
         self.__Nsn = len(snpar)
         self.__snode = snode
@@ -619,6 +640,9 @@ class symbolic(object):
         self.__snrowidx = snrowidx
         self.__blkptr = blkptr
         self.__fill = (nnz_Ae-nnz_Ap,self.nnz-nnz_Ae)
+        self.__memory = {'stack_depth':stack_depth,
+                         'stack_mem':stack_mem,
+                         'frontal_mem':frontal_mem}
 
         return
 
@@ -775,6 +799,10 @@ class symbolic(object):
         Permutation vector
         """
         return self.__p
+
+    @property
+    def memory(self):
+        return self.__memory
 
     @property
     def ip(self):
@@ -950,6 +978,10 @@ class cspmatrix(object):
         """
         return self._is_factor
 
+    @is_factor.setter
+    def is_factor(self, value):
+        self._is_factor = value
+    
     def spmatrix(self, reordered = True, symmetric = False):
         """
         Converts the :py:class:`cspmatrix` :math:`A` to a sparse matrix. A reordered

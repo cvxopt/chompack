@@ -1,5 +1,5 @@
 from cvxopt import matrix, blas, lapack
-from symbolic import cspmatrix
+from chompack.symbolic import cspmatrix
 
 def dot(X,Y):
     """

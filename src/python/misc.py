@@ -1,9 +1,4 @@
 from cvxopt import spmatrix, sparse, matrix, blas, lapack
-try:
-    from chompack import cmisc
-    __use_C = True
-except:
-    __use_C = False    
 __all__ = []
 
 def tril(A):
@@ -64,9 +59,9 @@ def eye(n):
     I[::n+1] = 1.0
     return I
 
-if __use_C:
-    frontal_add_update = cmisc.frontal_add_update
-else:
+try:
+    from chompack.cbase import frontal_add_update
+except:
     def frontal_add_update(F, U, relidx, relptr, i, alpha = 1.0):
         """
         Add update matrix to frontal matrix.
@@ -75,9 +70,9 @@ else:
         F[r,r] += alpha*U
         return 
 
-if __use_C:
-    frontal_get_update = cmisc.frontal_get_update
-else:
+try:
+    from chompack.cbase import frontal_get_update
+except:
     def frontal_get_update(F, relidx, relptr, i):
         """
         Extract update matrix from frontal matrix.
@@ -176,12 +171,12 @@ def frontal_get_update_factor(F, r, nn, na):
     At = matrix(Li[:N1,:N1][::-1],(N1,N1)) 
     lapack.potrf(At, uplo = 'U')
     Li[:N1,:N1] = matrix(At[::-1],(N1,N1))
-
+    
     return Li
 
-if __use_C:
-    lmerge = cmisc.lmerge
-else:
+try:
+    from chompack.cbase import lmerge
+except:
     def lmerge(left, right, offsetl = 0, offsetr = 0, nl = None, nr = None):
         if nl is None: nl = len(left)
         if nr is None: nr = len(right)

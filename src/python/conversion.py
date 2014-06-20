@@ -1,7 +1,7 @@
 from cvxopt import matrix, spdiag, spmatrix, sparse, amd
 import itertools
-from symbolic import symbolic
-from misc import tril, symmetrize, perm
+from chompack.symbolic import symbolic
+from chompack.misc import tril, symmetrize, perm
 
 def symb_to_block(symb, coupling = 'full'):
     """

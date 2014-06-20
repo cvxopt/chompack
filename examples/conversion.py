@@ -8,7 +8,7 @@ def sp_rand(m,n,a):
     """
     if m == 0 or n == 0: return spmatrix([], [], [], (m,n))
     nnz = min(max(0, int(round(a*m*n))), m*n)
-    nz = matrix(random.sample(xrange(m*n), nnz), tc='i')
+    nz = matrix(random.sample(range(m*n), nnz), tc='i')
     return spmatrix(normal(nnz,1), nz%m, nz/m, (m,n))
 
 # generate random sparsity pattern and sparse SDP problem data

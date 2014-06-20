@@ -1,5 +1,5 @@
 from cvxopt import matrix, spmatrix
-from misc import symmetrize
+from chompack.misc import symmetrize
 
 def maxcardsearch(A, ve = None):
     """

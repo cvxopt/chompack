@@ -1,6 +1,6 @@
 from cvxopt import matrix, blas, lapack
-from symbolic import cspmatrix
-from misc import frontal_get_update_factor, frontal_get_update, frontal_add_update, tril
+from chompack.symbolic import cspmatrix
+from chompack.misc import frontal_get_update_factor, frontal_get_update, frontal_add_update, tril
 
 def __Y2K(L, U, inv = False):
     

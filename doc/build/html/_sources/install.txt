@@ -21,7 +21,7 @@ Chompack can also be installed using pip
 
 .. code-block:: bash
    
-   $ pip install chompack --user
+   $ pip install chompack
 
 
 Python-only installation
@@ -37,4 +37,7 @@ or using pip,
 
 .. code-block:: bash
    
-   $ CHOMPACK_PY_ONLY=1 pip install chompack --user
+   $ CHOMPACK_PY_ONLY=1 pip install chompack
+
+Please note that the Python-only reference implementations are significantly slower
+than the C implementations that are available in the standard installation.
