@@ -7,7 +7,8 @@ EXTRA_COMPILE_ARGS = []
 EXT_MODULES = []
 
 # Install Python-only reference implementation? (default: False)
-py_only = os.environ.get('CHOMPACK_PY_ONLY',False)
+py_only = os.environ.get('CHOMPACK_PY_ONLY',False) or os.environ.get('READTHEDOCS', False) == 'True'
+
 if type(py_only) is str:
     if py_only in ['true','True','1','yes','Yes','Y','y']: py_only = True
     else: py_only = False
@@ -25,7 +26,7 @@ setup(name='chompack',
     author='Martin S. Andersen, Lieven Vandenberghe',
     author_email='martin.skovgaard.andersen@gmail.com, vandenbe@ee.ucla.edu',
     url='http://cvxopt.github.io/chompack/',
-    download_url='https://github.com/cvxopt/chompack/tarball/2.0.1',
+    download_url='https://github.com/cvxopt/chompack/archive/v2.0.1.tar.gz',
     license = 'GNU GPL version 3',
     package_dir = {"chompack": "src/python"},
     packages = ["chompack"],
