@@ -64,30 +64,30 @@ int cholesky(const int_t n,         // order of matrix
 	     const int_t nsn,       // number of supernodes/cliques
 	     const int_t *snpost,   // post-ordering of supernodes
 	     const int_t *snptr,    // supernode pointer
-	     const int_t *relptr, 
-	     const int_t *relidx, 
-	     const int_t *chptr, 
+	     const int_t *relptr,
+	     const int_t *relidx,
+	     const int_t *chptr,
 	     const int_t *chidx,
-	     const int_t *blkptr, 
+	     const int_t *blkptr,
 	     double * restrict blkval,
 	     double * restrict fws,     // frontal matrix workspace
 	     double * restrict upd,     // update matrix workspace
-	     int_t * restrict upd_size  
+	     int_t * restrict upd_size
 	     );
 
 void llt(const int_t n,         // order of matrix
 	 const int_t nsn,       // number of supernodes/cliques
 	 const int_t *snpost,   // post-ordering of supernodes
 	 const int_t *snptr,    // supernode pointer
-	 const int_t *relptr, 
-	 const int_t *relidx, 
-	 const int_t *chptr, 
+	 const int_t *relptr,
+	 const int_t *relidx,
+	 const int_t *chptr,
 	 const int_t *chidx,
-	 const int_t *blkptr, 
+	 const int_t *blkptr,
 	 double * restrict blkval,
 	 double * restrict fws,  // frontal matrix workspace
 	 double * restrict upd,  // update matrix workspace
-	 int_t * restrict upd_size  
+	 int_t * restrict upd_size
 	 );
 
 
@@ -95,30 +95,109 @@ int projected_inverse(const int_t n,         // order of matrix
 		      const int_t nsn,       // number of supernodes/cliques
 		      const int_t *snpost,   // post-ordering of supernodes
 		      const int_t *snptr,    // supernode pointer
-		      const int_t *relptr, 
-		      const int_t *relidx, 
-		      const int_t *chptr, 
+		      const int_t *relptr,
+		      const int_t *relidx,
+		      const int_t *chptr,
 		      const int_t *chidx,
-		      const int_t *blkptr, 
+		      const int_t *blkptr,
 		      double * restrict blkval,
 		      double * restrict fws,  // frontal matrix workspace
 		      double * restrict upd,  // update matrix workspace
-		      int_t * restrict upd_size  
+		      int_t * restrict upd_size
 		      );
 
 int completion(const int_t n,         // order of matrix
 	       const int_t nsn,       // number of supernodes/cliques
 	       const int_t *snpost,   // post-ordering of supernodes
 	       const int_t *snptr,    // supernode pointer
-	       const int_t *relptr, 
-	       const int_t *relidx, 
-	       const int_t *chptr, 
+	       const int_t *relptr,
+	       const int_t *relidx,
+	       const int_t *chptr,
 	       const int_t *chidx,
-	       const int_t *blkptr, 
+	       const int_t *blkptr,
 	       double * restrict blkval,
 	       double * restrict fws,  // frontal matrix workspace
 	       double * restrict upd,  // update matrix workspace
-	       int_t * restrict upd_size,  
+	       int_t * restrict upd_size,
 	       int factored_updates);
+
+void _Y2K(const int_t n,         // order of matrix
+	  const int_t nsn,       // number of supernodes/cliques
+	  const int_t *snpost,   // post-ordering of supernodes
+	  const int_t *snptr,    // supernode pointer
+	  const int_t *relptr,
+	  const int_t *relidx,
+	  const int_t *chptr,
+	  const int_t *chidx,
+	  const int_t *blkptr,
+	  double * restrict lblkval,
+	  double *restrict *restrict ublkval,
+	  double * restrict fws,  // frontal matrix workspace
+	  double * restrict upd,  // update matrix workspace
+	  int_t * restrict upd_size,
+	  int inv);
+
+void _M2T(const int_t n,         // order of matrix
+	  const int_t nsn,       // number of supernodes/cliques
+	  const int_t *snpost,   // post-ordering of supernodes
+	  const int_t *snptr,    // supernode pointer
+	  const int_t *relptr,
+	  const int_t *relidx,
+	  const int_t *chptr,
+	  const int_t *chidx,
+	  const int_t *blkptr,
+	  double * restrict lblkval,
+	  double *restrict *restrict ublkval,
+	  double * restrict fws,  // frontal matrix workspace
+	  double * restrict upd,  // update matrix workspace
+	  int_t * restrict upd_size,
+	  int inv);
+
+int _scale(const int_t n,         // order of matrix
+	   const int_t nsn,       // number of supernodes/cliques
+	   const int_t *snpost,   // post-ordering of supernodes
+	   const int_t *snptr,    // supernode pointer
+	   const int_t *relptr,
+	   const int_t *relidx,
+	   const int_t *chptr,
+	   const int_t *chidx,
+	   const int_t *blkptr,
+	   double * restrict lblkval,
+	   double * restrict yblkval,
+	   double *restrict *restrict ublkval,
+	   double * restrict fws,  // frontal matrix workspace
+	   double * restrict upd,  // update matrix workspace
+	   int_t * restrict upd_size,
+	   int inv,
+	   int adj,
+	   int factored_updates);
+
+int hessian(const int_t n,         // order of matrix
+	    const int_t nsn,       // number of supernodes/cliques
+	    const int_t *snpost,   // post-ordering of supernodes
+	    const int_t *snptr,    // supernode pointer
+	    const int_t *relptr,
+	    const int_t *relidx,
+	    const int_t *chptr,
+	    const int_t *chidx,
+	    const int_t *blkptr,
+	    double * restrict lblkval,
+	    double * restrict yblkval,
+	    double *restrict *restrict ublkval,
+	    double * restrict fws,  // frontal matrix workspace
+	    double * restrict upd,  // update matrix workspace
+	    int_t * restrict upd_size,
+	    int inv,
+	    int adj,
+	    int factored_updates);
+
+int update_factor(const int_t *ri,
+		  int *nn,
+		  int *na,
+		  double * restrict u,
+		  int *ldu,
+		  double * restrict f,
+		  int *ldf,
+		  double *ws);
 
 #endif

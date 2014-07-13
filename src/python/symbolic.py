@@ -977,11 +977,15 @@ class cspmatrix(object):
         Cholesky factor, and otherwise it is equal to `False`.
         """
         return self._is_factor
-
+    
     @is_factor.setter
     def is_factor(self, value):
         self._is_factor = value
-    
+
+    @property
+    def size(self):
+        return (self.symb.n,self.symb.n)
+            
     def spmatrix(self, reordered = True, symmetric = False):
         """
         Converts the :py:class:`cspmatrix` :math:`A` to a sparse matrix. A reordered

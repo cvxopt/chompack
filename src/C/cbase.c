@@ -546,6 +546,242 @@ static PyObject* ccompletion
   return Py_BuildValue("");
 }
 
+static char doc_chessian[] =
+  "Supernodal multifrontal Hessian mapping.\n"
+  "\n"
+  "The mapping \n"
+  "\n"
+  ".. math:: \n"
+  "     \\mathcal H_X(U) = P(X^{-1}UX^{-1}) \n"
+  "\n"
+  "is the Hessian of the log-det barrier at a positive definite chordal \n"
+  "matrix :math:`X`, applied to a symmetric chordal matrix :math:`U`. The Hessian operator \n"
+  "can be factored as \n"
+  "\n"
+  ".. math:: \n"
+  "     \\mathcal H_X(U) = \\mathcal G_X^{\\mathrm adj}( \\mathcal G_X(U) ) \n"
+  "\n"
+  "where the mappings on the right-hand side are adjoint mappings \n"
+  "that map chordal symmetric matrices to chordal symmetric matrices. \n"
+  "\n"
+  "This routine evaluates the mapping :math:`G_X` and its adjoint \n"
+  ":math:`G_X^{\\mathrm adj}` as well as the corresponding inverse \n"
+  "mappings. The inputs `adj` and `inv` control the action as \n"
+  "follows: \n"
+  "\n"
+  "   +--------------------------------------------------+--------+-------+ \n"
+  "   | Action                                           |`adj`   | `inv` | \n"
+  "   +==================================================+========+=======+ \n"
+  "   | :math:`U = \\mathcal G_X(U)`                      | False  | False | \n"
+  "   +--------------------------------------------------+--------+-------+ \n"
+  "   | :math:`U = \\mathcal G_X^{\\mathrm adj}(U)`        | True   | False | \n"
+  "   +--------------------------------------------------+--------+-------+ \n"
+  "   | :math:`U = \\mathcal G_X^{-1}(U)`                 | False  | True  | \n"
+  "   +--------------------------------------------------+--------+-------+ \n"
+  "   | :math:`U = \\mathcal (G_X^{\\mathrm adj})^{-1}(U)` | True   | True  | \n"
+  "   +--------------------------------------------------+--------+-------+ \n"
+  "\n"
+  "The input argument :math:`L` is the Cholesky factor of \n"
+  ":math:`X`. The input argument :math:`Y` is the projected inverse of \n"
+  ":math:`X`. The input argument :math:`U` is either a chordal matrix (a \n"
+  ":py:class:`cspmatrix`) of a list of chordal matrices with the same \n"
+  "sparsity pattern as :math:`L` and :math:`Y`. \n"
+  "\n"
+  "The optional argument `factored_updates` can be used to enable (if \n"
+  "True) or disable (if False) updating of intermediate \n"
+  "factorizations. \n"
+  "\n"
+  ":param L:                 :py:class:`cspmatrix` (factor) \n"
+  ":param Y:                 :py:class:`cspmatrix` \n"
+  ":param U:                 :py:class:`cspmatrix` or list of :py:class:`cspmatrix` objects \n"
+  ":param adj:               boolean\n"
+  ":param inv:               boolean\n"
+  ":param factored_updates:  boolean \n";
+
+static PyObject* chessian
+(PyObject *self, PyObject *args, PyObject *kwrds)
+{
+  int i, info = 0, factored_updates = 0, adj = 0, inv = 0;
+  int_t n, nsn, stack_depth, stack_mem, frontal_mem, nu = 0;
+  int_t *upd_size=NULL;
+  double *restrict fws=NULL, *restrict upd=NULL;
+  double ** ublkval;
+  char str_symb[] = "symb",
+    str_snpost[] = "snpost",
+    str_snptr[] = "snptr",
+    str_relptr[] = "relptr",
+    str_relidx[] = "relidx",
+    str_chptr[] = "chptr",
+    str_chidx[] = "chidx",
+    str_blkptr[] = "blkptr",
+    str_blkval[] = "blkval",
+    str_memory[] = "memory",
+    str_stack_depth[] = "stack_depth",
+    str_stack_mem[] = "stack_mem",
+    str_frontal_mem[] = "frontal_mem",
+    str_is_factor[] = "is_factor",
+    str_n[] = "n",
+    str_nsn[] = "Nsn";
+  char *kwlist[] = {"L","Y","U","adj","inv","factored_updates",NULL};
+
+  PyObject *L,*Y,*U,*Adj,*Inv,*symb,*symb_test,*Py_snpost, *Py_snptr, *Py_relptr, *Py_relidx,
+    *Py_chptr, *Py_chidx, *Py_blkptr, *Py_lblkval, *Py_yblkval, *Py_Ui, *Py_memory, *PyObj;
+  PyObj = Py_True;
+
+  // extract pointers from arguments
+  if(!PyArg_ParseTupleAndKeywords(args, kwrds, "OOO|OOO", kwlist, &L, &Y, &U, &Adj, &Inv, &PyObj)) return NULL;
+
+  // set optional parameters
+  if (Inv == Py_True) inv = 1;
+  if (Adj == Py_True)
+    adj = 1;
+  else if (Adj == Py_None)
+    adj = inv;
+  if (PyObj == Py_True) factored_updates = 1;
+
+  // extract pointers and values from symbolic object
+  symb = PyObject_GetAttrString(L,str_symb);
+
+  PyObj = PyObject_GetAttrString(symb, str_n);
+  n   = PYINT_AS_LONG(PyObj);
+  Py_DECREF(PyObj);
+
+  PyObj = PyObject_GetAttrString(symb, str_nsn);
+  nsn = PYINT_AS_LONG(PyObj);
+  Py_DECREF(PyObj);
+
+  Py_memory = PyObject_GetAttrString(symb, str_memory);
+  stack_depth = PYINT_AS_LONG(PyDict_GetItemString(Py_memory, str_stack_depth));
+  stack_mem   = PYINT_AS_LONG(PyDict_GetItemString(Py_memory, str_stack_mem));
+  frontal_mem = PYINT_AS_LONG(PyDict_GetItemString(Py_memory, str_frontal_mem));
+  Py_DECREF(Py_memory);
+
+  Py_lblkval = PyObject_GetAttrString(L, str_blkval);
+  Py_yblkval = PyObject_GetAttrString(Y, str_blkval);
+
+  // check Y and L point to same symbolic object
+  symb_test = PyObject_GetAttrString(Y,str_symb);
+  if (symb_test != symb) info += 1;
+  Py_DECREF(symb_test);
+
+  if (PyList_CheckExact(U)) {
+    // build list and check symbolic object
+    nu = PyList_Size(U);
+    ublkval = malloc((nu+1)*sizeof(double *));
+    for (i=0;i<nu;i++) {
+      Py_Ui = PyList_GetItem(U,i);
+      symb_test = PyObject_GetAttrString(Py_Ui,str_symb);
+      if (symb == symb_test) {
+	PyObj = PyObject_GetAttrString(Py_Ui, str_blkval);
+	ublkval[i] = MAT_BUFD(PyObj);
+	Py_DECREF(PyObj);
+      }
+      else {
+	info += 1;
+      }
+      Py_DECREF(symb_test);
+    }
+    ublkval[nu] = NULL;
+  }
+  else {
+    // check that U is an cspmatrix with same symbolic object as L
+    symb_test = PyObject_GetAttrString(U,str_symb);
+    if (symb != symb_test) info += 1;
+    Py_DECREF(symb_test);
+
+    ublkval = malloc(2*sizeof(double *));
+    PyObj = PyObject_GetAttrString(U, str_blkval);
+    ublkval[0] = MAT_BUFD(PyObj);
+    Py_DECREF(PyObj);
+    ublkval[1] = NULL;
+  }
+
+  // throw exception if all symbolic objects are not the same
+  if (info) {
+    Py_DECREF(symb);
+    if (nu > 0) free(ublkval);
+    return PyErr_Format(PyExc_ValueError,"symbolic factorizations must be the same");
+  }
+
+  // L: check that cspmatrix factor flag is True
+  PyObj = PyObject_GetAttrString(L,str_is_factor);
+  if (PyObj == Py_False) {
+    Py_DECREF(PyObj);
+    Py_DECREF(symb);
+    if (nu > 0) free(ublkval);
+    return PyErr_Format(PyExc_ValueError,"L must be a cspmatrix factor");
+  }
+  Py_DECREF(PyObj);
+
+  // Y: check that cspmatrix factor flag is False
+  PyObj = PyObject_GetAttrString(Y,str_is_factor);
+  if (PyObj == Py_True) {
+    Py_DECREF(PyObj);
+    Py_DECREF(symb);
+    if (nu > 0) free(ublkval);
+    return PyErr_Format(PyExc_ValueError,"Y must be a cspmatrix");
+  }
+  Py_DECREF(PyObj);
+
+  // allocate workspace
+  if (!(upd = malloc(stack_mem*sizeof(double)))) return PyErr_NoMemory();
+  if (!(fws = malloc(frontal_mem*sizeof(double)))) {
+    free(upd);
+    Py_DECREF(symb);
+    if (nu > 0) free(ublkval);
+    return PyErr_NoMemory();
+  }
+  if (!(upd_size = malloc(stack_depth*sizeof(int_t)))) {
+    free(upd);
+    free(fws);
+    if (nu > 0) free(ublkval);
+    Py_DECREF(symb);
+    return PyErr_NoMemory();
+  }
+
+  // extract arrays from symbolic factorization
+  Py_snpost = PyObject_GetAttrString(symb, str_snpost);
+  Py_snptr  = PyObject_GetAttrString(symb, str_snptr);
+  Py_relptr = PyObject_GetAttrString(symb, str_relptr);
+  Py_relidx = PyObject_GetAttrString(symb, str_relidx);
+  Py_chptr  = PyObject_GetAttrString(symb, str_chptr);
+  Py_chidx  = PyObject_GetAttrString(symb, str_chidx);
+  Py_blkptr = PyObject_GetAttrString(symb, str_blkptr);
+  Py_DECREF(symb);
+
+  // call hessian
+  info = hessian(n,nsn,MAT_BUFI(Py_snpost),MAT_BUFI(Py_snptr),
+		 MAT_BUFI(Py_relptr),MAT_BUFI(Py_relidx),
+		 MAT_BUFI(Py_chptr),MAT_BUFI(Py_chidx),
+		 MAT_BUFI(Py_blkptr),MAT_BUFD(Py_lblkval),
+		 MAT_BUFD(Py_yblkval),ublkval,
+		 fws,upd,upd_size,inv,adj,factored_updates);
+  if (Adj == Py_None) { // apply adjoint operator
+    adj = 1^adj; // toggle flag with XOR
+    info = hessian(n,nsn,MAT_BUFI(Py_snpost),MAT_BUFI(Py_snptr),
+		   MAT_BUFI(Py_relptr),MAT_BUFI(Py_relidx),
+		   MAT_BUFI(Py_chptr),MAT_BUFI(Py_chidx),
+		   MAT_BUFI(Py_blkptr),MAT_BUFD(Py_lblkval),
+		   MAT_BUFD(Py_yblkval),ublkval,
+		   fws,upd,upd_size,inv,adj,factored_updates);
+  }
+
+  // update reference counts
+  Py_DECREF(Py_snpost); Py_DECREF(Py_snptr);
+  Py_DECREF(Py_relptr); Py_DECREF(Py_relidx);
+  Py_DECREF(Py_chptr); Py_DECREF(Py_chidx);
+  Py_DECREF(Py_blkptr);
+
+  // free workspace
+  free(fws); free(upd); free(upd_size);
+  if (nu > 0) free(ublkval);
+
+  // check for errors
+  if (info) return PyErr_Format(PyExc_ArithmeticError,"hessian failed");
+
+  return Py_BuildValue("");
+}
+
 static PyMethodDef cbase_functions[] = { 
 
   {"frontal_add_update", (PyCFunction)frontal_add_update,
@@ -568,6 +804,9 @@ static PyMethodDef cbase_functions[] = {
 
   {"completion", (PyCFunction)ccompletion,
    METH_VARARGS|METH_KEYWORDS, doc_ccompletion},
+
+  {"hessian", (PyCFunction)chessian,
+   METH_VARARGS|METH_KEYWORDS, doc_chessian},
 
   {NULL}  /* Sentinel */
 };

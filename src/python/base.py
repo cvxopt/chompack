@@ -10,8 +10,6 @@ def dot(X,Y):
     assert Y.is_factor is False, "cspmatrix factor object"
     #if True: return 2.0*blas.dot(Y.blkval, X.blkval) - blas.dot(Y.diag(),X.diag())
     sncolptr = X.symb.sncolptr
-    snptr = X.symb.snptr
-    snode = X.symb.snode
     blkptr = X.symb.blkptr
     val = 0.0
     for k in range(X.symb.Nsn):
@@ -22,6 +20,46 @@ def dot(X,Y):
             val -= X.blkval[offset+ck*j+j]*Y.blkval[offset+ck*j+j]
             val += 2.0*blas.dot(X.blkval,Y.blkval,offsetx=offset+ck*j+j,offsety=offset+ck*j+j,n=ck-j)
     return val
+
+def syr2(X, u, v, alpha = 1.0, beta = 1.0):
+    r"""
+    Computes the projected rank 2 update of a cspmatrix X
+
+    .. math::
+         X := \alpha*P(u v^T + v u^T) + \beta X.
+    """
+    assert X.is_factor is False, "cspmatrix factor object"
+    n = X.size[0]
+    snptr = X.symb.snptr
+    snode = X.symb.snode
+    blkval = X.blkval
+    blkptr = X.symb.blkptr
+    relptr = X.symb.relptr
+    snrowidx = X.symb.snrowidx
+    sncolptr = X.symb.sncolptr
+
+    if X.symb.p is not None:
+        up = u[X.symb.p]
+        vp = v[X.symb.p]
+    else:
+        up = u
+        vp = v
+            
+    for k in range(X.symb.Nsn):
+        nn = snptr[k+1]-snptr[k]     
+        na = relptr[k+1]-relptr[k] 
+        nj = na + nn
+
+        for i in range(nn): blas.scal(beta, blkval, n = nj-i, offset = blkptr[k]+(nj+1)*i)
+
+        uk = up[snrowidx[sncolptr[k]:sncolptr[k+1]]]
+        vk = vp[snrowidx[sncolptr[k]:sncolptr[k+1]]]
+
+        blas.syr2(uk, vk, blkval, n = nn, offsetA = blkptr[k], ldA = nj, alpha = alpha)
+        blas.ger(uk, vk, blkval, m = na, n = nn, offsetx = nn, offsetA = blkptr[k]+nn, ldA = nj, alpha = alpha)
+        blas.ger(vk, uk, blkval, m = na, n = nn, offsetx = nn, offsetA = blkptr[k]+nn, ldA = nj, alpha = alpha)
+        
+    return
 
 def trsm(L, B, alpha = 1.0, trans = 'N', nrhs = None, offsetB = 0, ldB = None):
     r"""

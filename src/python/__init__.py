@@ -16,7 +16,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Chompack.  If not, see <http://www.gnu.org/licenses/>.    
 """
-version = '2.0.1'
+version = '2.0.2'
 from chompack.symbolic import symbolic, cspmatrix, merge_size_fill, peo
 from cvxopt import spmatrix
 
@@ -28,7 +28,7 @@ from chompack.hessian import hessian
 
 from chompack.misc import tril, triu, symmetrize, perm, eye
 from chompack.conversion import convert_block, convert_conelp
-from chompack.base import trsm, trmm, dot
+from chompack.base import trsm, trmm, dot, syr2
 from chompack.maxchord import maxchord
 from chompack.mcs import maxcardsearch
 

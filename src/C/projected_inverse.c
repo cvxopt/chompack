@@ -4,15 +4,15 @@ int projected_inverse(const int_t n,         // order of matrix
 		      const int_t nsn,       // number of supernodes/cliques
 		      const int_t *snpost,   // post-ordering of supernodes
 		      const int_t *snptr,    // supernode pointer
-		      const int_t *relptr, 
-		      const int_t *relidx, 
-		      const int_t *chptr, 
+		      const int_t *relptr,
+		      const int_t *relidx,
+		      const int_t *chptr,
 		      const int_t *chidx,
-		      const int_t *blkptr, 
+		      const int_t *blkptr,
 		      double * restrict blkval,
 		      double * restrict fws,  // frontal matrix workspace
 		      double * restrict upd,  // update matrix workspace
-		      int_t * restrict upd_size  
+		      int_t * restrict upd_size
 		      ) {
 
   int nn,na,nj,offset,info,i,j,k,l,N,ki,nup=0;
@@ -26,7 +26,7 @@ int projected_inverse(const int_t n,         // order of matrix
     k = snpost[ki];
     nn = snptr[k+1]-snptr[k];
     na = relptr[k+1]-relptr[k];
-    nj = na + nn;        
+    nj = na + nn;
 
     // invert factor of D_{Nk,Nk}
     dtrtri_(&cL, &cN, &nn, blkval+blkptr[k], &nj, &info);
@@ -34,7 +34,7 @@ int projected_inverse(const int_t n,         // order of matrix
 
     // zero-out strict upper triangular part of {Nj,Nj} block (just in case!)
     for (j=1;j<nn;j++) {
-      for (i=0;i<j;i++) blkval[blkptr[k]+j*nj+i] = 0.0; 
+      for (i=0;i<j;i++) blkval[blkptr[k]+j*nj+i] = 0.0;
     }
 
     // compute inv(D_{Nk,Nk}) (store in 1,1 block of frontal matrix)
@@ -62,8 +62,9 @@ int projected_inverse(const int_t n,         // order of matrix
       N = relptr[chidx[l]+1]-offset;
       upd_size[nup++] = N;
       for (j=0; j<N; j++) {
-	for (i=j; i<N; i++)
-	  U[N*j+i] = fws[nj*relidx[offset+j]+relidx[offset+i]];
+				for (i=j; i<N; i++) {
+	  			U[N*j+i] = fws[nj*relidx[offset+j]+relidx[offset+i]];
+				}
       }
       U += N*N;
     }
