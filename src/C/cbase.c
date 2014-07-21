@@ -782,6 +782,92 @@ static PyObject* chessian
   return Py_BuildValue("");
 }
 
+static char doc_pfchol[] =
+  "/n";
+
+static PyObject* pfchol
+(PyObject *self, PyObject *args)
+{
+
+  int k,n,rc;
+  PyObject *V,*L,*B,*alpha;
+  
+  // extract pointers from arguments
+  if (!PyArg_ParseTuple(args, "OOOO", &alpha, &V, &L, &B)) return NULL;
+
+  n = MAT_NROWS(V);
+  k = MAT_NCOLS(V);
+
+  rc = dpftrf(&n,&k,MAT_BUFD(alpha),MAT_BUFD(V),&n,MAT_BUFD(L),&n,MAT_BUFD(B),&n);
+  if (rc == 0)
+    return Py_BuildValue("");
+  else 
+    return PyErr_Format(PyExc_ArithmeticError,"factorization failed");
+}
+
+static char doc_pftrsm[] =
+  "/n";
+
+static PyObject* pftrsm
+(PyObject *self, PyObject *args, PyObject *kwrds)
+{
+  char *kwlist[] = {"V","L","B","U","trans",NULL};
+
+  int k,n,i;
+  PyObject *V,*L,*B,*U;
+  char trans='N';
+
+#if PY_MAJOR_VERSION >= 3
+  int trans_;
+  if (!PyArg_ParseTupleAndKeywords(args, kwrds, "OOOO|C", kwlist, &V, &L, &B, &U, &trans_)) return NULL;
+  trans = (char) trans_;
+#else
+  if (!PyArg_ParseTupleAndKeywords(args, kwrds, "OOOO|c", kwlist, &V, &L, &B, &U, &trans)) return NULL;
+#endif
+
+  if (trans != 'N' && trans != 'T') return PyErr_Format(PyExc_ValueError,"trans must be 'N' or 'T'");
+
+  n = MAT_NROWS(V);
+  k = MAT_NCOLS(V);
+
+  for (i=0;i<MAT_NCOLS(U);i++) 
+    dpfsv(&n,&k,&trans,MAT_BUFD(V),&n,MAT_BUFD(L),&n,MAT_BUFD(B),&n,MAT_BUFD(U)+i*MAT_NROWS(U));
+
+  return Py_BuildValue("");
+}
+
+static char doc_pftrmm[] =
+  "/n";
+
+static PyObject* pftrmm
+(PyObject *self, PyObject *args, PyObject *kwrds)
+{
+  char *kwlist[] = {"V","L","B","U","trans",NULL};
+
+  int k,n,i;
+  PyObject *V,*L,*B,*U;
+  char trans='N';
+
+#if PY_MAJOR_VERSION >= 3
+  int trans_;
+  if (!PyArg_ParseTupleAndKeywords(args, kwrds, "OOOO|C", kwlist, &V, &L, &B, &U, &trans_)) return NULL;
+  trans = (char) trans_;
+#else
+  if (!PyArg_ParseTupleAndKeywords(args, kwrds, "OOOO|c", kwlist, &V, &L, &B, &U, &trans)) return NULL;
+#endif
+
+  if (trans != 'N' && trans != 'T') return PyErr_Format(PyExc_ValueError,"trans must be 'N' or 'T'");
+
+  n = MAT_NROWS(V);
+  k = MAT_NCOLS(V);
+
+  for (i=0;i<MAT_NCOLS(U);i++) 
+    dpfmv(&n,&k,&trans,MAT_BUFD(V),&n,MAT_BUFD(L),&n,MAT_BUFD(B),&n,MAT_BUFD(U)+i*MAT_NROWS(U));
+
+  return Py_BuildValue("");
+}
+
+
 static PyMethodDef cbase_functions[] = { 
 
   {"frontal_add_update", (PyCFunction)frontal_add_update,
@@ -807,6 +893,15 @@ static PyMethodDef cbase_functions[] = {
 
   {"hessian", (PyCFunction)chessian,
    METH_VARARGS|METH_KEYWORDS, doc_chessian},
+
+  {"pfchol", (PyCFunction)pfchol,
+   METH_VARARGS, doc_pfchol},
+
+  {"pftrsm", (PyCFunction)pftrsm,
+   METH_VARARGS|METH_KEYWORDS, doc_pftrsm},
+
+  {"pftrmm", (PyCFunction)pftrmm,
+   METH_VARARGS|METH_KEYWORDS, doc_pftrmm},
 
   {NULL}  /* Sentinel */
 };

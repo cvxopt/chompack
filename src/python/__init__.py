@@ -16,16 +16,19 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Chompack.  If not, see <http://www.gnu.org/licenses/>.    
 """
-version = '2.0.2'
+
+__version__ = '2.1.0'
 from chompack.symbolic import symbolic, cspmatrix, merge_size_fill, peo
 from cvxopt import spmatrix
 
-from chompack.cholesky import cholesky
-from chompack.completion import completion
-from chompack.llt import llt
-from chompack.projected_inverse import projected_inverse
-from chompack.hessian import hessian
-
+try:
+    from chompack.cbase import cholesky,llt,completion,projected_inverse,hessian
+    __py_only__ = False
+except:
+    from chompack.pybase import cholesky,llt,completion,projected_inverse,hessian
+    __py_only__ = True
+    
+from chompack.pfcholesky import pfcholesky
 from chompack.misc import tril, triu, symmetrize, perm, eye
 from chompack.conversion import convert_block, convert_conelp
 from chompack.base import trsm, trmm, dot, syr2

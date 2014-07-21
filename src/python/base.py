@@ -192,7 +192,6 @@ def trmm(L, B, alpha = 1.0, trans = 'N', nrhs = None, offsetB = 0, ldB = None):
     :param nrhs:   number of right-hand sides (default: number of columns in :math:`B`)
     :param offsetB: integer (default: 0)
     :param ldB:   leading dimension of :math:`B` (default: number of rows in :math:`B`)
-    
     """
     
     assert isinstance(L, cspmatrix) and L.is_factor is True, "L must be a cspmatrix factor"

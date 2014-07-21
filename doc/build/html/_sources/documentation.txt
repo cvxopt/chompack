@@ -261,6 +261,10 @@ Numerical computations
 
 .. autofunction:: chompack.trsm
 
+.. autoclass:: chompack.pfcholesky
+   :members: 
+
+
 
 
 Chordal conversion

@@ -3,14 +3,14 @@
  * Copyright 2010-2011 L. Vandenberghe.
  * Copyright 2004-2009 J. Dahl and L. Vandenberghe.
  *
- * This file is part of CVXOPT version 1.1.5.
+ * This file is part of CHOMPACK.
  *
- * CVXOPT is free software; you can redistribute it and/or modify
+ * CHOMPACK is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * CVXOPT is distributed in the hope that it will be useful,
+ * CHOMPACK is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
@@ -44,7 +44,6 @@
 #define PYSTRING_CHECK(a) PyString_Check(a)
 #define PYSTRING_COMPARE(a,b) strcmp(PyString_AsString(a), b)
 #endif
-
 
 extern void dscal_(int *n, double *alpha, double *x, int *incx);
 extern void dlacpy_(char *uplo, int *m, int *n, double *A, int *lda, double *B, int *ldb);
@@ -199,5 +198,11 @@ int update_factor(const int_t *ri,
 		  double * restrict f,
 		  int *ldf,
 		  double *ws);
+
+void ddrsv(const int *n, const char *trans, double * restrict v, double * restrict l, double * restrict b, double * restrict x);
+void ddrmv(const int *n, const char *trans, double * restrict v, double * restrict l, double * restrict b, double * restrict x);
+int dpftrf(const int *n, const int *k, double * restrict a, double * restrict V, const int *ldv, double * restrict L, const int *ldl, double * restrict B, const int *ldb);
+void dpfsv(const int *n, const int *k, const char *trans, double * restrict V, const int *ldv, double * restrict L, const int *ldl, double * restrict B, const int *ldb, double * restrict x);
+void dpfmv(const int *n, const int *k, const char *trans, double * restrict V, const int *ldv, double * restrict L, const int *ldl, double * restrict B, const int *ldb, double * restrict x);
 
 #endif

@@ -430,7 +430,8 @@ def peo(A, p):
     assert type(A) == spmatrix, "A must be a sparse matrix"
     assert A.size[1] == n, "A must be a square matrix"
     assert len(p) == n, "length of p must be equal to the order of A" 
-
+    if isinstance(p, list): p = matrix(p)
+    
     As = symmetrize(A)
     cp,ri,_ = As.CCS
 
@@ -893,10 +894,10 @@ class cspmatrix(object):
             na = self.symb.relptr[k+1]-self.symb.relptr[k]
             nnz += nn*na + nn*(nn+1)/2
         if self.is_factor:
-            return "<%ix%i cspmatrix (factor), tc='%s', nnz=%i, nsn=%i>"\
+            return "<%ix%i chordal sparse matrix (factor), tc='%s', nnz=%i, nsn=%i>"\
               % (self.symb.n,self.symb.n,self.blkval.typecode,nnz,self.symb.Nsn) 
         else:
-            return "<%ix%i cspmatrix, tc='%s', nnz=%i, nsn=%i>"\
+            return "<%ix%i chorcal sparse matrix, tc='%s', nnz=%i, nsn=%i>"\
               % (self.symb.n,self.symb.n,self.blkval.typecode,nnz,self.symb.Nsn)
         
     def __iadd__(self, B):
@@ -955,14 +956,13 @@ class cspmatrix(object):
     def __imul__(self, a):
         if isinstance(a,float):
             blas.scal(a, self.blkval)
-        elif isinstance(a, int):
+        elif isinstance(a, int) or isinstance(a, long):
             blas.scal(float(a), self.blkval)
         else:
             raise NotImplementedError("only scalar multiplication has been implemented")
         return self
     
     def __mul__(self, a):
-        if type(a) is not float: raise NotImplementedError("only scalar multiplication has been implemented")
         ret = self.copy()
         ret.__imul__(a)
         return ret

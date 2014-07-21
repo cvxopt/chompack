@@ -220,7 +220,7 @@ int _scale(const int_t n,         // order of matrix
   double * restrict U, * restrict ublkvalk, * restrict ws=NULL;
   double dOne=1.0,alpha=-1.0;
   char cL='L',cT='T',cR='R',cN='N';
-  char *tr1, *tr2, *tr3;
+  char *tr1, *tr2, *tr3=NULL;
 
   if (inv) alpha = 1.0;
 
