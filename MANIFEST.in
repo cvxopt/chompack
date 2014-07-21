@@ -4,4 +4,5 @@ include src/C/cvxopt.h
 include src/C/blas_redefines.h
 include src/C/chompack.h
 recursive-include examples *
+recursive-include tests *
 recursive-include doc/build/html *
