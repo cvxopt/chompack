@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Documentation &mdash; Chompack 2.1.0 documentation</title>
+  <title>Documentation &mdash; Chompack 2.1.1 documentation</title>
   
 
   
@@ -28,7 +28,7 @@
   
 
   
-    <link rel="top" title="Chompack 2.1.0 documentation" href="index.html"/>
+    <link rel="top" title="Chompack 2.1.1 documentation" href="index.html"/>
         <link rel="prev" title="Installation" href="install.html"/> 
 
   
@@ -607,7 +607,7 @@ matrix is returned if the optional argument <cite>reordered</cite> is
 <h2>Numerical computations<a class="headerlink" href="#numerical-computations" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
 <dt id="chompack.cholesky">
-<tt class="descclassname">chompack.</tt><tt class="descname">cholesky</tt><big>(</big><big>)</big><a class="headerlink" href="#chompack.cholesky" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">chompack.</tt><tt class="descname">cholesky</tt><big>(</big><em>X</em><big>)</big><a class="headerlink" href="#chompack.cholesky" title="Permalink to this definition">¶</a></dt>
 <dd><p>Supernodal multifrontal Cholesky factorization:</p>
 <div class="math">
 <p><img src="_images/math/071c72fbe6c4fd6252b2efde1543d092d4d17a43.png" alt="X = LL^T"/></p>
@@ -625,7 +625,7 @@ contains the Cholesky factor <img class="math" src="_images/math/53a7d99088c1cbd
 
 <dl class="function">
 <dt id="chompack.llt">
-<tt class="descclassname">chompack.</tt><tt class="descname">llt</tt><big>(</big><big>)</big><a class="headerlink" href="#chompack.llt" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">chompack.</tt><tt class="descname">llt</tt><big>(</big><em>L</em><big>)</big><a class="headerlink" href="#chompack.llt" title="Permalink to this definition">¶</a></dt>
 <dd><p>Supernodal multifrontal Cholesky product:</p>
 <div class="math">
 <p><img src="_images/math/071c72fbe6c4fd6252b2efde1543d092d4d17a43.png" alt="X = LL^T"/></p>
@@ -643,7 +643,7 @@ contains the product <img class="math" src="_images/math/0ba6ae58a72b4954369f8aa
 
 <dl class="function">
 <dt id="chompack.projected_inverse">
-<tt class="descclassname">chompack.</tt><tt class="descname">projected_inverse</tt><big>(</big><big>)</big><a class="headerlink" href="#chompack.projected_inverse" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">chompack.</tt><tt class="descname">projected_inverse</tt><big>(</big><em>L</em><big>)</big><a class="headerlink" href="#chompack.projected_inverse" title="Permalink to this definition">¶</a></dt>
 <dd><p>Supernodal multifrontal projected inverse. The routine computes the projected inverse</p>
 <div class="math">
 <p><img src="_images/math/c48617ca5ffc4bc3951220d663927f2fcfefbc96.png" alt="Y = P(L^{-T}L^{-1})"/></p>
@@ -661,7 +661,7 @@ projected inverse <img class="math" src="_images/math/a369f18bebb305679d9ed8188d
 
 <dl class="function">
 <dt id="chompack.completion">
-<tt class="descclassname">chompack.</tt><tt class="descname">completion</tt><big>(</big><big>)</big><a class="headerlink" href="#chompack.completion" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">chompack.</tt><tt class="descname">completion</tt><big>(</big><em>X</em>, <em>factored_updates=True</em><big>)</big><a class="headerlink" href="#chompack.completion" title="Permalink to this definition">¶</a></dt>
 <dd><p>Supernodal multifrontal maximum determinant positive definite
 matrix completion. The routine computes the Cholesky factor
 <img class="math" src="_images/math/53a7d99088c1cbd146ec8640b7c6360998cfa86f.png" alt="L" style="vertical-align: 0px"/> of the inverse of the maximum determinant positive
@@ -689,24 +689,23 @@ factorizations.</p>
 
 <dl class="function">
 <dt id="chompack.hessian">
-<tt class="descclassname">chompack.</tt><tt class="descname">hessian</tt><big>(</big><big>)</big><a class="headerlink" href="#chompack.hessian" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">chompack.</tt><tt class="descname">hessian</tt><big>(</big><em>L</em>, <em>Y</em>, <em>U</em>, <em>adj=False</em>, <em>inv=False</em>, <em>factored_updates=False</em><big>)</big><a class="headerlink" href="#chompack.hessian" title="Permalink to this definition">¶</a></dt>
 <dd><p>Supernodal multifrontal Hessian mapping.</p>
 <p>The mapping</p>
 <div class="math">
-<p><img src="_images/math/b4be52adbbffad1829b6d37f0282e17bd9e1149f.png" alt="\mathcal H_X(U) = P(X^{-1}UX^{-1})"/></p>
-</div><p>is the Hessian of the log-det barrier at a positive definite chordal 
-matrix <img class="math" src="_images/math/0ba6ae58a72b4954369f8aa53eeeece57df6da5a.png" alt="X" style="vertical-align: 0px"/>, applied to a symmetric chordal matrix <img class="math" src="_images/math/718655b4c0a2142e2eb20dd5f281f4fb9a01f338.png" alt="U" style="vertical-align: 0px"/>. The Hessian operator 
+<p><img src="_images/math/97a8909c08ec63c5da8d1d5d2fb9ce382dac5b13.png" alt="\mathcal H_X(U) = P(X^{-1}UX^{-1})"/></p>
+</div><p>is the Hessian of the log-det barrier at a positive definite chordal
+matrix <img class="math" src="_images/math/0ba6ae58a72b4954369f8aa53eeeece57df6da5a.png" alt="X" style="vertical-align: 0px"/>, applied to a symmetric chordal matrix <img class="math" src="_images/math/718655b4c0a2142e2eb20dd5f281f4fb9a01f338.png" alt="U" style="vertical-align: 0px"/>. The Hessian operator
 can be factored as</p>
 <div class="math">
-<p><img src="_images/math/267d020bb265d0f5465ee9e3a0e2e9d0bb9dc565.png" alt="\mathcal H_X(U) = \mathcal G_X^{\mathrm adj}( \mathcal G_X(U) )"/></p>
-</div><p>where the mappings on the right-hand side are adjoint mappings 
+<p><img src="_images/math/7756b77348eb7e1a87d2d5c9d603c864d35da72e.png" alt="\mathcal H_X(U) = \mathcal G_X^{\mathrm adj}( \mathcal G_X(U) )"/></p>
+</div><p>where the mappings on the right-hand side are adjoint mappings
 that map chordal symmetric matrices to chordal symmetric matrices.</p>
-<p>This routine evaluates the mapping <img class="math" src="_images/math/5323f7b2488f2ddfaabb312add2e81a7c2860f13.png" alt="G_X" style="vertical-align: -3px"/> and its adjoint 
-<img class="math" src="_images/math/55557159ccbf1384e006a50c5c4b191fa85cb1cf.png" alt="G_X^{\mathrm adj}" style="vertical-align: -5px"/> as well as the corresponding inverse 
-mappings. The inputs <cite>adj</cite> and <cite>inv</cite> control the action as 
+<p>This routine evaluates the mapping <img class="math" src="_images/math/5323f7b2488f2ddfaabb312add2e81a7c2860f13.png" alt="G_X" style="vertical-align: -3px"/> and its adjoint
+<img class="math" src="_images/math/55557159ccbf1384e006a50c5c4b191fa85cb1cf.png" alt="G_X^{\mathrm adj}" style="vertical-align: -5px"/> as well as the corresponding inverse
+mappings. The inputs <cite>adj</cite> and <cite>inv</cite> control the action as
 follows:</p>
-<blockquote>
-<div><table border="1" class="docutils">
+<table border="1" class="docutils">
 <colgroup>
 <col width="77%" />
 <col width="12%" />
@@ -737,14 +736,13 @@ follows:</p>
 </tr>
 </tbody>
 </table>
-</div></blockquote>
-<p>The input argument <img class="math" src="_images/math/53a7d99088c1cbd146ec8640b7c6360998cfa86f.png" alt="L" style="vertical-align: 0px"/> is the Cholesky factor of 
-<img class="math" src="_images/math/0ba6ae58a72b4954369f8aa53eeeece57df6da5a.png" alt="X" style="vertical-align: 0px"/>. The input argument <img class="math" src="_images/math/a369f18bebb305679d9ed8188d7f0aebb581ea57.png" alt="Y" style="vertical-align: 0px"/> is the projected inverse of 
-<img class="math" src="_images/math/0ba6ae58a72b4954369f8aa53eeeece57df6da5a.png" alt="X" style="vertical-align: 0px"/>. The input argument <img class="math" src="_images/math/718655b4c0a2142e2eb20dd5f281f4fb9a01f338.png" alt="U" style="vertical-align: 0px"/> is either a chordal matrix (a 
-<a class="reference internal" href="#chompack.cspmatrix" title="chompack.cspmatrix"><tt class="xref py py-class docutils literal"><span class="pre">cspmatrix</span></tt></a>) of a list of chordal matrices with the same 
+<p>The input argument <img class="math" src="_images/math/53a7d99088c1cbd146ec8640b7c6360998cfa86f.png" alt="L" style="vertical-align: 0px"/> is the Cholesky factor of
+<img class="math" src="_images/math/0ba6ae58a72b4954369f8aa53eeeece57df6da5a.png" alt="X" style="vertical-align: 0px"/>. The input argument <img class="math" src="_images/math/a369f18bebb305679d9ed8188d7f0aebb581ea57.png" alt="Y" style="vertical-align: 0px"/> is the projected inverse of
+<img class="math" src="_images/math/0ba6ae58a72b4954369f8aa53eeeece57df6da5a.png" alt="X" style="vertical-align: 0px"/>. The input argument <img class="math" src="_images/math/718655b4c0a2142e2eb20dd5f281f4fb9a01f338.png" alt="U" style="vertical-align: 0px"/> is either a chordal matrix (a
+<a class="reference internal" href="#chompack.cspmatrix" title="chompack.cspmatrix"><tt class="xref py py-class docutils literal"><span class="pre">cspmatrix</span></tt></a>) of a list of chordal matrices with the same
 sparsity pattern as <img class="math" src="_images/math/53a7d99088c1cbd146ec8640b7c6360998cfa86f.png" alt="L" style="vertical-align: 0px"/> and <img class="math" src="_images/math/a369f18bebb305679d9ed8188d7f0aebb581ea57.png" alt="Y" style="vertical-align: 0px"/>.</p>
-<p>The optional argument <cite>factored_updates</cite> can be used to enable (if 
-True) or disable (if False) updating of intermediate 
+<p>The optional argument <cite>factored_updates</cite> can be used to enable (if
+True) or disable (if False) updating of intermediate
 factorizations.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -1193,7 +1191,7 @@ lower triangular entries of <img class="math" src="_images/math/937abf0036e3f773
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'2.1.0',
+            VERSION:'2.1.1',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
