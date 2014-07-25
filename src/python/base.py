@@ -9,6 +9,7 @@ def dot(X,Y):
     assert X.is_factor is False, "cspmatrix factor object"
     assert Y.is_factor is False, "cspmatrix factor object"
     #if True: return 2.0*blas.dot(Y.blkval, X.blkval) - blas.dot(Y.diag(),X.diag())
+    snptr = X.symb.snptr
     sncolptr = X.symb.sncolptr
     blkptr = X.symb.blkptr
     val = 0.0
