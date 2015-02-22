@@ -22,4 +22,9 @@ from chompack.pybase.llt import llt
 from chompack.pybase.completion import completion
 from chompack.pybase.projected_inverse import projected_inverse
 from chompack.pybase.hessian import hessian
-__all__ = ['cholesky','llt','competion','projected_inverse','hessian']
+from chompack.pybase.trsm import trsm
+from chompack.pybase.trmm import trmm
+from chompack.pybase.psdcompletion import psdcompletion
+from chompack.pybase.edmcompletion import edmcompletion
+    
+__all__ = ['cholesky','llt','competion','projected_inverse','hessian','trsm','trmm','psdcompletion','edmcompletion']

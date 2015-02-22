@@ -3,7 +3,7 @@ Installation
 
 .. note::
 
-   CHOMPACK requires that CVXOPT 1.1.6 or newer is installed.
+   CHOMPACK requires that CVXOPT 1.1.7 or newer is installed.
 
 
 Installation from source

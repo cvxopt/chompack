@@ -32,15 +32,13 @@ class TestSymbolic(unittest.TestCase):
         self.assertEqual(symb.clique_number, 5)
         self.assertEqual(symb.Nsn, 9)
         self.assertEqual(symb.fill,(0,0))
-        self.assertEqual(symb.p, None)
-        self.assertEqual(symb.ip, None)
 
-        p = amd.order(self.A)
-        symb = cp.symbolic(self.A, p = p)
-        self.assertEqual(list(symb.p), list(p))
+        #p = amd.order(self.A)
+        #symb = cp.symbolic(self.A, p = p)
+        #self.assertEqual(list(symb.p), list(p))
 
-        symb = cp.symbolic(self.A, p = amd.order)
-        self.assertEqual(list(symb.p), list(p))
+        #symb = cp.symbolic(self.A, p = amd.order)
+        #self.assertEqual(list(symb.p), list(p))
                     
     def test_merge(self):
         symb = cp.symbolic(self.A, p = None, merge_function = cp.merge_size_fill(0,0))
@@ -49,8 +47,8 @@ class TestSymbolic(unittest.TestCase):
         self.assertEqual(symb.Nsn, 9)
         self.assertEqual(symb.fill,(0,0))
         self.assertEqual(symb.clique_number, 5)
-        self.assertEqual(symb.p, None)
-        self.assertEqual(symb.ip, None)
+        #self.assertEqual(symb.p, None)
+        #self.assertEqual(symb.ip, None)
 
         symb = cp.symbolic(self.A, p = None, merge_function = cp.merge_size_fill(2,2))
         self.assertEqual(symb.n, 17)
@@ -58,8 +56,8 @@ class TestSymbolic(unittest.TestCase):
         self.assertTrue(symb.Nsn < 9)
         self.assertTrue(symb.fill[0] >= 0)
         self.assertTrue(symb.fill[1] > 0)
-        self.assertEqual(symb.p, None)
-        self.assertEqual(symb.ip, None)
+        #self.assertEqual(symb.p, None)
+        #self.assertEqual(symb.ip, None)
 
     def test_symbolic_nc(self):
         symb = cp.symbolic(self.A_nc, p = None)
@@ -68,8 +66,8 @@ class TestSymbolic(unittest.TestCase):
         self.assertEqual(symb.clique_number, 12)
         self.assertEqual(symb.Nsn, 10)
         self.assertEqual(symb.fill,(73,0))
-        self.assertEqual(symb.p, None)
-        self.assertEqual(symb.ip, None)
+        #self.assertEqual(symb.p, None)
+        #self.assertEqual(symb.ip, None)
 
         p = amd.order(self.A_nc)
         symb = cp.symbolic(self.A_nc, p = p)
@@ -78,8 +76,8 @@ class TestSymbolic(unittest.TestCase):
         self.assertEqual(symb.clique_number, 9)
         self.assertEqual(symb.Nsn, 15)
         self.assertEqual(symb.fill,(36,0))
-        self.assertEqualLists(list(symb.p), list(p))
-        self.assertEqualLists(list(symb.p[symb.ip]),range(23))
+        #self.assertEqualLists(list(symb.p), list(p))
+        #self.assertEqualLists(list(symb.p[symb.ip]),range(23))
         
     def test_merge_nc(self):
         symb = cp.symbolic(self.A_nc, p = None, merge_function = cp.merge_size_fill(0,0))
@@ -96,8 +94,8 @@ class TestSymbolic(unittest.TestCase):
         self.assertTrue(symb.Nsn < 10)
         self.assertTrue(symb.fill[0] >= 36)
         self.assertTrue(symb.fill[1] > 0)
-        self.assertEqualLists(list(symb.p), list(p))
-        self.assertEqualLists(list(symb.p[symb.ip]),range(23))
+        #self.assertEqualLists(list(symb.p), list(p))
+        #self.assertEqualLists(list(symb.p[symb.ip]),range(23))
 
 
 if __name__ == '__main__':

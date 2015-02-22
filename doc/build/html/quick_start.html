@@ -1,0 +1,384 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Quick start &mdash; Chompack 2.2.0 documentation</title>
+  
+
+  
+  
+
+  
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="top" title="Chompack 2.2.0 documentation" href="index.html"/> 
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-nav-search">
+        <a href="index.html" class="fa fa-home"> Chompack</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        
+        
+            <ul>
+<li class="toctree-l1"><a class="reference internal" href="license.html">Copyright and License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="install.html#installation-from-source">Installation from source</a></li>
+<li class="toctree-l2"><a class="reference internal" href="install.html#python-only-installation">Python-only installation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="documentation.html">Documentation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="documentation.html#quick-start">Quick start</a></li>
+<li class="toctree-l2"><a class="reference internal" href="documentation.html#symbolic-factorization">Symbolic factorization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="documentation.html#chordal-sparse-matrices">Chordal sparse matrices</a></li>
+<li class="toctree-l2"><a class="reference internal" href="documentation.html#numerical-computations">Numerical computations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="documentation.html#chordal-conversion">Chordal conversion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="documentation.html#auxiliary-routines">Auxiliary routines</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="examples.html#sdp-conversion">SDP conversion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples.html#euclidean-distance-matrix-completion">Euclidean distance matrix completion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples.html#symbolic-factorization">Symbolic factorization</a></li>
+</ul>
+</li>
+</ul>
+
+        
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">Chompack</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+      
+    <li>Quick start</li>
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main">
+            
+  <div class="section" id="quick-start">
+<h1>Quick start<a class="headerlink" href="#quick-start" title="Permalink to this headline">¶</a></h1>
+<p>The core functionality of CHOMPACK is contained in two types of
+objects: the <tt class="xref py py-class docutils literal"><span class="pre">symbolic</span></tt> object and the <tt class="xref py py-class docutils literal"><span class="pre">cspmatrix</span></tt>
+(chordal sparse matrix) object. A <tt class="xref py py-class docutils literal"><span class="pre">symbolic</span></tt> object
+represents a symbolic factorization of a sparse symmetric matrix
+<img class="math" src="_images/math/937abf0036e3f773123ec44111199b356cf0ab10.png" alt="A" style="vertical-align: 0px"/>, and it can be created as follows:</p>
+<div class="code python highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">cvxopt</span> <span class="kn">import</span> <span class="n">spmatrix</span><span class="p">,</span> <span class="n">amd</span>
+<span class="kn">import</span> <span class="nn">chompack</span> <span class="kn">as</span> <span class="nn">cp</span>
+
+<span class="c"># generate sparse matrix</span>
+<span class="n">I</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">]</span>
+<span class="n">J</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">]</span>
+<span class="n">A</span> <span class="o">=</span> <span class="n">spmatrix</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">I</span><span class="p">,</span> <span class="n">J</span><span class="p">,</span> <span class="p">(</span><span class="mi">7</span><span class="p">,</span><span class="mi">7</span><span class="p">))</span>
+
+<span class="c"># compute symbolic factorization using AMD ordering</span>
+<span class="n">symb</span> <span class="o">=</span> <span class="n">cp</span><span class="o">.</span><span class="n">symbolic</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="n">amd</span><span class="o">.</span><span class="n">order</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The argument <img class="math" src="_images/math/c5b47cd114d1cd218d587260b667ed59b7ace4a0.png" alt="p" style="vertical-align: -4px"/> is a so-called elimination order, and it can
+be either an ordering routine or a permutation vector. In the above
+example we used the &#8220;approximate minimum degree&#8221; (AMD) ordering
+routine. Note that <img class="math" src="_images/math/937abf0036e3f773123ec44111199b356cf0ab10.png" alt="A" style="vertical-align: 0px"/> is a lower-triangular sparse matrix that represents a
+symmetric matrix; upper-triangular entries in <img class="math" src="_images/math/937abf0036e3f773123ec44111199b356cf0ab10.png" alt="A" style="vertical-align: 0px"/> are ignored in the
+symbolic factorization.</p>
+<p>Now let&#8217;s inspect the sparsity pattern of <cite>A</cite> and its chordal
+embedding (i.e., the filled pattern):</p>
+<div class="code python highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">A</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre>[ 1.00e+00     0         0         0         0         0         0    ]
+[ 1.00e+00  1.00e+00     0         0         0         0         0    ]
+[    0         0      1.00e+00     0         0         0         0    ]
+[ 1.00e+00     0         0      1.00e+00     0         0         0    ]
+[    0         0         0      1.00e+00  1.00e+00     0         0    ]
+[    0      1.00e+00     0      1.00e+00  1.00e+00  1.00e+00     0    ]
+[    0         0      1.00e+00     0      1.00e+00     0      1.00e+00]
+</pre></div>
+</div>
+<div class="code python highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">symb</span><span class="o">.</span><span class="n">sparsity_pattern</span><span class="p">(</span><span class="n">reordered</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">symmetric</span><span class="o">=</span><span class="bp">False</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre>[ 1.00e+00     0         0         0         0         0         0    ]
+[ 1.00e+00  1.00e+00     0         0         0         0         0    ]
+[    0         0      1.00e+00     0         0         0         0    ]
+[ 1.00e+00     0         0      1.00e+00     0         0         0    ]
+[    0         0         0      1.00e+00  1.00e+00     0         0    ]
+[ 1.00e+00  1.00e+00     0      1.00e+00  1.00e+00  1.00e+00     0    ]
+[    0         0      1.00e+00     0      1.00e+00     0      1.00e+00]
+</pre></div>
+</div>
+<p>The reordered pattern and its cliques can be inspected using the
+following commands:</p>
+<div class="code python highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">symb</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre>[X X          ]
+[X X X        ]
+[  X X   X X  ]
+[      X   X X]
+[    X   X X X]
+[    X X X X X]
+[      X X X X]
+</pre></div>
+</div>
+<div class="code python highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">symb</span><span class="o">.</span><span class="n">cliques</span><span class="p">())</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">],</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">],</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">]]</span>
+</pre></div>
+</div>
+<p>Similarly, the clique tree, the supernodes, and the separator sets are:</p>
+<div class="code python highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">symb</span><span class="o">.</span><span class="n">parent</span><span class="p">())</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">]</span>
+</pre></div>
+</div>
+<div class="code python highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">symb</span><span class="o">.</span><span class="n">supernodes</span><span class="p">())</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">[[</span><span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">]]</span>
+</pre></div>
+</div>
+<div class="code python highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">symb</span><span class="o">.</span><span class="n">separators</span><span class="p">())</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">[[</span><span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">],</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">],</span> <span class="p">[]]</span>
+</pre></div>
+</div>
+<p>The <tt class="xref py py-class docutils literal"><span class="pre">cspmatrix</span></tt> object represents a chordal sparse matrix,
+and it contains lower-triangular numerical values as well as a
+reference to a symbolic factorization that defines the sparsity
+pattern. Given a <tt class="xref py py-class docutils literal"><span class="pre">symbolic</span></tt> object <cite>symb</cite> and a sparse
+matrix <img class="math" src="_images/math/937abf0036e3f773123ec44111199b356cf0ab10.png" alt="A" style="vertical-align: 0px"/>, we can create a <tt class="xref py py-class docutils literal"><span class="pre">cspmatrix</span></tt> as follows:</p>
+<div class="code python highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">cvxopt</span> <span class="kn">import</span> <span class="n">spmatrix</span><span class="p">,</span> <span class="n">amd</span><span class="p">,</span> <span class="n">printing</span>
+<span class="kn">import</span> <span class="nn">chompack</span> <span class="kn">as</span> <span class="nn">cp</span>
+<span class="n">printing</span><span class="o">.</span><span class="n">options</span><span class="p">[</span><span class="s">&#39;dformat&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;</span><span class="si">%3.1f</span><span class="s">&#39;</span>
+
+<span class="c"># generate sparse matrix and compute symbolic factorization</span>
+<span class="n">I</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">]</span>
+<span class="n">J</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">]</span>
+<span class="n">A</span> <span class="o">=</span> <span class="n">spmatrix</span><span class="p">([</span><span class="mf">1.0</span><span class="o">*</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">15</span><span class="o">+</span><span class="mi">1</span><span class="p">)],</span> <span class="n">I</span><span class="p">,</span> <span class="n">J</span><span class="p">,</span> <span class="p">(</span><span class="mi">7</span><span class="p">,</span><span class="mi">7</span><span class="p">))</span>
+<span class="n">symb</span> <span class="o">=</span> <span class="n">cp</span><span class="o">.</span><span class="n">symbolic</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="n">amd</span><span class="o">.</span><span class="n">order</span><span class="p">)</span>
+
+<span class="n">L</span> <span class="o">=</span> <span class="n">cp</span><span class="o">.</span><span class="n">cspmatrix</span><span class="p">(</span><span class="n">symb</span><span class="p">)</span>
+<span class="n">L</span> <span class="o">+=</span> <span class="n">A</span>
+</pre></div>
+</div>
+<p>Now let us take a look at  <img class="math" src="_images/math/937abf0036e3f773123ec44111199b356cf0ab10.png" alt="A" style="vertical-align: 0px"/> and <img class="math" src="_images/math/53a7d99088c1cbd146ec8640b7c6360998cfa86f.png" alt="L" style="vertical-align: 0px"/>:</p>
+<div class="code python highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">A</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre>[ 1.0  0    0    0    0    0    0  ]
+[ 2.0  4.0  0    0    0    0    0  ]
+[ 0    0    6.0  0    0    0    0  ]
+[ 3.0  0    0    8.0  0    0    0  ]
+[ 0    0    0    9.0 11.0  0    0  ]
+[ 0    5.0  0   10.0 12.0 14.0  0  ]
+[ 0    0    7.0  0   13.0  0   15.0]
+</pre></div>
+</div>
+<div class="code python highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">L</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre>[ 6.0  0    0    0    0    0    0  ]
+[ 7.0 15.0  0    0    0    0    0  ]
+[ 0   13.0 11.0  0    0    0    0  ]
+[ 0    0    0    4.0  0    0    0  ]
+[ 0    0    9.0  0    8.0  0    0  ]
+[ 0    0   12.0  5.0 10.0 14.0  0  ]
+[ 0    0    0    2.0  3.0  0.0  1.0]
+</pre></div>
+</div>
+<p>Notice that <img class="math" src="_images/math/53a7d99088c1cbd146ec8640b7c6360998cfa86f.png" alt="L" style="vertical-align: 0px"/> is a reordered lower-triangular representation
+of <img class="math" src="_images/math/937abf0036e3f773123ec44111199b356cf0ab10.png" alt="A" style="vertical-align: 0px"/>. We can convert <img class="math" src="_images/math/53a7d99088c1cbd146ec8640b7c6360998cfa86f.png" alt="L" style="vertical-align: 0px"/> to an <tt class="xref py py-class docutils literal"><span class="pre">spmatrix</span></tt> using
+the <cite>spmatrix()</cite> method:</p>
+<div class="code python highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">L</span><span class="o">.</span><span class="n">spmatrix</span><span class="p">(</span><span class="n">reordered</span> <span class="o">=</span> <span class="bp">False</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre>[ 1.0  0    0    0    0    0    0  ]
+[ 2.0  4.0  0    0    0    0    0  ]
+[ 0    0    6.0  0    0    0    0  ]
+[ 3.0  0    0    8.0  0    0    0  ]
+[ 0    0    0    9.0 11.0  0    0  ]
+[ 0.0  5.0  0   10.0 12.0 14.0  0  ]
+[ 0    0    7.0  0   13.0  0   15.0]
+</pre></div>
+</div>
+<p>This returns an <tt class="xref py py-class docutils literal"><span class="pre">spmatrix</span></tt> with the same ordering
+as <img class="math" src="_images/math/937abf0036e3f773123ec44111199b356cf0ab10.png" alt="A" style="vertical-align: 0px"/>, i.e., the inverse permutation is applied to <img class="math" src="_images/math/53a7d99088c1cbd146ec8640b7c6360998cfa86f.png" alt="L" style="vertical-align: 0px"/>.</p>
+<p>The following example illustrates how to use the Cholesky routine:</p>
+<div class="code python highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">cvxopt</span> <span class="kn">import</span> <span class="n">spmatrix</span><span class="p">,</span> <span class="n">amd</span><span class="p">,</span> <span class="n">normal</span>
+<span class="kn">from</span> <span class="nn">chompack</span> <span class="kn">import</span> <span class="n">symbolic</span><span class="p">,</span> <span class="n">cspmatrix</span><span class="p">,</span> <span class="n">cholesky</span>
+
+<span class="c"># generate sparse matrix and compute symbolic factorization</span>
+<span class="n">I</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">]</span>
+<span class="n">J</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">]</span>
+<span class="n">A</span> <span class="o">=</span> <span class="n">spmatrix</span><span class="p">([</span><span class="mf">0.1</span><span class="o">*</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">15</span><span class="p">)],</span> <span class="n">I</span><span class="p">,</span> <span class="n">J</span><span class="p">,</span> <span class="p">(</span><span class="mi">7</span><span class="p">,</span><span class="mi">7</span><span class="p">))</span> <span class="o">+</span> <span class="n">spmatrix</span><span class="p">(</span><span class="mf">10.0</span><span class="p">,</span><span class="nb">range</span><span class="p">(</span><span class="mi">7</span><span class="p">),</span><span class="nb">range</span><span class="p">(</span><span class="mi">7</span><span class="p">))</span>
+<span class="n">symb</span> <span class="o">=</span> <span class="n">symbolic</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="n">amd</span><span class="o">.</span><span class="n">order</span><span class="p">)</span>
+
+<span class="c"># create cspmatrix</span>
+<span class="n">L</span> <span class="o">=</span> <span class="n">cspmatrix</span><span class="p">(</span><span class="n">symb</span><span class="p">)</span>
+<span class="n">L</span> <span class="o">+=</span> <span class="n">A</span>
+
+<span class="c"># compute numeric factorization</span>
+<span class="n">cholesky</span><span class="p">(</span><span class="n">L</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="code python highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">L</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre>[ 3.3  0    0    0    0    0    0  ]
+[ 0.2  3.4  0    0    0    0    0  ]
+[ 0    0.4  3.3  0    0    0    0  ]
+[ 0    0    0    3.2  0    0    0  ]
+[ 0    0    0.3  0    3.3  0    0  ]
+[ 0    0    0.4  0.2  0.3  3.3  0  ]
+[ 0    0    0    0.1  0.1 -0.0  3.2]
+</pre></div>
+</div>
+<p>Given a sparse matrix <img class="math" src="_images/math/937abf0036e3f773123ec44111199b356cf0ab10.png" alt="A" style="vertical-align: 0px"/>, we can check if it is chordal by
+checking whether the permutation <img class="math" src="_images/math/c5b47cd114d1cd218d587260b667ed59b7ace4a0.png" alt="p" style="vertical-align: -4px"/> returned by maximum cardinality
+search is a perfect elimination ordering:</p>
+<div class="code python highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">cvxopt</span> <span class="kn">import</span> <span class="n">spmatrix</span><span class="p">,</span> <span class="n">printing</span>
+<span class="n">printing</span><span class="o">.</span><span class="n">options</span><span class="p">[</span><span class="s">&#39;width&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+<span class="kn">import</span> <span class="nn">chompack</span> <span class="kn">as</span> <span class="nn">cp</span>
+
+<span class="c"># Define chordal sparse matrix</span>
+<span class="n">I</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mi">17</span><span class="p">)</span><span class="o">+</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">14</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">14</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">14</span><span class="p">,</span><span class="mi">15</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">15</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">14</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">14</span><span class="p">,</span><span class="mi">14</span><span class="p">,</span>\
+    <span class="mi">15</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">12</span><span class="p">,</span><span class="mi">13</span><span class="p">,</span><span class="mi">16</span><span class="p">,</span><span class="mi">12</span><span class="p">,</span><span class="mi">13</span><span class="p">,</span><span class="mi">16</span><span class="p">,</span><span class="mi">12</span><span class="p">,</span><span class="mi">13</span><span class="p">,</span><span class="mi">15</span><span class="p">,</span><span class="mi">16</span><span class="p">,</span><span class="mi">13</span><span class="p">,</span><span class="mi">15</span><span class="p">,</span><span class="mi">16</span><span class="p">,</span><span class="mi">15</span><span class="p">,</span><span class="mi">16</span><span class="p">,</span><span class="mi">15</span><span class="p">,</span><span class="mi">16</span><span class="p">,</span><span class="mi">16</span><span class="p">]</span>
+<span class="n">J</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mi">17</span><span class="p">)</span><span class="o">+</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span>\
+    <span class="mi">8</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">11</span><span class="p">,</span><span class="mi">11</span><span class="p">,</span><span class="mi">11</span><span class="p">,</span><span class="mi">11</span><span class="p">,</span><span class="mi">12</span><span class="p">,</span><span class="mi">12</span><span class="p">,</span><span class="mi">12</span><span class="p">,</span><span class="mi">13</span><span class="p">,</span><span class="mi">13</span><span class="p">,</span><span class="mi">14</span><span class="p">,</span><span class="mi">14</span><span class="p">,</span><span class="mi">15</span><span class="p">]</span>
+<span class="n">A</span> <span class="o">=</span> <span class="n">spmatrix</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span><span class="n">I</span><span class="p">,</span><span class="n">J</span><span class="p">,(</span><span class="mi">17</span><span class="p">,</span><span class="mi">17</span><span class="p">))</span>
+
+<span class="c"># Compute maximum cardinality search</span>
+<span class="n">p</span> <span class="o">=</span> <span class="n">cp</span><span class="o">.</span><span class="n">maxcardsearch</span><span class="p">(</span><span class="n">A</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Is <img class="math" src="_images/math/c5b47cd114d1cd218d587260b667ed59b7ace4a0.png" alt="p" style="vertical-align: -4px"/> a perfect elimination ordering?</p>
+<div class="code python highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">cp</span><span class="o">.</span><span class="n">peo</span><span class="p">(</span><span class="n">A</span><span class="p">,</span><span class="n">p</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span class="bp">True</span>
+</pre></div>
+</div>
+<p>Let&#8217;s verify that no fill is generated by the symbolic factorization:</p>
+<div class="code python highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">symb</span> <span class="o">=</span> <span class="n">cp</span><span class="o">.</span><span class="n">symbolic</span><span class="p">(</span><span class="n">A</span><span class="p">,</span><span class="n">p</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">symb</span><span class="o">.</span><span class="n">fill</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+
+
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2014-2015, Martin S. Andersen and Lieven Vandenberghe.
+    </p>
+  </div>
+
+  <a href="https://github.com/snide/sphinx_rtd_theme">Sphinx theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'2.2.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

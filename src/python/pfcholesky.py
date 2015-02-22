@@ -1,5 +1,4 @@
-from chompack import cholesky
-from chompack.base import trsm, trmm
+import chompack as cp
 from chompack.symbolic import cspmatrix, symbolic
 from cvxopt import matrix, spmatrix, lapack
 
@@ -94,20 +93,20 @@ except:
         return
     
     def pfchol(alpha,V,L,B):
-        dpftrf(V.size[0],V.size[1],alpha,V,L,B)
+        _dpftrf(V.size[0],V.size[1],alpha,V,L,B)
         return
 
     def pftrsm(V,L,B,U,trans='N'):
         for i in range(U.size[1]):
             u = U[:,i]
-            dpfsv(U.size[0],L.size[1],trans,V,L,B,u)
+            _dpfsv(U.size[0],L.size[1],trans,V,L,B,u)
             U[:,i] = u
         return
 
     def pftrmm(V,L,B,U,trans='N'):
         for i in range(U.size[1]):
             u = U[:,i]
-            dpfmv(U.size[0],L.size[1],trans,V,L,B,u)
+            _dpfmv(U.size[0],L.size[1],trans,V,L,B,u)
             U[:,i] = u
         return
     
@@ -137,16 +136,16 @@ class pfcholesky(object):
         
         if isinstance(X, cspmatrix) and X.is_factor is False:
             self._L0 = X.copy()            
-            cholesky(self._L0)
-            trsm(self._L0, self._V)
+            cp.cholesky(self._L0)
+            cp.trsm(self._L0, self._V)
         elif isinstance(X, cspmatrix) and X.is_factor is True:
             self._L0 = X
-            trsm(self._L0, self._V)
+            cp.trsm(self._L0, self._V)
         elif isinstance(X, spmatrix):
             symb = symbolic(X, p = p)
             self._L0 = cspmatrix(symb) + X
-            cholesky(self._L0)
-            trsm(self._L0, self._V)
+            cp.cholesky(self._L0)
+            cp.trsm(self._L0, self._V)
         elif isinstance(X, matrix):
             raise NotImplementedError
         else:
@@ -175,11 +174,11 @@ class pfcholesky(object):
         """
         
         if trans=='N':
-            trsm(self._L0,B)
+            cp.trsm(self._L0,B)
             pftrsm(self._V,self._L,self._B,B,trans='N')
         elif trans=='T':
             pftrsm(self._V,self._L,self._B,B,trans='T')
-            trsm(self._L0,B,trans='T')
+            cp.trsm(self._L0,B,trans='T')
         elif type(trans) is str:
             raise ValueError("trans must be 'N' or 'T'")
         else:
@@ -199,9 +198,9 @@ class pfcholesky(object):
         
         if trans=='N':
             pftrmm(self._V,self._L,self._B,B,trans='N')
-            trmm(self._L0,B)            
+            cp.trmm(self._L0,B)            
         elif trans=='T':
-            trmm(self._L0,B,trans='T')
+            cp.trmm(self._L0,B,trans='T')
             pftrmm(self._V,self._L,self._B,B,trans='T')
         elif type(trans) is str:
             raise ValueError("trans must be 'N' or 'T'")

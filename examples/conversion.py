@@ -1,5 +1,6 @@
 from cvxopt import matrix, spmatrix, sparse, normal, solvers
-import chompack, random
+import chompack as cp
+import random
 
 # generate random sparse matrix
 def sp_rand(m,n,a):
@@ -16,7 +17,7 @@ random.seed(1)
 m, n = 50, 200
 print("Generating random sparse SDP (n=%i, m=%i constraints).."%(n,m))
 A = sp_rand(n,n,0.015) + spmatrix(1.0,range(n),range(n))
-I = chompack.tril(A)[:].I
+I = cp.tril(A)[:].I
 N = len(I)/50 # each data matrix has 1/50 of total nonzeros in pattern
 Ig = []; Jg = []
 for j in range(m):
@@ -34,7 +35,7 @@ sol = solvers.conelp(*prob)
 Z1 = matrix(sol['z'], (n,n))
 
 # convert SDP and solve
-prob2, blocks_to_sparse, symbs = chompack.convert_conelp(*prob)
+prob2, blocks_to_sparse, symbs = cp.convert_conelp(*prob)
 print("Solving converted SDP (no merging)..")
 sol2 = solvers.conelp(*prob2) 
 
@@ -42,9 +43,12 @@ sol2 = solvers.conelp(*prob2)
 blki,I,J,bn = blocks_to_sparse[0]
 Z2 = spmatrix(sol2['z'][blki],I,J)
 
-(sol2['z'])
+# compute completion
+symb = cp.symbolic(Z2, p=cp.maxcardsearch)
+Z2c = cp.psdcompletion(cp.cspmatrix(symb)+Z2, reordered=False)
 
-prob3, blocks_to_sparse, symbs = chompack.convert_conelp(*prob, coupling = 'full', merge_function = chompack.merge_size_fill(5,5))
+
+prob3, blocks_to_sparse, symbs = cp.convert_conelp(*prob, coupling = 'full', merge_function = cp.merge_size_fill(5,5))
 print("Solving converted SDP (with merging)..")
 sol3 = solvers.conelp(*prob3) 
 
@@ -52,3 +56,6 @@ sol3 = solvers.conelp(*prob3)
 blki,I,J,bn = blocks_to_sparse[0]
 Z3 = spmatrix(sol3['z'][blki],I,J)
 
+# compute completion
+symb = cp.symbolic(Z3, p=cp.maxcardsearch)
+Z3c = cp.psdcompletion(cp.cspmatrix(symb)+Z3, reordered=False)

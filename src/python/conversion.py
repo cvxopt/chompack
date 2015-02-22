@@ -42,7 +42,7 @@ def symb_to_block(symb, coupling = 'full'):
                     sparse_to_block[nodes[j]*n + rows[i]] =(offsets[k] + j*wk + i, offsets[k] + i*wk + j)
 
         # add coupling constraints to list of constraints
-        if symb.snpar[k] == -1: continue   # skip if supernode k is a root supernode
+        if symb.snpar[k] == k: continue   # skip if supernode k is a root supernode
         p = symb.snpar[k]
         np = len(symb.snode[symb.snptr[p]:symb.snptr[p+1]])
         wp = symb.sncolptr[p+1] - symb.sncolptr[p]
@@ -182,19 +182,17 @@ def convert_block(G, h, dim, **kwargs):
     Va = spmatrix(1.,Ia,Ja,(dim,dim))
     
     # find permutation, symmetrize, and permute
-    p = amd.order(tril(Va))
-    Va = perm(symmetrize(tril(Va)),p)
-    
-    # inverse permutation
-    ip = matrix(0,(dim,1))
-    ip[p] = matrix(range(dim))
-    
+    Va = symmetrize(tril(Va))
+        
     # if not very sparse, skip decomposition 
     if float(len(Va))/Va.size[0]**2 > tskip:
         return (G, h, None, [dim]), None, None
     
     # compute symbolic factorization 
-    F = symbolic(Va, merge_function = merge_function)
+    F = symbolic(Va, merge_function = merge_function, p = amd.order)
+    p = F.p
+    ip = F.ip
+    Va = F.sparsity_pattern(reordered = True, symmetric = True)
     
     # symbolic conversion
     if coupling == 'sparse': coupling = tril(Va)

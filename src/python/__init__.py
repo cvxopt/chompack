@@ -17,23 +17,25 @@ You should have received a copy of the GNU General Public License
 along with Chompack.  If not, see <http://www.gnu.org/licenses/>.    
 """
 
-__version__ = '2.1.1'
+__version__ = '2.2.0'
 from chompack.symbolic import symbolic, cspmatrix, merge_size_fill, peo
 from cvxopt import spmatrix
 
 try:
-    from chompack.cbase import cholesky,llt,completion,projected_inverse,hessian
+    from chompack.cbase import cholesky,llt,completion,projected_inverse,hessian,trsm
+    from chompack.pybase import trmm, psdcompletion, edmcompletion
     __py_only__ = False
 except:
-    from chompack.pybase import cholesky,llt,completion,projected_inverse,hessian
+    from chompack.pybase import cholesky,llt,completion,projected_inverse,hessian,trsm,trmm,psdcompletion,edmcompletion
     __py_only__ = True
     
 from chompack.pfcholesky import pfcholesky
 from chompack.misc import tril, triu, symmetrize, perm, eye
 from chompack.conversion import convert_block, convert_conelp
-from chompack.base import trsm, trmm, dot, syr2
+from chompack.base import dot, syr2
 from chompack.maxchord import maxchord
 from chompack.mcs import maxcardsearch
 
-__all__ = ["cspmatrix", "spmatrix", "symbolic", "peo", "cholesky", "llt", "completion", "projected_inverse", "hessian",\
-           "trsm", "trmm", "tril", "triu", "version", "convert_block", "convert_conelp","maxcardsearch","maxchord","version","dot"]
+__all__ = ["__version__","cspmatrix","spmatrix","symbolic","peo","maxcardsearch","maxchord",\
+           "cholesky", "llt", "completion", "psdcompletion", "edmcompletion", "projected_inverse", "hessian",\
+           "trsm", "trmm", "tril", "triu", "convert_block", "convert_conelp", "dot", "syr2"]

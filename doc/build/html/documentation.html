@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Documentation &mdash; Chompack 2.1.1 documentation</title>
+  <title>Documentation &mdash; Chompack 2.2.0 documentation</title>
   
 
   
@@ -28,7 +28,8 @@
   
 
   
-    <link rel="top" title="Chompack 2.1.1 documentation" href="index.html"/>
+    <link rel="top" title="Chompack 2.2.0 documentation" href="index.html"/>
+        <link rel="next" title="Examples" href="examples.html"/>
         <link rel="prev" title="Installation" href="install.html"/> 
 
   
@@ -72,6 +73,12 @@
 <li class="toctree-l2"><a class="reference internal" href="#auxiliary-routines">Auxiliary routines</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="examples.html#sdp-conversion">SDP conversion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples.html#euclidean-distance-matrix-completion">Euclidean distance matrix completion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples.html#symbolic-factorization">Symbolic factorization</a></li>
+</ul>
+</li>
 </ul>
 
         
@@ -113,7 +120,7 @@ objects: the <a class="reference internal" href="#chompack.symbolic" title="chom
 (chordal sparse matrix) object. A <a class="reference internal" href="#chompack.symbolic" title="chompack.symbolic"><tt class="xref py py-class docutils literal"><span class="pre">symbolic</span></tt></a> object
 represents a symbolic factorization of a sparse symmetric matrix
 <img class="math" src="_images/math/937abf0036e3f773123ec44111199b356cf0ab10.png" alt="A" style="vertical-align: 0px"/>, and it can be created as follows:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">cvxopt</span> <span class="kn">import</span> <span class="n">spmatrix</span><span class="p">,</span> <span class="n">amd</span>
+<div class="code python highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">cvxopt</span> <span class="kn">import</span> <span class="n">spmatrix</span><span class="p">,</span> <span class="n">amd</span>
 <span class="kn">import</span> <span class="nn">chompack</span> <span class="kn">as</span> <span class="nn">cp</span>
 
 <span class="c"># generate sparse matrix</span>
@@ -133,49 +140,67 @@ symmetric matrix; upper-triangular entries in <img class="math" src="_images/mat
 symbolic factorization.</p>
 <p>Now let&#8217;s inspect the sparsity pattern of <cite>A</cite> and its chordal
 embedding (i.e., the filled pattern):</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">A</span><span class="p">)</span>
-<span class="go">[ 1.00e+00     0         0         0         0         0         0    ]</span>
-<span class="go">[ 1.00e+00  1.00e+00     0         0         0         0         0    ]</span>
-<span class="go">[    0         0      1.00e+00     0         0         0         0    ]</span>
-<span class="go">[ 1.00e+00     0         0      1.00e+00     0         0         0    ]</span>
-<span class="go">[    0         0         0      1.00e+00  1.00e+00     0         0    ]</span>
-<span class="go">[    0      1.00e+00     0      1.00e+00  1.00e+00  1.00e+00     0    ]</span>
-<span class="go">[    0         0      1.00e+00     0      1.00e+00     0      1.00e+00]</span>
-
-<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">symb</span><span class="o">.</span><span class="n">sparsity_pattern</span><span class="p">(</span><span class="n">reordered</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">symmetric</span><span class="o">=</span><span class="bp">False</span><span class="p">))</span>
-<span class="go">[ 1.00e+00     0         0         0         0         0         0    ]</span>
-<span class="go">[ 1.00e+00  1.00e+00     0         0         0         0         0    ]</span>
-<span class="go">[    0         0      1.00e+00     0         0         0         0    ]</span>
-<span class="go">[ 1.00e+00     0         0      1.00e+00     0         0         0    ]</span>
-<span class="go">[    0         0         0      1.00e+00  1.00e+00     0         0    ]</span>
-<span class="go">[ 1.00e+00  1.00e+00     0      1.00e+00  1.00e+00  1.00e+00     0    ]</span>
-<span class="go">[    0         0      1.00e+00     0      1.00e+00     0      1.00e+00]</span>
+<div class="code python highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">A</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre>[ 1.00e+00     0         0         0         0         0         0    ]
+[ 1.00e+00  1.00e+00     0         0         0         0         0    ]
+[    0         0      1.00e+00     0         0         0         0    ]
+[ 1.00e+00     0         0      1.00e+00     0         0         0    ]
+[    0         0         0      1.00e+00  1.00e+00     0         0    ]
+[    0      1.00e+00     0      1.00e+00  1.00e+00  1.00e+00     0    ]
+[    0         0      1.00e+00     0      1.00e+00     0      1.00e+00]
+</pre></div>
+</div>
+<div class="code python highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">symb</span><span class="o">.</span><span class="n">sparsity_pattern</span><span class="p">(</span><span class="n">reordered</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">symmetric</span><span class="o">=</span><span class="bp">False</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre>[ 1.00e+00     0         0         0         0         0         0    ]
+[ 1.00e+00  1.00e+00     0         0         0         0         0    ]
+[    0         0      1.00e+00     0         0         0         0    ]
+[ 1.00e+00     0         0      1.00e+00     0         0         0    ]
+[    0         0         0      1.00e+00  1.00e+00     0         0    ]
+[ 1.00e+00  1.00e+00     0      1.00e+00  1.00e+00  1.00e+00     0    ]
+[    0         0      1.00e+00     0      1.00e+00     0      1.00e+00]
 </pre></div>
 </div>
 <p>The reordered pattern and its cliques can be inspected using the
 following commands:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">symb</span><span class="p">)</span>
-<span class="go">[X X          ]</span>
-<span class="go">[X X X        ]</span>
-<span class="go">[  X X X   X  ]</span>
-<span class="go">[    X X   X X]</span>
-<span class="go">[        X X X]</span>
-<span class="go">[    X X X X X]</span>
-<span class="go">[      X X X X]</span>
-
-<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">symb</span><span class="o">.</span><span class="n">cliques</span><span class="p">())</span>
-<span class="go">[[0, 1], [1, 2], [2, 3, 5], [3, 5, 6], [4, 5, 6]]</span>
+<div class="code python highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">symb</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre>[X X          ]
+[X X X        ]
+[  X X   X X  ]
+[      X   X X]
+[    X   X X X]
+[    X X X X X]
+[      X X X X]
+</pre></div>
+</div>
+<div class="code python highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">symb</span><span class="o">.</span><span class="n">cliques</span><span class="p">())</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">],</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">],</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">]]</span>
 </pre></div>
 </div>
 <p>Similarly, the clique tree, the supernodes, and the separator sets are:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">symb</span><span class="o">.</span><span class="n">parent</span><span class="p">())</span>
-<span class="go">[1, 2, 3, -1, 3]</span>
-
-<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">symb</span><span class="o">.</span><span class="n">supernodes</span><span class="p">())</span>
-<span class="go">[[0], [1], [2], [3, 5, 6], [4]]</span>
-
-<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">symb</span><span class="o">.</span><span class="n">separators</span><span class="p">())</span>
-<span class="go">[[1], [2], [3, 5], [], [5, 6]]</span>
+<div class="code python highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">symb</span><span class="o">.</span><span class="n">parent</span><span class="p">())</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">]</span>
+</pre></div>
+</div>
+<div class="code python highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">symb</span><span class="o">.</span><span class="n">supernodes</span><span class="p">())</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">[[</span><span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">]]</span>
+</pre></div>
+</div>
+<div class="code python highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">symb</span><span class="o">.</span><span class="n">separators</span><span class="p">())</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">[[</span><span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">],</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">],</span> <span class="p">[]]</span>
 </pre></div>
 </div>
 <p>The <a class="reference internal" href="#chompack.cspmatrix" title="chompack.cspmatrix"><tt class="xref py py-class docutils literal"><span class="pre">cspmatrix</span></tt></a> object represents a chordal sparse matrix,
@@ -183,14 +208,14 @@ and it contains lower-triangular numerical values as well as a
 reference to a symbolic factorization that defines the sparsity
 pattern. Given a <a class="reference internal" href="#chompack.symbolic" title="chompack.symbolic"><tt class="xref py py-class docutils literal"><span class="pre">symbolic</span></tt></a> object <cite>symb</cite> and a sparse
 matrix <img class="math" src="_images/math/937abf0036e3f773123ec44111199b356cf0ab10.png" alt="A" style="vertical-align: 0px"/>, we can create a <a class="reference internal" href="#chompack.cspmatrix" title="chompack.cspmatrix"><tt class="xref py py-class docutils literal"><span class="pre">cspmatrix</span></tt></a> as follows:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">cvxopt</span> <span class="kn">import</span> <span class="n">spmatrix</span><span class="p">,</span> <span class="n">amd</span><span class="p">,</span> <span class="n">printing</span>
+<div class="code python highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">cvxopt</span> <span class="kn">import</span> <span class="n">spmatrix</span><span class="p">,</span> <span class="n">amd</span><span class="p">,</span> <span class="n">printing</span>
 <span class="kn">import</span> <span class="nn">chompack</span> <span class="kn">as</span> <span class="nn">cp</span>
 <span class="n">printing</span><span class="o">.</span><span class="n">options</span><span class="p">[</span><span class="s">&#39;dformat&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;</span><span class="si">%3.1f</span><span class="s">&#39;</span>
 
 <span class="c"># generate sparse matrix and compute symbolic factorization</span>
 <span class="n">I</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">]</span>
 <span class="n">J</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">]</span>
-<span class="n">A</span> <span class="o">=</span> <span class="n">spmatrix</span><span class="p">([</span><span class="mf">1.0</span><span class="o">*</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">15</span><span class="p">)],</span> <span class="n">I</span><span class="p">,</span> <span class="n">J</span><span class="p">,</span> <span class="p">(</span><span class="mi">7</span><span class="p">,</span><span class="mi">7</span><span class="p">))</span>
+<span class="n">A</span> <span class="o">=</span> <span class="n">spmatrix</span><span class="p">([</span><span class="mf">1.0</span><span class="o">*</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">15</span><span class="o">+</span><span class="mi">1</span><span class="p">)],</span> <span class="n">I</span><span class="p">,</span> <span class="n">J</span><span class="p">,</span> <span class="p">(</span><span class="mi">7</span><span class="p">,</span><span class="mi">7</span><span class="p">))</span>
 <span class="n">symb</span> <span class="o">=</span> <span class="n">cp</span><span class="o">.</span><span class="n">symbolic</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="n">amd</span><span class="o">.</span><span class="n">order</span><span class="p">)</span>
 
 <span class="n">L</span> <span class="o">=</span> <span class="n">cp</span><span class="o">.</span><span class="n">cspmatrix</span><span class="p">(</span><span class="n">symb</span><span class="p">)</span>
@@ -198,42 +223,49 @@ matrix <img class="math" src="_images/math/937abf0036e3f773123ec44111199b356cf0a
 </pre></div>
 </div>
 <p>Now let us take a look at  <img class="math" src="_images/math/937abf0036e3f773123ec44111199b356cf0ab10.png" alt="A" style="vertical-align: 0px"/> and <img class="math" src="_images/math/53a7d99088c1cbd146ec8640b7c6360998cfa86f.png" alt="L" style="vertical-align: 0px"/>:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">A</span><span class="p">)</span>
-<span class="go">[ 0.0  0    0    0    0    0    0  ]</span>
-<span class="go">[ 1.0  3.0  0    0    0    0    0  ]</span>
-<span class="go">[ 0    0    5.0  0    0    0    0  ]</span>
-<span class="go">[ 2.0  0    0    7.0  0    0    0  ]</span>
-<span class="go">[ 0    0    0    8.0 10.0  0    0  ]</span>
-<span class="go">[ 0    4.0  0    9.0 11.0 13.0  0  ]</span>
-<span class="go">[ 0    0    6.0  0   12.0  0   14.0]</span>
-
-<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">L</span><span class="p">)</span>
-<span class="go">[ 5.0  0    0    0    0    0    0  ]</span>
-<span class="go">[ 6.0 14.0  0    0    0    0    0  ]</span>
-<span class="go">[ 0   12.0 10.0  0    0    0    0  ]</span>
-<span class="go">[ 0    0    8.0  7.0  0    0    0  ]</span>
-<span class="go">[ 0    0    0    0    3.0  0    0  ]</span>
-<span class="go">[ 0    0   11.0  9.0  4.0 13.0  0  ]</span>
-<span class="go">[ 0    0    0    2.0  1.0  0.0  0.0]</span>
+<div class="code python highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">A</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre>[ 1.0  0    0    0    0    0    0  ]
+[ 2.0  4.0  0    0    0    0    0  ]
+[ 0    0    6.0  0    0    0    0  ]
+[ 3.0  0    0    8.0  0    0    0  ]
+[ 0    0    0    9.0 11.0  0    0  ]
+[ 0    5.0  0   10.0 12.0 14.0  0  ]
+[ 0    0    7.0  0   13.0  0   15.0]
+</pre></div>
+</div>
+<div class="code python highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">L</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre>[ 6.0  0    0    0    0    0    0  ]
+[ 7.0 15.0  0    0    0    0    0  ]
+[ 0   13.0 11.0  0    0    0    0  ]
+[ 0    0    0    4.0  0    0    0  ]
+[ 0    0    9.0  0    8.0  0    0  ]
+[ 0    0   12.0  5.0 10.0 14.0  0  ]
+[ 0    0    0    2.0  3.0  0.0  1.0]
 </pre></div>
 </div>
 <p>Notice that <img class="math" src="_images/math/53a7d99088c1cbd146ec8640b7c6360998cfa86f.png" alt="L" style="vertical-align: 0px"/> is a reordered lower-triangular representation
 of <img class="math" src="_images/math/937abf0036e3f773123ec44111199b356cf0ab10.png" alt="A" style="vertical-align: 0px"/>. We can convert <img class="math" src="_images/math/53a7d99088c1cbd146ec8640b7c6360998cfa86f.png" alt="L" style="vertical-align: 0px"/> to an <tt class="xref py py-class docutils literal"><span class="pre">spmatrix</span></tt> using
 the <cite>spmatrix()</cite> method:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">L</span><span class="o">.</span><span class="n">spmatrix</span><span class="p">(</span><span class="n">reordered</span> <span class="o">=</span> <span class="bp">False</span><span class="p">))</span>
-<span class="go">[ 0.0  0    0    0    0    0    0  ]</span>
-<span class="go">[ 1.0  3.0  0    0    0    0    0  ]</span>
-<span class="go">[ 0    0    5.0  0    0    0    0  ]</span>
-<span class="go">[ 2.0  0    0    7.0  0    0    0  ]</span>
-<span class="go">[ 0    0    0    8.0 10.0  0    0  ]</span>
-<span class="go">[ 0.0  4.0  0    9.0 11.0 13.0  0  ]</span>
-<span class="go">[ 0    0    6.0  0   12.0  0   14.0]</span>
+<div class="code python highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">L</span><span class="o">.</span><span class="n">spmatrix</span><span class="p">(</span><span class="n">reordered</span> <span class="o">=</span> <span class="bp">False</span><span class="p">))</span>
 </pre></div>
 </div>
-<p>Notice that this returns an <tt class="xref py py-class docutils literal"><span class="pre">spmatrix</span></tt> with the same ordering
+<div class="highlight-python"><div class="highlight"><pre>[ 1.0  0    0    0    0    0    0  ]
+[ 2.0  4.0  0    0    0    0    0  ]
+[ 0    0    6.0  0    0    0    0  ]
+[ 3.0  0    0    8.0  0    0    0  ]
+[ 0    0    0    9.0 11.0  0    0  ]
+[ 0.0  5.0  0   10.0 12.0 14.0  0  ]
+[ 0    0    7.0  0   13.0  0   15.0]
+</pre></div>
+</div>
+<p>This returns an <tt class="xref py py-class docutils literal"><span class="pre">spmatrix</span></tt> with the same ordering
 as <img class="math" src="_images/math/937abf0036e3f773123ec44111199b356cf0ab10.png" alt="A" style="vertical-align: 0px"/>, i.e., the inverse permutation is applied to <img class="math" src="_images/math/53a7d99088c1cbd146ec8640b7c6360998cfa86f.png" alt="L" style="vertical-align: 0px"/>.</p>
 <p>The following example illustrates how to use the Cholesky routine:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">cvxopt</span> <span class="kn">import</span> <span class="n">spmatrix</span><span class="p">,</span> <span class="n">amd</span><span class="p">,</span> <span class="n">normal</span>
+<div class="code python highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">cvxopt</span> <span class="kn">import</span> <span class="n">spmatrix</span><span class="p">,</span> <span class="n">amd</span><span class="p">,</span> <span class="n">normal</span>
 <span class="kn">from</span> <span class="nn">chompack</span> <span class="kn">import</span> <span class="n">symbolic</span><span class="p">,</span> <span class="n">cspmatrix</span><span class="p">,</span> <span class="n">cholesky</span>
 
 <span class="c"># generate sparse matrix and compute symbolic factorization</span>
@@ -250,56 +282,49 @@ as <img class="math" src="_images/math/937abf0036e3f773123ec44111199b356cf0ab10.
 <span class="n">cholesky</span><span class="p">(</span><span class="n">L</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">L</span><span class="p">)</span>
-<span class="go">[ 3.26e+00     0         0         0         0         0         0    ]</span>
-<span class="go">[ 2.15e-01  3.38e+00     0         0         0         0         0    ]</span>
-<span class="go">[    0      3.84e-01  3.31e+00     0         0         0         0    ]</span>
-<span class="go">[    0         0      2.72e-01  3.28e+00     0         0         0    ]</span>
-<span class="go">[    0         0         0         0      3.22e+00     0         0    ]</span>
-<span class="go">[    0         0      3.63e-01  2.75e-01  1.55e-01  3.34e+00     0    ]</span>
-<span class="go">[    0         0         0      9.16e-02  6.20e-02 -1.04e-02  3.18e+00]</span>
+<div class="code python highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">L</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">cvxopt</span> <span class="kn">import</span> <span class="n">spmatrix</span><span class="p">,</span> <span class="n">printing</span>
+<div class="highlight-python"><div class="highlight"><pre>[ 3.3  0    0    0    0    0    0  ]
+[ 0.2  3.4  0    0    0    0    0  ]
+[ 0    0.4  3.3  0    0    0    0  ]
+[ 0    0    0    3.2  0    0    0  ]
+[ 0    0    0.3  0    3.3  0    0  ]
+[ 0    0    0.4  0.2  0.3  3.3  0  ]
+[ 0    0    0    0.1  0.1 -0.0  3.2]
+</pre></div>
+</div>
+<p>Given a sparse matrix <img class="math" src="_images/math/937abf0036e3f773123ec44111199b356cf0ab10.png" alt="A" style="vertical-align: 0px"/>, we can check if it is chordal by
+checking whether the permutation <img class="math" src="_images/math/c5b47cd114d1cd218d587260b667ed59b7ace4a0.png" alt="p" style="vertical-align: -4px"/> returned by maximum cardinality
+search is a perfect elimination ordering:</p>
+<div class="code python highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">cvxopt</span> <span class="kn">import</span> <span class="n">spmatrix</span><span class="p">,</span> <span class="n">printing</span>
 <span class="n">printing</span><span class="o">.</span><span class="n">options</span><span class="p">[</span><span class="s">&#39;width&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
 <span class="kn">import</span> <span class="nn">chompack</span> <span class="kn">as</span> <span class="nn">cp</span>
 
 <span class="c"># Define chordal sparse matrix</span>
 <span class="n">I</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mi">17</span><span class="p">)</span><span class="o">+</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">14</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">14</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">14</span><span class="p">,</span><span class="mi">15</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">15</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">14</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">14</span><span class="p">,</span><span class="mi">14</span><span class="p">,</span>\
-             <span class="mi">15</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">12</span><span class="p">,</span><span class="mi">13</span><span class="p">,</span><span class="mi">16</span><span class="p">,</span><span class="mi">12</span><span class="p">,</span><span class="mi">13</span><span class="p">,</span><span class="mi">16</span><span class="p">,</span><span class="mi">12</span><span class="p">,</span><span class="mi">13</span><span class="p">,</span><span class="mi">15</span><span class="p">,</span><span class="mi">16</span><span class="p">,</span><span class="mi">13</span><span class="p">,</span><span class="mi">15</span><span class="p">,</span><span class="mi">16</span><span class="p">,</span><span class="mi">15</span><span class="p">,</span><span class="mi">16</span><span class="p">,</span><span class="mi">15</span><span class="p">,</span><span class="mi">16</span><span class="p">,</span><span class="mi">16</span><span class="p">]</span>
+    <span class="mi">15</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">12</span><span class="p">,</span><span class="mi">13</span><span class="p">,</span><span class="mi">16</span><span class="p">,</span><span class="mi">12</span><span class="p">,</span><span class="mi">13</span><span class="p">,</span><span class="mi">16</span><span class="p">,</span><span class="mi">12</span><span class="p">,</span><span class="mi">13</span><span class="p">,</span><span class="mi">15</span><span class="p">,</span><span class="mi">16</span><span class="p">,</span><span class="mi">13</span><span class="p">,</span><span class="mi">15</span><span class="p">,</span><span class="mi">16</span><span class="p">,</span><span class="mi">15</span><span class="p">,</span><span class="mi">16</span><span class="p">,</span><span class="mi">15</span><span class="p">,</span><span class="mi">16</span><span class="p">,</span><span class="mi">16</span><span class="p">]</span>
 <span class="n">J</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mi">17</span><span class="p">)</span><span class="o">+</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span>\
-             <span class="mi">8</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">11</span><span class="p">,</span><span class="mi">11</span><span class="p">,</span><span class="mi">11</span><span class="p">,</span><span class="mi">11</span><span class="p">,</span><span class="mi">12</span><span class="p">,</span><span class="mi">12</span><span class="p">,</span><span class="mi">12</span><span class="p">,</span><span class="mi">13</span><span class="p">,</span><span class="mi">13</span><span class="p">,</span><span class="mi">14</span><span class="p">,</span><span class="mi">14</span><span class="p">,</span><span class="mi">15</span><span class="p">]</span>
+    <span class="mi">8</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">11</span><span class="p">,</span><span class="mi">11</span><span class="p">,</span><span class="mi">11</span><span class="p">,</span><span class="mi">11</span><span class="p">,</span><span class="mi">12</span><span class="p">,</span><span class="mi">12</span><span class="p">,</span><span class="mi">12</span><span class="p">,</span><span class="mi">13</span><span class="p">,</span><span class="mi">13</span><span class="p">,</span><span class="mi">14</span><span class="p">,</span><span class="mi">14</span><span class="p">,</span><span class="mi">15</span><span class="p">]</span>
 <span class="n">A</span> <span class="o">=</span> <span class="n">spmatrix</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span><span class="n">I</span><span class="p">,</span><span class="n">J</span><span class="p">,(</span><span class="mi">17</span><span class="p">,</span><span class="mi">17</span><span class="p">))</span>
 
 <span class="c"># Compute maximum cardinality search</span>
 <span class="n">p</span> <span class="o">=</span> <span class="n">cp</span><span class="o">.</span><span class="n">maxcardsearch</span><span class="p">(</span><span class="n">A</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">cp</span><span class="o">.</span><span class="n">peo</span><span class="p">(</span><span class="n">A</span><span class="p">,</span><span class="n">p</span><span class="p">)</span>
-<span class="go">True</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">p</span><span class="p">))</span>
-<span class="go">[0, 9, 10, 11, 12, 13, 5, 6, 7, 1, 2, 3, 4, 8, 14, 15, 16]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">symb</span> <span class="o">=</span> <span class="n">cp</span><span class="o">.</span><span class="n">symbolic</span><span class="p">(</span><span class="n">A</span><span class="p">,</span><span class="n">p</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">symb</span><span class="p">)</span>
-<span class="go">[X                   X            ]</span>
-<span class="go">[  X X   X X                     X]</span>
-<span class="go">[  X X   X X                     X]</span>
-<span class="go">[      X X X                   X X]</span>
-<span class="go">[  X X X X X                   X X]</span>
-<span class="go">[  X X X X X                   X X]</span>
-<span class="go">[            X             X   X  ]</span>
-<span class="go">[              X X         X X    ]</span>
-<span class="go">[              X X         X X    ]</span>
-<span class="go">[                  X X X          ]</span>
-<span class="go">[X                 X X X X   X    ]</span>
-<span class="go">[                  X X X X   X    ]</span>
-<span class="go">[                    X X X X X X  ]</span>
-<span class="go">[            X X X       X X X X  ]</span>
-<span class="go">[              X X   X X X X X X X]</span>
-<span class="go">[      X X X X           X X X X X]</span>
-<span class="go">[  X X X X X                 X X X]</span>
+<p>Is <img class="math" src="_images/math/c5b47cd114d1cd218d587260b667ed59b7ace4a0.png" alt="p" style="vertical-align: -4px"/> a perfect elimination ordering?</p>
+<div class="code python highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">cp</span><span class="o">.</span><span class="n">peo</span><span class="p">(</span><span class="n">A</span><span class="p">,</span><span class="n">p</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span class="bp">True</span>
+</pre></div>
+</div>
+<p>Let&#8217;s verify that no fill is generated by the symbolic factorization:</p>
+<div class="code python highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">symb</span> <span class="o">=</span> <span class="n">cp</span><span class="o">.</span><span class="n">symbolic</span><span class="p">(</span><span class="n">A</span><span class="p">,</span><span class="n">p</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">symb</span><span class="o">.</span><span class="n">fill</span><span class="p">)</span>
-<span class="go">(0, 0)</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -307,7 +332,7 @@ as <img class="math" src="_images/math/937abf0036e3f773123ec44111199b356cf0ab10.
 <h2>Symbolic factorization<a class="headerlink" href="#symbolic-factorization" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="chompack.symbolic">
-<em class="property">class </em><tt class="descclassname">chompack.</tt><tt class="descname">symbolic</tt><big>(</big><em>A</em>, <em>p=None</em>, <em>merge_function=None</em><big>)</big><a class="headerlink" href="#chompack.symbolic" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">chompack.</tt><tt class="descname">symbolic</tt><big>(</big><em>A</em>, <em>p=None</em>, <em>merge_function=None</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#chompack.symbolic" title="Permalink to this definition">¶</a></dt>
 <dd><p>Symbolic factorization object.</p>
 <p>Computes symbolic factorization of a square sparse matrix
 <img class="math" src="_images/math/937abf0036e3f773123ec44111199b356cf0ab10.png" alt="A" style="vertical-align: 0px"/> and creates a symbolic factorization object.</p>
@@ -382,8 +407,8 @@ of supernode k.</p>
 
 <dl class="method">
 <dt id="chompack.symbolic.cliques">
-<tt class="descname">cliques</tt><big>(</big><big>)</big><a class="headerlink" href="#chompack.symbolic.cliques" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns a list of cliques (reordered pattern)</p>
+<tt class="descname">cliques</tt><big>(</big><em>reordered=True</em><big>)</big><a class="headerlink" href="#chompack.symbolic.cliques" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of cliques</p>
 </dd></dl>
 
 <dl class="attribute">
@@ -447,8 +472,8 @@ array <cite>relptr</cite>.</p>
 
 <dl class="method">
 <dt id="chompack.symbolic.separators">
-<tt class="descname">separators</tt><big>(</big><big>)</big><a class="headerlink" href="#chompack.symbolic.separators" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns a list of separator sets (reordered pattern)</p>
+<tt class="descname">separators</tt><big>(</big><em>reordered=True</em><big>)</big><a class="headerlink" href="#chompack.symbolic.separators" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of separator sets</p>
 </dd></dl>
 
 <dl class="attribute">
@@ -469,7 +494,7 @@ pointer array</p>
 <dt id="chompack.symbolic.snpar">
 <tt class="descname">snpar</tt><a class="headerlink" href="#chompack.symbolic.snpar" title="Permalink to this definition">¶</a></dt>
 <dd><p>Supernode parent array: supernode <img class="math" src="_images/math/c8ff6dc362a9a07153582909d5a26898fae59569.png" alt="k" style="vertical-align: 0px"/> is a root of the
-supernodal elimination tree if <cite>snpar[k]</cite> is equal to -1, and
+supernodal elimination tree if <cite>snpar[k]</cite> is equal to k, and
 otherwise <cite>snpar[k]</cite> is the index of the parent of supernode
 <img class="math" src="_images/math/c8ff6dc362a9a07153582909d5a26898fae59569.png" alt="k" style="vertical-align: 0px"/> in the supernodal elimination tree</p>
 </dd></dl>
@@ -521,8 +546,8 @@ permutation is applied if <cite>reordered</cite> is <cite>False</cite>.</p>
 
 <dl class="method">
 <dt id="chompack.symbolic.supernodes">
-<tt class="descname">supernodes</tt><big>(</big><big>)</big><a class="headerlink" href="#chompack.symbolic.supernodes" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns a list of supernode sets (reordered pattern)</p>
+<tt class="descname">supernodes</tt><big>(</big><em>reordered=True</em><big>)</big><a class="headerlink" href="#chompack.symbolic.supernodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of supernode sets</p>
 </dd></dl>
 
 </dd></dl>
@@ -688,6 +713,50 @@ factorizations.</p>
 </dd></dl>
 
 <dl class="function">
+<dt id="chompack.psdcompletion">
+<tt class="descclassname">chompack.</tt><tt class="descname">psdcompletion</tt><big>(</big><em>A</em>, <em>reordered=True</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#chompack.psdcompletion" title="Permalink to this definition">¶</a></dt>
+<dd><p>Maximum determinant positive semidefinite matrix completion. The
+routine takes a cspmatrix <img class="math" src="_images/math/937abf0036e3f773123ec44111199b356cf0ab10.png" alt="A" style="vertical-align: 0px"/> and returns the maximum determinant
+positive semidefinite matrix completion <img class="math" src="_images/math/0ba6ae58a72b4954369f8aa53eeeece57df6da5a.png" alt="X" style="vertical-align: 0px"/> as a dense matrix, i.e.,</p>
+<div class="math">
+<p><img src="_images/math/457b7f4bffe35dd458654a71b4cbb40c8f470fe0.png" alt="P( X ) = A"/></p>
+</div><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>A</strong> &#8211; <a class="reference internal" href="#chompack.cspmatrix" title="chompack.cspmatrix"><tt class="xref py py-class docutils literal"><span class="pre">cspmatrix</span></tt></a></li>
+<li><strong>reordered</strong> &#8211; boolean</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="chompack.edmcompletion">
+<tt class="descclassname">chompack.</tt><tt class="descname">edmcompletion</tt><big>(</big><em>A</em>, <em>reordered=True</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#chompack.edmcompletion" title="Permalink to this definition">¶</a></dt>
+<dd><p>Euclidean distance matrix completion. The routine takes an EDM-completable
+cspmatrix <img class="math" src="_images/math/937abf0036e3f773123ec44111199b356cf0ab10.png" alt="A" style="vertical-align: 0px"/> and returns a dense EDM <img class="math" src="_images/math/0ba6ae58a72b4954369f8aa53eeeece57df6da5a.png" alt="X" style="vertical-align: 0px"/>
+that satisfies</p>
+<div class="math">
+<p><img src="_images/math/457b7f4bffe35dd458654a71b4cbb40c8f470fe0.png" alt="P( X ) = A"/></p>
+</div><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>A</strong> &#8211; <a class="reference internal" href="#chompack.cspmatrix" title="chompack.cspmatrix"><tt class="xref py py-class docutils literal"><span class="pre">cspmatrix</span></tt></a></li>
+<li><strong>reordered</strong> &#8211; boolean</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
 <dt id="chompack.hessian">
 <tt class="descclassname">chompack.</tt><tt class="descname">hessian</tt><big>(</big><em>L</em>, <em>Y</em>, <em>U</em>, <em>adj=False</em>, <em>inv=False</em>, <em>factored_updates=False</em><big>)</big><a class="headerlink" href="#chompack.hessian" title="Permalink to this definition">¶</a></dt>
 <dd><p>Supernodal multifrontal Hessian mapping.</p>
@@ -799,7 +868,7 @@ B &amp;:= \alpha L^T B  \text{ if trans is 'T'}"/></p>
 <dl class="function">
 <dt id="chompack.trsm">
 <tt class="descclassname">chompack.</tt><tt class="descname">trsm</tt><big>(</big><em>L</em>, <em>B</em>, <em>alpha=1.0</em>, <em>trans='N'</em>, <em>nrhs=None</em>, <em>offsetB=0</em>, <em>ldB=None</em><big>)</big><a class="headerlink" href="#chompack.trsm" title="Permalink to this definition">¶</a></dt>
-<dd><p>Solves a triangular system of equations with multiple righthand
+<dd><p>Solves a triangular system of equations with multiple right-hand
 sides. Computes</p>
 <div class="math">
 <p><img src="_images/math/09c0c906334006235a77350555e66cf9716ad747.png" alt="B &amp;:= \alpha L^{-1} B  \text{ if trans is 'N'}
@@ -1152,6 +1221,27 @@ in the lower triangular part of the sparsity pattern.</p>
 lower triangular entries of <img class="math" src="_images/math/937abf0036e3f773123ec44111199b356cf0ab10.png" alt="A" style="vertical-align: 0px"/> are accessed.</p>
 </dd></dl>
 
+<dl class="function">
+<dt id="chompack.pybase.plot.spy">
+<tt class="descclassname">chompack.pybase.plot.</tt><tt class="descname">spy</tt><big>(</big><em>symb</em>, <em>reordered=True</em>, <em>symmetric=True</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#chompack.pybase.plot.spy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Draw sparsity pattern.</p>
+<p>Requires: Matplotlib, Scipy, and Numpy</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="chompack.pybase.plot.sparsity_graph">
+<tt class="descclassname">chompack.pybase.plot.</tt><tt class="descname">sparsity_graph</tt><big>(</big><em>symb</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#chompack.pybase.plot.sparsity_graph" title="Permalink to this definition">¶</a></dt>
+<dd><p>Draw sparsity graph.</p>
+<p>Requires: NetworkX and Graphviz</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="chompack.pybase.plot.etree_graph">
+<tt class="descclassname">chompack.pybase.plot.</tt><tt class="descname">etree_graph</tt><big>(</big><em>symb</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#chompack.pybase.plot.etree_graph" title="Permalink to this definition">¶</a></dt>
+<dd><p>Draw supernodal elimination tree.</p>
+<p>Requires: NetworkX and Graphviz</p>
+</dd></dl>
+
 </div>
 </div>
 
@@ -1160,6 +1250,8 @@ lower triangular entries of <img class="math" src="_images/math/937abf0036e3f773
           <footer>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="examples.html" class="btn btn-neutral float-right" title="Examples">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="install.html" class="btn btn-neutral" title="Installation"><span class="fa fa-arrow-circle-left"></span> Previous</a>
@@ -1171,7 +1263,7 @@ lower triangular entries of <img class="math" src="_images/math/937abf0036e3f773
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2014, Martin S. Andersen and Lieven Vandenberghe.
+        &copy; Copyright 2014-2015, Martin S. Andersen and Lieven Vandenberghe.
     </p>
   </div>
 
@@ -1191,7 +1283,7 @@ lower triangular entries of <img class="math" src="_images/math/937abf0036e3f773
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'2.1.1',
+            VERSION:'2.2.0',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
