@@ -45,6 +45,7 @@
 #define PYSTRING_COMPARE(a,b) strcmp(PyString_AsString(a), b)
 #endif
 
+extern double ddot_(int *n, double *dx, int *incx, double *dy, int *incy);
 extern void dscal_(int *n, double *alpha, double *x, int *incx);
 extern void dlacpy_(char *uplo, int *m, int *n, double *A, int *lda, double *B, int *ldb);
 extern void dpotrf_(char *uplo, int *n, double *A, int *lda, int *info);
@@ -204,5 +205,29 @@ void ddrmv(const int *n, const char *trans, double * restrict v, double * restri
 int dpftrf(const int *n, const int *k, double * restrict a, double * restrict V, const int *ldv, double * restrict L, const int *ldl, double * restrict B, const int *ldb);
 void dpfsv(const int *n, const int *k, const char *trans, double * restrict V, const int *ldv, double * restrict L, const int *ldl, double * restrict B, const int *ldb, double * restrict x);
 void dpfmv(const int *n, const int *k, const char *trans, double * restrict V, const int *ldv, double * restrict L, const int *ldl, double * restrict B, const int *ldb, double * restrict x);
+
+double dot(int_t *Nsn, int_t *snptr, int_t *sncolptr, int_t *blkptr, double * restrict blkval_x, double * restrict blkval_y);
+
+void trsm(const char trans, 
+	  int nrhs,
+	  const double alpha,
+	  const int_t n,         // order of matrix
+	  const int_t nsn,       // number of supernodes/cliques
+	  const int_t *snpost,   // post-ordering of supernodes
+	  const int_t *snptr,    // supernode pointer
+	  const int_t *snode,    // supernode array
+	  const int_t *relptr,
+	  const int_t *relidx,
+	  const int_t *chptr,
+	  const int_t *chidx,
+	  const int_t *blkptr,
+	  const int_t *p,
+	  double * restrict blkval,
+	  double * restrict a,
+	  int * lda,
+	  double * restrict fws,  // frontal matrix workspace : must be >= clique number * nrhs
+	  double * restrict upd,  // update matrix workspace  
+	  int_t * restrict upd_size
+	  );
 
 #endif

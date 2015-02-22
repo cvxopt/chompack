@@ -2,7 +2,7 @@ from cvxopt import matrix, spmatrix, normal, blas, printing
 from chompack.misc import tril, perm, symmetrize
 from chompack.misc import lmerge
 from types import BuiltinFunctionType, FunctionType
-
+            
 def __tdfs(j, k, head, next, post, stack):
     """
     Depth-first search and postorder of a tree rooted at node j.
@@ -36,12 +36,12 @@ def post_order(parent):
     stack = matrix(0,(n,1))
 
     for j in range(n-1,-1,-1):
-        if (parent[j] == -1): continue
+        if (parent[j] == j): continue
         next[j] = head[parent[j]]
         head[parent[j]] = j
 
     for j in range(n):
-        if (not parent[j] == -1): continue
+        if (parent[j] <> j): continue
         k = __tdfs(j, k, head, next, p, stack)
 
     return p
@@ -59,7 +59,7 @@ def etree(A):
     w = matrix(0,(n,1))
 
     for k in range(n):
-        parent[k] = -1
+        parent[k] = k
         w[k] = -1
         for p in range(cp[k],cp[k+1]):
             i = ri[p]
@@ -116,7 +116,7 @@ def counts(A, parent, post):
     cp,ri,_ = A.CCS
     for k in range(n):
         j = post[k]
-        if parent[j] != -1:
+        if parent[j] <> j:
             colcount[parent[j]] -= 1
         for p in range(cp[j],cp[j+1]):
             i = ri[p]
@@ -124,9 +124,9 @@ def counts(A, parent, post):
             q, jleaf = __leaf(i, j, first, maxfirst, prevleaf, ancestor)
             if jleaf >= 1: colcount[j] += 1
             if jleaf == 2: colcount[q] -= 1
-        if parent[j] != -1: ancestor[j] = parent[j]
+        if parent[j] <> j: ancestor[j] = parent[j]
     for j in range(n):
-        if parent[j] != -1: colcount[parent[j]] += colcount[j]
+        if parent[j] <> j: colcount[parent[j]] += colcount[j]
 
     return colcount
 
@@ -163,7 +163,7 @@ def pothen_sun(par, post, colcount):
 
         mdeg = colcount[j] - 1
 
-        if not par[j] == -1:
+        if par[j] <> j:
             if mdeg == colcount[par[j]] and flag[par[j]] == -1:
                 # par[j] not assigned to supernode
                 snodes -= 1
@@ -174,8 +174,8 @@ def pothen_sun(par, post, colcount):
                     flag[par[j]] = flag[j]
                     flag[flag[j]] -= 1
         else:
-            if flag[j] < 0: snpar[j] = -1
-            else: snpar[flag[j]] = -1
+            if flag[j] < 0: snpar[j] = j
+            else: snpar[flag[j]] = flag[j]
 
         if flag[j] < 0: k = j
         else: k = flag[j]
@@ -297,7 +297,7 @@ def amalgamate(colcount, snode, snptr, snpar, snpost, merge_function):
     colcount_ = +colcount
     Ns = N
     for k in snpost:
-        if snpar_[k] != -1:
+        if snpar_[k] <> k:
             colk = colcount_[snlist[k][0]]
             colp = colcount_[snlist[snpar_[k]][0]]
             nk = len(snlist[k])
@@ -312,7 +312,7 @@ def amalgamate(colcount, snode, snptr, snpar, snpost, merge_function):
                     for c in ch[k]:
                         snpar_[c] = snpar_[k]
                     ch[snpar_[k]] += ch[k]
-                snpar_[k] = -1
+                snpar_[k] = k
 
     L = [i for i,s in enumerate(snlist) if s is not None]
     snptr_ = +snptr
@@ -323,7 +323,7 @@ def amalgamate(colcount, snode, snptr, snpar, snpost, merge_function):
 
     snpar_ = snpar_[L]
     for i in range(len(snpar_)):
-        if snpar_[i] != -1:
+        if snpar_[i] <> i:
             snpar_[i] = L.index(snpar_[i])
     snpost_ = post_order(snpar_)
     return colcount_, snode_, snptr_, snpar_, snpost_
@@ -381,7 +381,7 @@ def embed(A, colcount, snode, snptr, snpar, snpost):
     for k in snpost:
         p = snptr[k]
         Nk = snptr[k+1]-p
-        if snpar[k] != -1:
+        if snpar[k] <> k:
             cnnz[snpar[k]] = lmerge(rowidx,rowidx,colptr[snpar[k]], colptr[k]+Nk,cnnz[snpar[k]], cnnz[k]-Nk)
 
     return colptr, rowidx
@@ -527,10 +527,12 @@ class symbolic(object):
     The clique k is merged with its parent if the return value is `True`.
     """
     
-    def __init__(self, A, p = None, merge_function = None):
+    def __init__(self, A, p = None, merge_function = None, **kwargs):
 
         assert isinstance(A,spmatrix), "A must be a sparse matrix"
         assert A.size[0] == A.size[1], "A must be a square matrix"
+
+        supernodal = kwargs.get('supernodal',True)
 
         # Symmetrize A
         Ap = symmetrize(A)
@@ -541,31 +543,54 @@ class symbolic(object):
             if type(p) is BuiltinFunctionType or type(p) is FunctionType:
                 p = p(Ap)
             assert len(p) == A.size[0], "length of permutation vector must be equal to the order of A"
-            Ap = perm(Ap,p)
-            ip = matrix(0,(A.size[0],1))
-            ip[p] = matrix(range(len(ip)))
-        else:
-            ip = p
-            
-        self.__p = p
-        self.__ip = ip
+            Ap = perm(Ap,p)            
 
         # Symbolic factorization
         par = etree(Ap)
         post = post_order(par)
         colcount = counts(Ap, par, post)
         nnz_Ae = sum(colcount)
-        snode, snptr, snpar = supernodes(par, post, colcount)
-        snpost = post_order(snpar)
+        if supernodal:
+            snode, snptr, snpar = supernodes(par, post, colcount)
+            snpost = post_order(snpar)
+        else:
+            snpar = par
+            snpost = post
+            snode = matrix(range(A.size[0]))
+            snptr = matrix(range(A.size[0]+1))
         if merge_function:
             colcount, snode, snptr, snpar, snpost = amalgamate(colcount, snode, snptr, snpar, snpost, merge_function)
+
+        # Post order nodes such that supernodes have consecutively numbered nodes
+        pp = matrix([snode[snptr[snpost[k]]:snptr[snpost[k]+1]] for k in range(len(snpar))])
+        snptr2 = matrix(0,(len(snptr),1))
+        for k in range(len(snpar)):
+            snptr2[k+1] = snptr2[k] + snptr[snpost[k]+1]-snptr[snpost[k]]
+        colcount = colcount[pp]
+        snposti = matrix(0,(len(snpost),1))
+        snposti[snpost] = matrix(range(len(snpost)))
+        snpar = matrix([snposti[snpar[snpost[k]]] for k in range(len(snpar)) ])        
+        snode = matrix(range(len(snode)))
+        snpost = matrix(range(len(snpost)))
+        snptr = snptr2
+
+        # Permute A and store effective permutation and its inverse
+        Ap = perm(Ap,pp)
+        if p is None:
+            self.__p = pp
+        else:
+            self.__p = p[pp]
+        self.__ip = matrix(0,(len(self.__p),1))
+        self.__ip[self.__p] = matrix(range(len(self.__p)))
+
+        # Compute embedding and relative indices
         sncolptr, snrowidx = embed(Ap, colcount, snode, snptr, snpar, snpost)
         relptr, relidx = relative_idx(sncolptr, snrowidx, snptr, snpar)
         
         # build chptr
         chptr = matrix(0, (len(snpar)+1,1))
         for j in snpost: 
-            if snpar[j] != -1: chptr[snpar[j]+1] += 1
+            if snpar[j] <> j: chptr[snpar[j]+1] += 1
         for j in range(1,len(chptr)):
             chptr[j] += chptr[j-1]
 
@@ -573,7 +598,7 @@ class symbolic(object):
         tmp = +chptr
         chidx = matrix(0,(chptr[-1],1))
         for j in snpost:
-            if snpar[j] != -1: 
+            if snpar[j] <> j: 
                 chidx[tmp[snpar[j]]] = j
                 tmp[snpar[j]] += 1
         del tmp
@@ -609,24 +634,32 @@ class symbolic(object):
         # compute storage requirements
         stack = []
         stack_depth = 0
+
         stack_mem = 0
         stack_tmp = 0
-        frontal_mem = 0
+        cln = 0
+
+        stack_solve = 0
+        stack_stmp = 0
+
         for k in snpost:
             nn = snptr[k+1]-snptr[k]       # |Nk|
             na = relptr[k+1]-relptr[k]     # |Ak|
             nj = na + nn
-            frontal_mem = max(frontal_mem,nj**2)
+            cln = max(cln,nj)              # this is the clique number
             for i in range(chptr[k+1]-1,chptr[k]-1,-1):
                 na_ch = stack.pop()
                 stack_tmp -= na_ch**2
+                stack_stmp -= na_ch
             if na > 0:
                 stack.append(na)
                 stack_tmp += na**2
                 stack_mem = max(stack_tmp,stack_mem)
+                stack_stmp += na
+                stack_solve = max(stack_stmp,stack_solve)
             stack_depth = max(stack_depth,len(stack))
             
-                
+        self.__clique_number = cln
         self.__n = len(snode)
         self.__Nsn = len(snpar)
         self.__snode = snode
@@ -643,7 +676,8 @@ class symbolic(object):
         self.__fill = (nnz_Ae-nnz_Ap,self.nnz-nnz_Ae)
         self.__memory = {'stack_depth':stack_depth,
                          'stack_mem':stack_mem,
-                         'frontal_mem':frontal_mem}
+                         'frontal_mem':cln**2,                         
+                         'stack_solve':stack_solve}
 
         return
 
@@ -720,7 +754,7 @@ class symbolic(object):
     def snpar(self):
         """
         Supernode parent array: supernode :math:`k` is a root of the
-        supernodal elimination tree if `snpar[k]` is equal to -1, and
+        supernodal elimination tree if `snpar[k]` is equal to k, and
         otherwise `snpar[k]` is the index of the parent of supernode
         :math:`k` in the supernodal elimination tree
         """
@@ -817,27 +851,36 @@ class symbolic(object):
         """
         The clique number (the order of the largest clique)
         """
-        return max([self.sncolptr[k+1]-self.sncolptr[k] for k in range(self.Nsn)])
+        return self.__clique_number
 
     
-    def cliques(self):
+    def cliques(self, reordered = True):
         """
-        Returns a list of cliques (reordered pattern)
+        Returns a list of cliques
         """
-        return [list(self.snrowidx[self.sncolptr[k]:self.sncolptr[k+1]]) for k in range(self.Nsn)]
+        if reordered:
+            return [list(self.snrowidx[self.sncolptr[k]:self.sncolptr[k+1]]) for k in range(self.Nsn)]
+        else:
+            return [list(self.__p[self.snrowidx[self.sncolptr[k]:self.sncolptr[k+1]]]) for k in range(self.Nsn)]
 
-    def separators(self):
+    def separators(self, reordered = True):
         """
-        Returns a list of separator sets (reordered pattern)
+        Returns a list of separator sets 
         """
-        return [list(self.snrowidx[self.sncolptr[k]+self.snptr[k+1]-self.snptr[k]:self.sncolptr[k+1]]) for k in range(self.Nsn)] 
-
-    def supernodes(self):
+        if reordered:
+            return [list(self.snrowidx[self.sncolptr[k]+self.snptr[k+1]-self.snptr[k]:self.sncolptr[k+1]]) for k in range(self.Nsn)] 
+        else:
+            return [list(self.__p[self.snrowidx[self.sncolptr[k]+self.snptr[k+1]-self.snptr[k]:self.sncolptr[k+1]]]) for k in range(self.Nsn)]
+        
+    def supernodes(self, reordered = True):
         """
-        Returns a list of supernode sets (reordered pattern)
+        Returns a list of supernode sets
         """
-        return [list(self.snode[self.snptr[k]:self.snptr[k+1]]) for k in range(self.Nsn)]
-
+        if reordered:
+            return [list(self.snode[self.snptr[k]:self.snptr[k+1]]) for k in range(self.Nsn)]
+        else:
+            return [list(self.__p[self.snode[self.snptr[k]:self.snptr[k+1]]]) for k in range(self.Nsn)]
+        
     def parent(self):
         """
         Returns a supernodal parent list: the i'th element is equal to -1 if 
@@ -845,7 +888,7 @@ class symbolic(object):
         the i'th element is the index of the parent of supernode i.
         """
         return list(self.snpar)
-    
+        
 class cspmatrix(object):
     """
     Chordal sparse matrix object.

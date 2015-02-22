@@ -44,12 +44,12 @@ EXT_MODULES = []
 if not py_only: EXT_MODULES.append(cbase)
     
 setup(name='chompack',
-    version='2.1.1',
+    version='2.2.0',
     description='Library for chordal matrix computations',
     author='Martin S. Andersen, Lieven Vandenberghe',
     author_email='martin.skovgaard.andersen@gmail.com, vandenbe@ee.ucla.edu',
     url='http://cvxopt.github.io/chompack/',
-    download_url='https://github.com/cvxopt/chompack/archive/v2.1.1.tar.gz',
+    download_url='https://github.com/cvxopt/chompack/archive/v2.2.0.tar.gz',
     license = 'GNU GPL version 3',
     package_dir = {"chompack": "src/python"},
     packages = ["chompack","chompack.pybase"],

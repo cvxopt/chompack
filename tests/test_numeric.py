@@ -1,7 +1,7 @@
 import unittest
 import random
 import chompack as cp
-from cvxopt import matrix,spmatrix,amd
+from cvxopt import matrix,spmatrix,amd,blas
 
 class TestNumeric(unittest.TestCase):
 
@@ -16,7 +16,12 @@ class TestNumeric(unittest.TestCase):
 
     def assertAlmostEqualLists(self,u,v):
         for ui,vi in zip(u,v): self.assertAlmostEqual(ui,vi)
-        
+
+    def test_dot(self):
+        A = cp.cspmatrix(self.symb) + self.A
+        B = cp.cspmatrix(self.symb) - 2*self.A
+        self.assertAlmostEqual(2.0*blas.dot(A.blkval, B.blkval) - blas.dot(A.diag(),B.diag()), cp.dot(A,B))
+                    
     def test_cholesky(self):
         L = cp.cspmatrix(self.symb) + self.A
         cp.cholesky(L)

@@ -8,6 +8,7 @@ routines for:
   - numeric Cholesky factorization
   - forward and back substitution
   - maximum determinant positive definite completion
+  - Euclidean distance matrix completion
   - computations with logarithmic barriers for sparse matrix cones
   - chordal conversion
   - computing maximal chordal subgraph
@@ -30,3 +31,4 @@ covariance selection, graphical models, and decomposition and relaxation methods
    license
    install
    documentation
+   examples

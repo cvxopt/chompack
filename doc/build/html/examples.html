@@ -1,0 +1,450 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Examples &mdash; Chompack 2.2.0 documentation</title>
+  
+
+  
+  
+
+  
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="top" title="Chompack 2.2.0 documentation" href="index.html"/>
+        <link rel="prev" title="Documentation" href="documentation.html"/> 
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-nav-search">
+        <a href="index.html" class="fa fa-home"> Chompack</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        
+        
+            <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="license.html">Copyright and License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="install.html#installation-from-source">Installation from source</a></li>
+<li class="toctree-l2"><a class="reference internal" href="install.html#python-only-installation">Python-only installation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="documentation.html">Documentation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="documentation.html#quick-start">Quick start</a></li>
+<li class="toctree-l2"><a class="reference internal" href="documentation.html#symbolic-factorization">Symbolic factorization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="documentation.html#chordal-sparse-matrices">Chordal sparse matrices</a></li>
+<li class="toctree-l2"><a class="reference internal" href="documentation.html#numerical-computations">Numerical computations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="documentation.html#chordal-conversion">Chordal conversion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="documentation.html#auxiliary-routines">Auxiliary routines</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="current reference internal" href="">Examples</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#sdp-conversion">SDP conversion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#euclidean-distance-matrix-completion">Euclidean distance matrix completion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#symbolic-factorization">Symbolic factorization</a></li>
+</ul>
+</li>
+</ul>
+
+        
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">Chompack</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+      
+    <li>Examples</li>
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main">
+            
+  <div class="section" id="examples">
+<h1>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="sdp-conversion">
+<h2>SDP conversion<a class="headerlink" href="#sdp-conversion" title="Permalink to this headline">¶</a></h2>
+<p>This example demonstrates the SDP conversion method. We first generate a
+random sparse SDP:</p>
+<div class="code python highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">cvxopt</span> <span class="kn">import</span> <span class="n">matrix</span><span class="p">,</span> <span class="n">spmatrix</span><span class="p">,</span> <span class="n">sparse</span><span class="p">,</span> <span class="n">normal</span><span class="p">,</span> <span class="n">solvers</span><span class="p">,</span> <span class="n">blas</span>
+<span class="kn">import</span> <span class="nn">chompack</span> <span class="kn">as</span> <span class="nn">cp</span>
+<span class="kn">import</span> <span class="nn">random</span>
+
+<span class="c"># Function for generating random sparse matrix</span>
+<span class="k">def</span> <span class="nf">sp_rand</span><span class="p">(</span><span class="n">m</span><span class="p">,</span><span class="n">n</span><span class="p">,</span><span class="n">a</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generates an m-by-n sparse &#39;d&#39; matrix with round(a*m*n) nonzeros.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">m</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">n</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span> <span class="k">return</span> <span class="n">spmatrix</span><span class="p">([],</span> <span class="p">[],</span> <span class="p">[],</span> <span class="p">(</span><span class="n">m</span><span class="p">,</span><span class="n">n</span><span class="p">))</span>
+    <span class="n">nnz</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">a</span><span class="o">*</span><span class="n">m</span><span class="o">*</span><span class="n">n</span><span class="p">))),</span> <span class="n">m</span><span class="o">*</span><span class="n">n</span><span class="p">)</span>
+    <span class="n">nz</span> <span class="o">=</span> <span class="n">matrix</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">m</span><span class="o">*</span><span class="n">n</span><span class="p">),</span> <span class="n">nnz</span><span class="p">),</span> <span class="n">tc</span><span class="o">=</span><span class="s">&#39;i&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">spmatrix</span><span class="p">(</span><span class="n">normal</span><span class="p">(</span><span class="n">nnz</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="n">nz</span><span class="o">%</span><span class="n">m</span><span class="p">,</span> <span class="n">nz</span><span class="o">/</span><span class="n">m</span><span class="p">,</span> <span class="p">(</span><span class="n">m</span><span class="p">,</span><span class="n">n</span><span class="p">))</span>
+
+<span class="c"># Generate random sparsity pattern and sparse SDP problem data</span>
+<span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">m</span><span class="p">,</span> <span class="n">n</span> <span class="o">=</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">200</span>
+<span class="n">A</span> <span class="o">=</span> <span class="n">sp_rand</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="n">n</span><span class="p">,</span><span class="mf">0.015</span><span class="p">)</span> <span class="o">+</span> <span class="n">spmatrix</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span><span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">),</span><span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">))</span>
+<span class="n">I</span> <span class="o">=</span> <span class="n">cp</span><span class="o">.</span><span class="n">tril</span><span class="p">(</span><span class="n">A</span><span class="p">)[:]</span><span class="o">.</span><span class="n">I</span>
+<span class="n">N</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">I</span><span class="p">)</span><span class="o">/</span><span class="mi">50</span> <span class="c"># each data matrix has 1/50 of total nonzeros in pattern</span>
+<span class="n">Ig</span> <span class="o">=</span> <span class="p">[];</span> <span class="n">Jg</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">m</span><span class="p">):</span>
+    <span class="n">Ig</span> <span class="o">+=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">I</span><span class="p">,</span><span class="n">N</span><span class="p">))</span>
+    <span class="n">Jg</span> <span class="o">+=</span> <span class="n">N</span><span class="o">*</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
+<span class="n">G</span> <span class="o">=</span> <span class="n">spmatrix</span><span class="p">(</span><span class="n">normal</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">Ig</span><span class="p">),</span><span class="mi">1</span><span class="p">),</span><span class="n">Ig</span><span class="p">,</span><span class="n">Jg</span><span class="p">,(</span><span class="n">n</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span><span class="n">m</span><span class="p">))</span>
+<span class="n">h</span> <span class="o">=</span> <span class="n">G</span><span class="o">*</span><span class="n">normal</span><span class="p">(</span><span class="n">m</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="n">spmatrix</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span><span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">),</span><span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">))[:]</span>
+<span class="n">c</span> <span class="o">=</span> <span class="n">normal</span><span class="p">(</span><span class="n">m</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">dims</span> <span class="o">=</span>  <span class="p">{</span><span class="s">&#39;l&#39;</span><span class="p">:</span><span class="mi">0</span><span class="p">,</span> <span class="s">&#39;q&#39;</span><span class="p">:[],</span> <span class="s">&#39;s&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">n</span><span class="p">]};</span>
+</pre></div>
+</div>
+<p>The problem can be solved using CVXOPT&#8217;s cone LP solver:</p>
+<div class="code python highlight-python"><div class="highlight"><pre><span class="n">prob</span> <span class="o">=</span> <span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">G</span><span class="p">,</span> <span class="n">matrix</span><span class="p">(</span><span class="n">h</span><span class="p">),</span> <span class="n">dims</span><span class="p">)</span>
+<span class="n">sol</span> <span class="o">=</span> <span class="n">solvers</span><span class="o">.</span><span class="n">conelp</span><span class="p">(</span><span class="o">*</span><span class="n">prob</span><span class="p">)</span>
+<span class="n">Z1</span> <span class="o">=</span> <span class="n">matrix</span><span class="p">(</span><span class="n">sol</span><span class="p">[</span><span class="s">&#39;z&#39;</span><span class="p">],</span> <span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="n">n</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre>     pcost       dcost       gap    pres   dres   k/t
+ 0: -1.0953e+01 -3.1500e+02  5e+02  5e-01  3e+00  1e+00
+ 1: -1.8696e+01 -6.3814e+01  5e+01  7e-02  4e-01  8e-01
+ 2: -2.3027e+01 -3.7585e+01  1e+01  2e-02  1e-01  2e-01
+ 3: -2.3052e+01 -3.3827e+01  1e+01  2e-02  1e-01  1e-01
+ 4: -2.3718e+01 -2.6062e+01  2e+00  4e-03  2e-02  3e-02
+ 5: -2.3700e+01 -2.5631e+01  2e+00  3e-03  2e-02  2e-02
+ 6: -2.3763e+01 -2.4181e+01  4e-01  7e-04  4e-03  4e-03
+ 7: -2.3766e+01 -2.3869e+01  1e-01  2e-04  1e-03  6e-04
+ 8: -2.3766e+01 -2.3793e+01  3e-02  4e-05  3e-04  1e-04
+ 9: -2.3766e+01 -2.3771e+01  5e-03  8e-06  5e-05  2e-05
+10: -2.3766e+01 -2.3767e+01  7e-04  1e-06  7e-06  4e-06
+11: -2.3766e+01 -2.3766e+01  3e-05  4e-08  3e-07  1e-07
+12: -2.3766e+01 -2.3766e+01  2e-06  4e-09  2e-08  1e-08
+Optimal solution found.
+</pre></div>
+</div>
+<p>An alternative is to convert the sparse SDP into a block-diagonal SDP
+using the conversion method and solve the converted problem using
+CVXOPT:</p>
+<div class="code python highlight-python"><div class="highlight"><pre><span class="n">prob2</span><span class="p">,</span> <span class="n">blocks_to_sparse</span><span class="p">,</span> <span class="n">symbs</span> <span class="o">=</span> <span class="n">cp</span><span class="o">.</span><span class="n">convert_conelp</span><span class="p">(</span><span class="o">*</span><span class="n">prob</span><span class="p">)</span>
+<span class="n">sol2</span> <span class="o">=</span> <span class="n">solvers</span><span class="o">.</span><span class="n">conelp</span><span class="p">(</span><span class="o">*</span><span class="n">prob2</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre>     pcost       dcost       gap    pres   dres   k/t
+ 0: -1.0507e+01 -3.1252e+02  9e+02  8e-01  3e+00  1e+00
+ 1: -1.7922e+01 -6.5004e+01  6e+01  1e-01  4e-01  2e+00
+ 2: -2.1583e+01 -4.5680e+01  3e+01  6e-02  2e-01  7e-01
+ 3: -2.3019e+01 -2.8139e+01  6e+00  1e-02  5e-02  1e-01
+ 4: -2.3438e+01 -2.5218e+01  2e+00  5e-03  2e-02  4e-02
+ 5: -2.3684e+01 -2.4060e+01  4e-01  1e-03  4e-03  6e-03
+ 6: -2.3740e+01 -2.3836e+01  1e-01  2e-04  9e-04  9e-04
+ 7: -2.3759e+01 -2.3783e+01  3e-02  6e-05  2e-04  1e-04
+ 8: -2.3764e+01 -2.3769e+01  5e-03  1e-05  5e-05  2e-05
+ 9: -2.3766e+01 -2.3767e+01  1e-03  3e-06  1e-05  4e-06
+10: -2.3766e+01 -2.3766e+01  3e-04  6e-07  2e-06  7e-07
+11: -2.3766e+01 -2.3766e+01  3e-05  7e-08  2e-07  7e-08
+12: -2.3766e+01 -2.3766e+01  7e-06  2e-08  6e-08  2e-08
+Optimal solution found.
+</pre></div>
+</div>
+<p>The solution to the original SDP can be found by mapping the
+block-diagonal solution to a sparse positive semidefinite completable
+matrix and computing a positive semidefinite completion:</p>
+<div class="code python highlight-python"><div class="highlight"><pre><span class="c"># Map block-diagonal solution sol2[&#39;z&#39;] to a sparse positive semidefinite completable matrix</span>
+<span class="n">blki</span><span class="p">,</span><span class="n">I</span><span class="p">,</span><span class="n">J</span><span class="p">,</span><span class="n">bn</span> <span class="o">=</span> <span class="n">blocks_to_sparse</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">Z2</span> <span class="o">=</span> <span class="n">spmatrix</span><span class="p">(</span><span class="n">sol2</span><span class="p">[</span><span class="s">&#39;z&#39;</span><span class="p">][</span><span class="n">blki</span><span class="p">],</span><span class="n">I</span><span class="p">,</span><span class="n">J</span><span class="p">)</span>
+
+<span class="c"># Compute completion</span>
+<span class="n">symb</span> <span class="o">=</span> <span class="n">cp</span><span class="o">.</span><span class="n">symbolic</span><span class="p">(</span><span class="n">Z2</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="n">cp</span><span class="o">.</span><span class="n">maxcardsearch</span><span class="p">)</span>
+<span class="n">Z2c</span> <span class="o">=</span> <span class="n">cp</span><span class="o">.</span><span class="n">psdcompletion</span><span class="p">(</span><span class="n">cp</span><span class="o">.</span><span class="n">cspmatrix</span><span class="p">(</span><span class="n">symb</span><span class="p">)</span><span class="o">+</span><span class="n">Z2</span><span class="p">,</span> <span class="n">reordered</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The conversion can also be combined with clique-merging techniques in
+the symbolic factorization. This typically yields a block-diagonal SDP
+with fewer (but bigger) blocks than without clique-merging:</p>
+<div class="code python highlight-python"><div class="highlight"><pre><span class="n">mf</span> <span class="o">=</span> <span class="n">cp</span><span class="o">.</span><span class="n">merge_size_fill</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">)</span>
+<span class="n">prob3</span><span class="p">,</span> <span class="n">blocks_to_sparse</span><span class="p">,</span> <span class="n">symbs</span> <span class="o">=</span> <span class="n">chompack</span><span class="o">.</span><span class="n">convert_conelp</span><span class="p">(</span><span class="o">*</span><span class="n">prob</span><span class="p">,</span> <span class="n">coupling</span> <span class="o">=</span> <span class="s">&#39;full&#39;</span><span class="p">,</span> <span class="n">merge_function</span> <span class="o">=</span> <span class="n">mf</span><span class="p">)</span>
+<span class="n">sol3</span> <span class="o">=</span> <span class="n">solvers</span><span class="o">.</span><span class="n">conelp</span><span class="p">(</span><span class="o">*</span><span class="n">prob3</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre>     pcost       dcost       gap    pres   dres   k/t
+ 0: -1.0566e+01 -3.1250e+02  6e+02  6e-01  3e+00  1e+00
+ 1: -1.7841e+01 -7.0230e+01  6e+01  1e-01  5e-01  1e+00
+ 2: -2.2301e+01 -4.0449e+01  2e+01  4e-02  2e-01  3e-01
+ 3: -2.3170e+01 -2.9548e+01  6e+00  1e-02  6e-02  1e-01
+ 4: -2.3608e+01 -2.4991e+01  1e+00  3e-03  1e-02  1e-02
+ 5: -2.3715e+01 -2.4159e+01  4e-01  9e-04  4e-03  4e-03
+ 6: -2.3756e+01 -2.3833e+01  8e-02  2e-04  7e-04  5e-04
+ 7: -2.3764e+01 -2.3777e+01  1e-02  2e-05  1e-04  6e-05
+ 8: -2.3765e+01 -2.3769e+01  4e-03  8e-06  4e-05  2e-05
+ 9: -2.3766e+01 -2.3766e+01  4e-04  8e-07  4e-06  2e-06
+10: -2.3766e+01 -2.3766e+01  1e-04  2e-07  1e-06  4e-07
+11: -2.3766e+01 -2.3766e+01  8e-06  2e-08  7e-08  3e-08
+Optimal solution found.
+</pre></div>
+</div>
+<p>Finally, we recover the solution to the original SDP:</p>
+<div class="code python highlight-python"><div class="highlight"><pre><span class="c"># Map block-diagonal solution sol2[&#39;z&#39;] to a sparse positive semidefinite completable matrix</span>
+<span class="n">blki</span><span class="p">,</span><span class="n">I</span><span class="p">,</span><span class="n">J</span><span class="p">,</span><span class="n">bn</span> <span class="o">=</span> <span class="n">blocks_to_sparse</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">Z3</span> <span class="o">=</span> <span class="n">spmatrix</span><span class="p">(</span><span class="n">sol3</span><span class="p">[</span><span class="s">&#39;z&#39;</span><span class="p">][</span><span class="n">blki</span><span class="p">],</span><span class="n">I</span><span class="p">,</span><span class="n">J</span><span class="p">)</span>
+
+<span class="c"># Compute completion</span>
+<span class="n">symb</span> <span class="o">=</span> <span class="n">cp</span><span class="o">.</span><span class="n">symbolic</span><span class="p">(</span><span class="n">Z3</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="n">cp</span><span class="o">.</span><span class="n">maxcardsearch</span><span class="p">)</span>
+<span class="n">Z3c</span> <span class="o">=</span> <span class="n">cp</span><span class="o">.</span><span class="n">psdcompletion</span><span class="p">(</span><span class="n">cp</span><span class="o">.</span><span class="n">cspmatrix</span><span class="p">(</span><span class="n">symb</span><span class="p">)</span><span class="o">+</span><span class="n">Z3</span><span class="p">,</span> <span class="n">reordered</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="euclidean-distance-matrix-completion">
+<h2>Euclidean distance matrix completion<a class="headerlink" href="#euclidean-distance-matrix-completion" title="Permalink to this headline">¶</a></h2>
+<p>Suppose that <img class="math" src="_images/math/937abf0036e3f773123ec44111199b356cf0ab10.png" alt="A" style="vertical-align: 0px"/> is a partial EDM of order <img class="math" src="_images/math/b1f5ca5a538abe6036ed478902bb5a03ef05f0c2.png" alt="n" style="vertical-align: 0px"/> where the
+squared distance <img class="math" src="_images/math/ad46b983778f54375c3fe9d333af11dfb28b44de.png" alt="A_{ij} = \| p_i - p_j \|_2^2" style="vertical-align: -6px"/> between two point
+<img class="math" src="_images/math/c6cdc16f617db87b67134954a3643f3d305e11dc.png" alt="p_i" style="vertical-align: -4px"/> and <img class="math" src="_images/math/4510226f34928add0a2715849bb98395fb83216b.png" alt="p_j" style="vertical-align: -6px"/> is known if <img class="math" src="_images/math/c6cdc16f617db87b67134954a3643f3d305e11dc.png" alt="p_i" style="vertical-align: -4px"/> and <img class="math" src="_images/math/4510226f34928add0a2715849bb98395fb83216b.png" alt="p_j" style="vertical-align: -6px"/> are
+sufficiently close. We will assume that <img class="math" src="_images/math/e11be819ff1983ea06de7dc44e45be2462956bca.png" alt="A_{ij}" style="vertical-align: -6px"/> is known if and
+only if</p>
+<div class="math">
+<p><img src="_images/math/d97bfe753f3c9c84b357deddba0858bd5b4806eb.png" alt="\| p_i - p_j \|_2^2 \leq \delta"/></p>
+</div><p>where <img class="math" src="_images/math/fc0e793deddf3e3b1dff2dd06f16794032862902.png" alt="\delta" style="vertical-align: 0px"/> is a positive constant. Let us generate a random
+partial EDM based on points in <img class="math" src="_images/math/ad52c87b73610fac02889623dd8e75ba9e31ba4f.png" alt="\mathbb{R}^2" style="vertical-align: 0px"/>:</p>
+<div class="code python highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">cvxopt</span> <span class="kn">import</span> <span class="n">uniform</span><span class="p">,</span> <span class="n">spmatrix</span><span class="p">,</span> <span class="n">matrix</span>
+<span class="kn">import</span> <span class="nn">chompack</span> <span class="kn">as</span> <span class="nn">cp</span>
+
+<span class="n">d</span> <span class="o">=</span> <span class="mi">2</span>              <span class="c"># dimension</span>
+<span class="n">n</span> <span class="o">=</span> <span class="mi">100</span>            <span class="c"># number of points (order of A)</span>
+<span class="n">delta</span> <span class="o">=</span> <span class="mf">0.15</span><span class="o">**</span><span class="mi">2</span>    <span class="c"># distance threshold</span>
+
+<span class="n">P</span> <span class="o">=</span> <span class="n">uniform</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="n">n</span><span class="p">)</span>   <span class="c"># generate n points with independent and uniformly distributed coordinates</span>
+<span class="n">Y</span> <span class="o">=</span> <span class="n">P</span><span class="o">.</span><span class="n">T</span><span class="o">*</span><span class="n">P</span>          <span class="c"># Gram matrix</span>
+
+<span class="c"># Compute true distances:  At[i,j] = norm(P[:,i]-P[:,j])**2</span>
+<span class="c">#   At = diag(Y)*ones(1,n) + ones(n,1)*diag(Y).T - 2*Y</span>
+<span class="n">At</span> <span class="o">=</span> <span class="n">Y</span><span class="p">[::</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">matrix</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,(</span><span class="mi">1</span><span class="p">,</span><span class="n">n</span><span class="p">))</span> <span class="o">+</span> <span class="n">matrix</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,(</span><span class="n">n</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span><span class="o">*</span><span class="n">Y</span><span class="p">[::</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">T</span> <span class="o">-</span> <span class="mi">2</span><span class="o">*</span><span class="n">Y</span>
+
+<span class="c"># Generate matrix with &quot;observable distances&quot;</span>
+<span class="c">#   A[i,j] = At[i,j] if At[i,j] &lt;= delta</span>
+<span class="n">V</span><span class="p">,</span><span class="n">I</span><span class="p">,</span><span class="n">J</span> <span class="o">=</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="p">[(</span><span class="n">At</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">],</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">)</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">j</span><span class="p">,</span><span class="n">n</span><span class="p">)</span> <span class="k">if</span> <span class="n">At</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">delta</span><span class="p">])</span>
+<span class="n">A</span> <span class="o">=</span> <span class="n">spmatrix</span><span class="p">(</span><span class="n">V</span><span class="p">,</span><span class="n">I</span><span class="p">,</span><span class="n">J</span><span class="p">,(</span><span class="n">n</span><span class="p">,</span><span class="n">n</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>The partial EDM <img class="math" src="_images/math/937abf0036e3f773123ec44111199b356cf0ab10.png" alt="A" style="vertical-align: 0px"/> may or may not be chordal. We can find a
+maximal chordal subgraph using the <tt class="docutils literal"><span class="pre">maxchord</span></tt> routine which returns a
+chordal matrix <img class="math" src="_images/math/2f50c36a40e10b3061a9578606d9bd81c6b67e4a.png" alt="A_{\mathrm{c}}" style="vertical-align: -3px"/> and a perfect elimination order
+<img class="math" src="_images/math/c5b47cd114d1cd218d587260b667ed59b7ace4a0.png" alt="p" style="vertical-align: -4px"/>. Note that if <img class="math" src="_images/math/937abf0036e3f773123ec44111199b356cf0ab10.png" alt="A" style="vertical-align: 0px"/> is chordal, then
+<img class="math" src="_images/math/80a335f918ba62a692259ff821648af619e5eb24.png" alt="A_{\mathrm{c}} = A" style="vertical-align: -3px"/>.</p>
+<div class="code python highlight-python"><div class="highlight"><pre><span class="n">Ac</span><span class="p">,</span><span class="n">p</span> <span class="o">=</span> <span class="n">cp</span><span class="o">.</span><span class="n">maxchord</span><span class="p">(</span><span class="n">A</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The points <img class="math" src="_images/math/c6cdc16f617db87b67134954a3643f3d305e11dc.png" alt="p_i" style="vertical-align: -4px"/> and the known distances can be visualized using
+Matplotlib:</p>
+<div class="code python highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">pylab</span> <span class="kn">import</span> <span class="n">plot</span><span class="p">,</span><span class="n">xlim</span><span class="p">,</span><span class="n">ylim</span><span class="p">,</span><span class="n">gca</span>
+
+<span class="c"># Extract entries in Ac and entries dropped from A</span>
+<span class="n">IJc</span> <span class="o">=</span> <span class="nb">zip</span><span class="p">(</span><span class="n">Ac</span><span class="o">.</span><span class="n">I</span><span class="p">,</span><span class="n">Ac</span><span class="o">.</span><span class="n">J</span><span class="p">)</span>
+<span class="n">tmp</span> <span class="o">=</span> <span class="n">A</span> <span class="o">-</span> <span class="n">Ac</span>
+<span class="n">IJd</span> <span class="o">=</span> <span class="p">[(</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">,</span><span class="n">v</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">tmp</span><span class="o">.</span><span class="n">I</span><span class="p">,</span><span class="n">tmp</span><span class="o">.</span><span class="n">J</span><span class="p">,</span><span class="n">tmp</span><span class="o">.</span><span class="n">V</span><span class="p">)</span> <span class="k">if</span> <span class="n">v</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">]</span>
+
+<span class="c"># Plot edges</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">j</span> <span class="ow">in</span> <span class="n">IJc</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">i</span> <span class="o">&gt;</span> <span class="n">j</span><span class="p">:</span> <span class="n">plot</span><span class="p">([</span><span class="n">P</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="n">i</span><span class="p">],</span><span class="n">P</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="n">j</span><span class="p">]],[</span><span class="n">P</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="n">i</span><span class="p">],</span><span class="n">P</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="n">j</span><span class="p">]],</span><span class="s">&#39;k-&#39;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">j</span> <span class="ow">in</span> <span class="n">IJd</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">i</span> <span class="o">&gt;</span> <span class="n">j</span><span class="p">:</span> <span class="n">plot</span><span class="p">([</span><span class="n">P</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="n">i</span><span class="p">],</span><span class="n">P</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="n">j</span><span class="p">]],[</span><span class="n">P</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="n">i</span><span class="p">],</span><span class="n">P</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="n">j</span><span class="p">]],</span><span class="s">&#39;r-&#39;</span><span class="p">)</span>
+
+<span class="c"># Plot points</span>
+<span class="n">plot</span><span class="p">(</span><span class="n">P</span><span class="p">[</span><span class="mi">0</span><span class="p">,:]</span><span class="o">.</span><span class="n">T</span><span class="p">,</span><span class="n">P</span><span class="p">[</span><span class="mi">1</span><span class="p">,:]</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="s">&#39;b.&#39;</span><span class="p">,</span> <span class="n">ms</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span>
+<span class="n">xlim</span><span class="p">([</span><span class="mf">0.</span><span class="p">,</span><span class="mf">1.</span><span class="p">])</span>
+<span class="n">ylim</span><span class="p">([</span><span class="mf">0.</span><span class="p">,</span><span class="mf">1.</span><span class="p">])</span>
+<span class="n">gca</span><span class="p">()</span><span class="o">.</span><span class="n">set_aspect</span><span class="p">(</span><span class="s">&#39;equal&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<img alt="_images/examples_20_0.png" src="_images/examples_20_0.png" />
+<p>The edges represent known distances. The red edges are edges that were
+removed to produce the maximal chordal subgraph, and the black edges are
+the edges of the chordal subgraph.</p>
+<p>Next we compute a symbolic factorization of the chordal matrix
+<img class="math" src="_images/math/2f50c36a40e10b3061a9578606d9bd81c6b67e4a.png" alt="A_{\mathrm{c}}" style="vertical-align: -3px"/> using the perfect elimination order <img class="math" src="_images/math/c5b47cd114d1cd218d587260b667ed59b7ace4a0.png" alt="p" style="vertical-align: -4px"/>:</p>
+<div class="code python highlight-python"><div class="highlight"><pre><span class="n">symb</span> <span class="o">=</span> <span class="n">cp</span><span class="o">.</span><span class="n">symbolic</span><span class="p">(</span><span class="n">Ac</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="n">p</span><span class="p">)</span>
+<span class="n">p</span> <span class="o">=</span> <span class="n">symb</span><span class="o">.</span><span class="n">p</span>
+</pre></div>
+</div>
+<p>Now <tt class="docutils literal"><span class="pre">edmcompletion</span></tt> can be used to compute an EDM completion of the
+chordal matrix <img class="math" src="_images/math/2f50c36a40e10b3061a9578606d9bd81c6b67e4a.png" alt="A_{\mathrm{c}}" style="vertical-align: -3px"/>:</p>
+<div class="code python highlight-python"><div class="highlight"><pre><span class="n">X</span> <span class="o">=</span> <span class="n">cp</span><span class="o">.</span><span class="n">edmcompletion</span><span class="p">(</span><span class="n">cp</span><span class="o">.</span><span class="n">cspmatrix</span><span class="p">(</span><span class="n">symb</span><span class="p">)</span><span class="o">+</span><span class="n">Ac</span><span class="p">,</span> <span class="n">reordered</span> <span class="o">=</span> <span class="bp">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="symbolic-factorization">
+<h2>Symbolic factorization<a class="headerlink" href="#symbolic-factorization" title="Permalink to this headline">¶</a></h2>
+<p>This example demonstrates the symbolic factorization. We start by
+generating a test problem and computing a symbolic factorization using
+the approximate minimum degree (AMD) ordering heuristic:</p>
+<div class="code python highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">chompack</span> <span class="kn">as</span> <span class="nn">cp</span>
+<span class="kn">from</span> <span class="nn">cvxopt</span> <span class="kn">import</span> <span class="n">spmatrix</span><span class="p">,</span> <span class="n">amd</span>
+
+<span class="n">L</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">14</span><span class="p">],[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">],[</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">14</span><span class="p">],[</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">14</span><span class="p">],[</span><span class="mi">4</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">14</span><span class="p">,</span><span class="mi">15</span><span class="p">],[</span><span class="mi">5</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">15</span><span class="p">],[</span><span class="mi">6</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">14</span><span class="p">],[</span><span class="mi">7</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">14</span><span class="p">],[</span><span class="mi">8</span><span class="p">,</span><span class="mi">14</span><span class="p">,</span><span class="mi">15</span><span class="p">],[</span><span class="mi">9</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">12</span><span class="p">,</span><span class="mi">13</span><span class="p">,</span><span class="mi">16</span><span class="p">],[</span><span class="mi">10</span><span class="p">,</span><span class="mi">12</span><span class="p">,</span><span class="mi">13</span><span class="p">,</span><span class="mi">16</span><span class="p">],[</span><span class="mi">11</span><span class="p">,</span><span class="mi">12</span><span class="p">,</span><span class="mi">13</span><span class="p">,</span><span class="mi">15</span><span class="p">,</span><span class="mi">16</span><span class="p">],[</span><span class="mi">12</span><span class="p">,</span><span class="mi">13</span><span class="p">,</span><span class="mi">15</span><span class="p">,</span><span class="mi">16</span><span class="p">],[</span><span class="mi">13</span><span class="p">,</span><span class="mi">15</span><span class="p">,</span><span class="mi">16</span><span class="p">],[</span><span class="mi">14</span><span class="p">,</span><span class="mi">15</span><span class="p">,</span><span class="mi">16</span><span class="p">],[</span><span class="mi">15</span><span class="p">,</span><span class="mi">16</span><span class="p">],[</span><span class="mi">16</span><span class="p">]]</span>
+<span class="n">I</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">J</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">k</span><span class="p">,</span><span class="n">l</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">L</span><span class="p">):</span>
+    <span class="n">I</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">l</span><span class="p">)</span>
+    <span class="n">J</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">l</span><span class="p">)</span><span class="o">*</span><span class="p">[</span><span class="n">k</span><span class="p">])</span>
+
+<span class="n">A</span> <span class="o">=</span> <span class="n">spmatrix</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span><span class="n">I</span><span class="p">,</span><span class="n">J</span><span class="p">,(</span><span class="mi">17</span><span class="p">,</span><span class="mi">17</span><span class="p">))</span>
+<span class="n">symb</span> <span class="o">=</span> <span class="n">cp</span><span class="o">.</span><span class="n">symbolic</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="n">amd</span><span class="o">.</span><span class="n">order</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The sparsity graph can be visualized with the <tt class="docutils literal"><span class="pre">sparsity_graph</span></tt> routine
+if Matplotlib, NetworkX, and Graphviz are installed:</p>
+<div class="code python highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">chompack.pybase.plot</span> <span class="kn">import</span> <span class="n">sparsity_graph</span>
+<span class="n">sparsity_graph</span><span class="p">(</span><span class="n">symb</span><span class="p">,</span> <span class="n">node_size</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">with_labels</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+</pre></div>
+</div>
+<img alt="_images/examples_30_0.png" src="_images/examples_30_0.png" />
+<p>The <tt class="docutils literal"><span class="pre">sparsity_graph</span></tt> routine passes all optional keyword arguments to
+NetworkX to make it easy to customize the visualization.</p>
+<p>It is also possible to visualize the sparsity pattern using the <tt class="docutils literal"><span class="pre">spy</span></tt>
+routine which requires the packages Matplotlib, Numpy, and Scipy:</p>
+<div class="code python highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">chompack.pybase.plot</span> <span class="kn">import</span> <span class="n">spy</span>
+<span class="n">fig</span> <span class="o">=</span> <span class="n">spy</span><span class="p">(</span><span class="n">symb</span><span class="p">,</span> <span class="n">reordered</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<img alt="_images/examples_32_0.png" src="_images/examples_32_0.png" />
+<p>The supernodes and the supernodal elimination tree can be extracted from
+the symbolic factorization as follows:</p>
+<div class="code python highlight-python"><div class="highlight"><pre><span class="n">par</span> <span class="o">=</span> <span class="n">symb</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span>
+<span class="n">snodes</span> <span class="o">=</span> <span class="n">symb</span><span class="o">.</span><span class="n">supernodes</span><span class="p">()</span>
+
+<span class="k">print</span> <span class="s">&quot;Id  Parent id  Supernode&quot;</span>
+<span class="k">for</span> <span class="n">k</span><span class="p">,</span><span class="n">sk</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">snodes</span><span class="p">):</span>
+    <span class="k">print</span> <span class="s">&quot;</span><span class="si">%2i</span><span class="s">     </span><span class="si">%2i</span><span class="s">     &quot;</span><span class="o">%</span><span class="p">(</span><span class="n">k</span><span class="p">,</span><span class="n">par</span><span class="p">[</span><span class="n">k</span><span class="p">]),</span> <span class="n">sk</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre>Id  Parent id  Supernode
+ 0      4      [0]
+ 1      2      [1]
+ 2      4      [2, 3, 4]
+ 3      4      [5, 6]
+ 4      5      [7, 8]
+ 5      7      [9]
+ 6      7      [10, 11]
+ 7      7      [12, 13, 14, 15, 16]
+</pre></div>
+</div>
+<p>The supernodal elimination tree can be visualized with the
+<tt class="docutils literal"><span class="pre">etree_graph</span></tt> routine if Matplotlib, NetworkX, and Graphviz are
+installed:</p>
+<div class="code python highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">chompack.pybase.plot</span> <span class="kn">import</span> <span class="n">etree_graph</span>
+<span class="n">etree_graph</span><span class="p">(</span><span class="n">symb</span><span class="p">,</span> <span class="n">with_labels</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">arrows</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">node_size</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">node_color</span><span class="o">=</span><span class="s">&#39;w&#39;</span><span class="p">,</span> <span class="n">node_shape</span><span class="o">=</span><span class="s">&#39;s&#39;</span><span class="p">,</span> <span class="n">font_size</span><span class="o">=</span><span class="mi">14</span><span class="p">)</span>
+</pre></div>
+</div>
+<img alt="_images/examples_36_0.png" src="_images/examples_36_0.png" />
+</div>
+</div>
+
+
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="documentation.html" class="btn btn-neutral" title="Documentation"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2014-2015, Martin S. Andersen and Lieven Vandenberghe.
+    </p>
+  </div>
+
+  <a href="https://github.com/snide/sphinx_rtd_theme">Sphinx theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'2.2.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
