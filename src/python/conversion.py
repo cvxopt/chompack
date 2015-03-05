@@ -178,7 +178,7 @@ def convert_block(G, h, dim, **kwargs):
     h = sparse(h)
     LIa = matrix(list(set(G.I).union(set(h.I))))
     Ia = [i%dim for i in LIa]
-    Ja = [j/dim for j in LIa]
+    Ja = [j//dim for j in LIa]
     Va = spmatrix(1.,Ia,Ja,(dim,dim))
     
     # find permutation, symmetrize, and permute
@@ -224,7 +224,7 @@ def convert_block(G, h, dim, **kwargs):
         iv = []
         for i in range(cp[j+1]-cp[j]):
             row = ri[cp[j]+i]%dim
-            col = ri[cp[j]+i]/dim
+            col = ri[cp[j]+i]//dim
             if row < col: continue   # ignore upper triangular entries
             k1 = ip[row]
             k2 = ip[col]
@@ -250,7 +250,7 @@ def convert_block(G, h, dim, **kwargs):
     iv = []
     for i in range(len(ri)):
         row = ri[i]%dim
-        col = ri[i]/dim
+        col = ri[i]//dim
         if row < col: continue   # ignore upper triangular entries
         k1 = ip[row]
         k2 = ip[col]
@@ -301,14 +301,14 @@ def convert_block(G, h, dim, **kwargs):
     idx = []
     for k in sparse_to_block.keys():
         k1 = p[k%dim]
-        k2 = p[k/dim]
+        k2 = p[k//dim]
         idx.append((min(k1,k2)*dim + max(k1,k2), sparse_to_block[k][0]))
 
     idx.sort()
     idx, blki = zip(*idx)
     blki = matrix(blki)
     I = [v%dim for v in idx]
-    J = [v/dim for v in idx]
+    J = [v//dim for v in idx]
     n = sum([di**2 for di in dims])
     
     return (G_converted, h_converted, G_coupling, dims), (blki, I, J, n), F
@@ -397,7 +397,11 @@ def convert_conelp(c, G, h, dims, A = None, b = None, **kwargs):
     G2 = spmatrix([v for v in itertools.chain(*V)],
                   [v for v in itertools.chain(*I)],
                   [v for v in itertools.chain(*J)],tuple(offset))
-    G = sparse([[G1],[G2]])
+    
+    if offset[0] == 0 or offset[1] == 0:
+        G = G1
+    else:
+        G = sparse([[G1],[G2]])
 
     ct = matrix([c,matrix(0.0,(G2.size[1],1))])
     if A is not None:
