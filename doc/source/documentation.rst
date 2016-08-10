@@ -37,6 +37,8 @@ Numerical computations
 
 .. autofunction:: chompack.psdcompletion
 
+.. autofunction:: chompack.mrcompletion
+
 .. autofunction:: chompack.edmcompletion
 		  
 .. autofunction:: chompack.hessian

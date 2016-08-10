@@ -289,9 +289,7 @@ def amalgamate(colcount, snode, snptr, snpar, snpost, merge_function):
         if snpar[j] in ch: ch[snpar[j]].append(j)
         else: ch[snpar[j]] = [j]
 
-    snlist = []
-    for k in range(N):
-        snlist.append(snode[snptr[k]:snptr[k+1]])
+    snlist = [snode[snptr[k]:snptr[k+1]] for k in range(N)]
 
     snpar_ = +snpar
     colcount_ = +colcount
@@ -315,7 +313,7 @@ def amalgamate(colcount, snode, snptr, snpar, snpost, merge_function):
                 snpar_[k] = k
 
     L = [i for i,s in enumerate(snlist) if s is not None]
-    snptr_ = +snptr
+    snptr_ = matrix(0,(len(L)+1,1))
     snode_ = +snode
     for i,l in enumerate(L):
         snptr_[i+1] = snptr_[i] + len(snlist[l])
@@ -323,8 +321,7 @@ def amalgamate(colcount, snode, snptr, snpar, snpost, merge_function):
 
     snpar_ = snpar_[L]
     for i in range(len(snpar_)):
-        if snpar_[i] != i:
-            snpar_[i] = L.index(snpar_[i])
+        snpar_[i] = L.index(snpar_[i])
     snpost_ = post_order(snpar_)
     return colcount_, snode_, snptr_, snpar_, snpost_
 

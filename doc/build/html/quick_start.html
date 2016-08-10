@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Quick start &mdash; Chompack 2.2.1 documentation</title>
+  <title>Quick start &mdash; Chompack 2.3.0 documentation</title>
   
 
   
@@ -28,7 +28,7 @@
   
 
   
-    <link rel="top" title="Chompack 2.2.1 documentation" href="index.html"/> 
+    <link rel="top" title="Chompack 2.3.0 documentation" href="index.html"/> 
 
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
@@ -112,103 +112,103 @@
   <div class="section" id="quick-start">
 <h1>Quick start<a class="headerlink" href="#quick-start" title="Permalink to this headline">¶</a></h1>
 <p>The core functionality of CHOMPACK is contained in two types of
-objects: the <tt class="xref py py-class docutils literal"><span class="pre">symbolic</span></tt> object and the <tt class="xref py py-class docutils literal"><span class="pre">cspmatrix</span></tt>
-(chordal sparse matrix) object. A <tt class="xref py py-class docutils literal"><span class="pre">symbolic</span></tt> object
+objects: the <code class="xref py py-class docutils literal"><span class="pre">symbolic</span></code> object and the <code class="xref py py-class docutils literal"><span class="pre">cspmatrix</span></code>
+(chordal sparse matrix) object. A <code class="xref py py-class docutils literal"><span class="pre">symbolic</span></code> object
 represents a symbolic factorization of a sparse symmetric matrix
-<img class="math" src="_images/math/937abf0036e3f773123ec44111199b356cf0ab10.png" alt="A" style="vertical-align: 0px"/>, and it can be created as follows:</p>
-<div class="code python highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">cvxopt</span> <span class="kn">import</span> <span class="n">spmatrix</span><span class="p">,</span> <span class="n">amd</span>
-<span class="kn">import</span> <span class="nn">chompack</span> <span class="kn">as</span> <span class="nn">cp</span>
+<span class="math">\(A\)</span>, and it can be created as follows:</p>
+<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">cvxopt</span> <span class="k">import</span> <span class="n">spmatrix</span><span class="p">,</span> <span class="n">amd</span>
+<span class="kn">import</span> <span class="nn">chompack</span> <span class="k">as</span> <span class="nn">cp</span>
 
-<span class="c"># generate sparse matrix</span>
+<span class="c1"># generate sparse matrix</span>
 <span class="n">I</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">]</span>
 <span class="n">J</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">]</span>
 <span class="n">A</span> <span class="o">=</span> <span class="n">spmatrix</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">I</span><span class="p">,</span> <span class="n">J</span><span class="p">,</span> <span class="p">(</span><span class="mi">7</span><span class="p">,</span><span class="mi">7</span><span class="p">))</span>
 
-<span class="c"># compute symbolic factorization using AMD ordering</span>
+<span class="c1"># compute symbolic factorization using AMD ordering</span>
 <span class="n">symb</span> <span class="o">=</span> <span class="n">cp</span><span class="o">.</span><span class="n">symbolic</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="n">amd</span><span class="o">.</span><span class="n">order</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>The argument <img class="math" src="_images/math/c5b47cd114d1cd218d587260b667ed59b7ace4a0.png" alt="p" style="vertical-align: -4px"/> is a so-called elimination order, and it can
+<p>The argument <span class="math">\(p\)</span> is a so-called elimination order, and it can
 be either an ordering routine or a permutation vector. In the above
 example we used the &#8220;approximate minimum degree&#8221; (AMD) ordering
-routine. Note that <img class="math" src="_images/math/937abf0036e3f773123ec44111199b356cf0ab10.png" alt="A" style="vertical-align: 0px"/> is a lower-triangular sparse matrix that represents a
-symmetric matrix; upper-triangular entries in <img class="math" src="_images/math/937abf0036e3f773123ec44111199b356cf0ab10.png" alt="A" style="vertical-align: 0px"/> are ignored in the
+routine. Note that <span class="math">\(A\)</span> is a lower-triangular sparse matrix that represents a
+symmetric matrix; upper-triangular entries in <span class="math">\(A\)</span> are ignored in the
 symbolic factorization.</p>
 <p>Now let&#8217;s inspect the sparsity pattern of <cite>A</cite> and its chordal
 embedding (i.e., the filled pattern):</p>
-<div class="code python highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">A</span><span class="p">)</span>
+<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">A</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-python"><div class="highlight"><pre>[ 1.00e+00     0         0         0         0         0         0    ]
-[ 1.00e+00  1.00e+00     0         0         0         0         0    ]
-[    0         0      1.00e+00     0         0         0         0    ]
-[ 1.00e+00     0         0      1.00e+00     0         0         0    ]
-[    0         0         0      1.00e+00  1.00e+00     0         0    ]
-[    0      1.00e+00     0      1.00e+00  1.00e+00  1.00e+00     0    ]
-[    0         0      1.00e+00     0      1.00e+00     0      1.00e+00]
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">[</span> <span class="mf">1.00e+00</span>     <span class="mi">0</span>         <span class="mi">0</span>         <span class="mi">0</span>         <span class="mi">0</span>         <span class="mi">0</span>         <span class="mi">0</span>    <span class="p">]</span>
+<span class="p">[</span> <span class="mf">1.00e+00</span>  <span class="mf">1.00e+00</span>     <span class="mi">0</span>         <span class="mi">0</span>         <span class="mi">0</span>         <span class="mi">0</span>         <span class="mi">0</span>    <span class="p">]</span>
+<span class="p">[</span>    <span class="mi">0</span>         <span class="mi">0</span>      <span class="mf">1.00e+00</span>     <span class="mi">0</span>         <span class="mi">0</span>         <span class="mi">0</span>         <span class="mi">0</span>    <span class="p">]</span>
+<span class="p">[</span> <span class="mf">1.00e+00</span>     <span class="mi">0</span>         <span class="mi">0</span>      <span class="mf">1.00e+00</span>     <span class="mi">0</span>         <span class="mi">0</span>         <span class="mi">0</span>    <span class="p">]</span>
+<span class="p">[</span>    <span class="mi">0</span>         <span class="mi">0</span>         <span class="mi">0</span>      <span class="mf">1.00e+00</span>  <span class="mf">1.00e+00</span>     <span class="mi">0</span>         <span class="mi">0</span>    <span class="p">]</span>
+<span class="p">[</span>    <span class="mi">0</span>      <span class="mf">1.00e+00</span>     <span class="mi">0</span>      <span class="mf">1.00e+00</span>  <span class="mf">1.00e+00</span>  <span class="mf">1.00e+00</span>     <span class="mi">0</span>    <span class="p">]</span>
+<span class="p">[</span>    <span class="mi">0</span>         <span class="mi">0</span>      <span class="mf">1.00e+00</span>     <span class="mi">0</span>      <span class="mf">1.00e+00</span>     <span class="mi">0</span>      <span class="mf">1.00e+00</span><span class="p">]</span>
 </pre></div>
 </div>
-<div class="code python highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">symb</span><span class="o">.</span><span class="n">sparsity_pattern</span><span class="p">(</span><span class="n">reordered</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">symmetric</span><span class="o">=</span><span class="bp">False</span><span class="p">))</span>
+<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">symb</span><span class="o">.</span><span class="n">sparsity_pattern</span><span class="p">(</span><span class="n">reordered</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">symmetric</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
 </pre></div>
 </div>
-<div class="highlight-python"><div class="highlight"><pre>[ 1.00e+00     0         0         0         0         0         0    ]
-[ 1.00e+00  1.00e+00     0         0         0         0         0    ]
-[    0         0      1.00e+00     0         0         0         0    ]
-[ 1.00e+00     0         0      1.00e+00     0         0         0    ]
-[    0         0         0      1.00e+00  1.00e+00     0         0    ]
-[ 1.00e+00  1.00e+00     0      1.00e+00  1.00e+00  1.00e+00     0    ]
-[    0         0      1.00e+00     0      1.00e+00     0      1.00e+00]
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">[</span> <span class="mf">1.00e+00</span>     <span class="mi">0</span>         <span class="mi">0</span>         <span class="mi">0</span>         <span class="mi">0</span>         <span class="mi">0</span>         <span class="mi">0</span>    <span class="p">]</span>
+<span class="p">[</span> <span class="mf">1.00e+00</span>  <span class="mf">1.00e+00</span>     <span class="mi">0</span>         <span class="mi">0</span>         <span class="mi">0</span>         <span class="mi">0</span>         <span class="mi">0</span>    <span class="p">]</span>
+<span class="p">[</span>    <span class="mi">0</span>         <span class="mi">0</span>      <span class="mf">1.00e+00</span>     <span class="mi">0</span>         <span class="mi">0</span>         <span class="mi">0</span>         <span class="mi">0</span>    <span class="p">]</span>
+<span class="p">[</span> <span class="mf">1.00e+00</span>     <span class="mi">0</span>         <span class="mi">0</span>      <span class="mf">1.00e+00</span>     <span class="mi">0</span>         <span class="mi">0</span>         <span class="mi">0</span>    <span class="p">]</span>
+<span class="p">[</span>    <span class="mi">0</span>         <span class="mi">0</span>         <span class="mi">0</span>      <span class="mf">1.00e+00</span>  <span class="mf">1.00e+00</span>     <span class="mi">0</span>         <span class="mi">0</span>    <span class="p">]</span>
+<span class="p">[</span> <span class="mf">1.00e+00</span>  <span class="mf">1.00e+00</span>     <span class="mi">0</span>      <span class="mf">1.00e+00</span>  <span class="mf">1.00e+00</span>  <span class="mf">1.00e+00</span>     <span class="mi">0</span>    <span class="p">]</span>
+<span class="p">[</span>    <span class="mi">0</span>         <span class="mi">0</span>      <span class="mf">1.00e+00</span>     <span class="mi">0</span>      <span class="mf">1.00e+00</span>     <span class="mi">0</span>      <span class="mf">1.00e+00</span><span class="p">]</span>
 </pre></div>
 </div>
 <p>The reordered pattern and its cliques can be inspected using the
 following commands:</p>
-<div class="code python highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">symb</span><span class="p">)</span>
+<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">symb</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-python"><div class="highlight"><pre>[X X          ]
-[X X X        ]
-[  X X   X X  ]
-[      X   X X]
-[    X   X X X]
-[    X X X X X]
-[      X X X X]
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">X</span> <span class="n">X</span>          <span class="p">]</span>
+<span class="p">[</span><span class="n">X</span> <span class="n">X</span> <span class="n">X</span>        <span class="p">]</span>
+<span class="p">[</span>  <span class="n">X</span> <span class="n">X</span>   <span class="n">X</span> <span class="n">X</span>  <span class="p">]</span>
+<span class="p">[</span>      <span class="n">X</span>   <span class="n">X</span> <span class="n">X</span><span class="p">]</span>
+<span class="p">[</span>    <span class="n">X</span>   <span class="n">X</span> <span class="n">X</span> <span class="n">X</span><span class="p">]</span>
+<span class="p">[</span>    <span class="n">X</span> <span class="n">X</span> <span class="n">X</span> <span class="n">X</span> <span class="n">X</span><span class="p">]</span>
+<span class="p">[</span>      <span class="n">X</span> <span class="n">X</span> <span class="n">X</span> <span class="n">X</span><span class="p">]</span>
 </pre></div>
 </div>
-<div class="code python highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">symb</span><span class="o">.</span><span class="n">cliques</span><span class="p">())</span>
+<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">symb</span><span class="o">.</span><span class="n">cliques</span><span class="p">())</span>
 </pre></div>
 </div>
-<div class="highlight-python"><div class="highlight"><pre><span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">],</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">],</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">]]</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">],</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">],</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">]]</span>
 </pre></div>
 </div>
 <p>Similarly, the clique tree, the supernodes, and the separator sets are:</p>
-<div class="code python highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">symb</span><span class="o">.</span><span class="n">parent</span><span class="p">())</span>
+<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">symb</span><span class="o">.</span><span class="n">parent</span><span class="p">())</span>
 </pre></div>
 </div>
-<div class="highlight-python"><div class="highlight"><pre><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">]</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">]</span>
 </pre></div>
 </div>
-<div class="code python highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">symb</span><span class="o">.</span><span class="n">supernodes</span><span class="p">())</span>
+<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">symb</span><span class="o">.</span><span class="n">supernodes</span><span class="p">())</span>
 </pre></div>
 </div>
-<div class="highlight-python"><div class="highlight"><pre><span class="p">[[</span><span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">]]</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">[[</span><span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">]]</span>
 </pre></div>
 </div>
-<div class="code python highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">symb</span><span class="o">.</span><span class="n">separators</span><span class="p">())</span>
+<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">symb</span><span class="o">.</span><span class="n">separators</span><span class="p">())</span>
 </pre></div>
 </div>
-<div class="highlight-python"><div class="highlight"><pre><span class="p">[[</span><span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">],</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">],</span> <span class="p">[]]</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">[[</span><span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">],</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">],</span> <span class="p">[]]</span>
 </pre></div>
 </div>
-<p>The <tt class="xref py py-class docutils literal"><span class="pre">cspmatrix</span></tt> object represents a chordal sparse matrix,
+<p>The <code class="xref py py-class docutils literal"><span class="pre">cspmatrix</span></code> object represents a chordal sparse matrix,
 and it contains lower-triangular numerical values as well as a
 reference to a symbolic factorization that defines the sparsity
-pattern. Given a <tt class="xref py py-class docutils literal"><span class="pre">symbolic</span></tt> object <cite>symb</cite> and a sparse
-matrix <img class="math" src="_images/math/937abf0036e3f773123ec44111199b356cf0ab10.png" alt="A" style="vertical-align: 0px"/>, we can create a <tt class="xref py py-class docutils literal"><span class="pre">cspmatrix</span></tt> as follows:</p>
-<div class="code python highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">cvxopt</span> <span class="kn">import</span> <span class="n">spmatrix</span><span class="p">,</span> <span class="n">amd</span><span class="p">,</span> <span class="n">printing</span>
-<span class="kn">import</span> <span class="nn">chompack</span> <span class="kn">as</span> <span class="nn">cp</span>
-<span class="n">printing</span><span class="o">.</span><span class="n">options</span><span class="p">[</span><span class="s">&#39;dformat&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;</span><span class="si">%3.1f</span><span class="s">&#39;</span>
+pattern. Given a <code class="xref py py-class docutils literal"><span class="pre">symbolic</span></code> object <cite>symb</cite> and a sparse
+matrix <span class="math">\(A\)</span>, we can create a <code class="xref py py-class docutils literal"><span class="pre">cspmatrix</span></code> as follows:</p>
+<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">cvxopt</span> <span class="k">import</span> <span class="n">spmatrix</span><span class="p">,</span> <span class="n">amd</span><span class="p">,</span> <span class="n">printing</span>
+<span class="kn">import</span> <span class="nn">chompack</span> <span class="k">as</span> <span class="nn">cp</span>
+<span class="n">printing</span><span class="o">.</span><span class="n">options</span><span class="p">[</span><span class="s1">&#39;dformat&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%3.1f</span><span class="s1">&#39;</span>
 
-<span class="c"># generate sparse matrix and compute symbolic factorization</span>
+<span class="c1"># generate sparse matrix and compute symbolic factorization</span>
 <span class="n">I</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">]</span>
 <span class="n">J</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">]</span>
 <span class="n">A</span> <span class="o">=</span> <span class="n">spmatrix</span><span class="p">([</span><span class="mf">1.0</span><span class="o">*</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">15</span><span class="o">+</span><span class="mi">1</span><span class="p">)],</span> <span class="n">I</span><span class="p">,</span> <span class="n">J</span><span class="p">,</span> <span class="p">(</span><span class="mi">7</span><span class="p">,</span><span class="mi">7</span><span class="p">))</span>
@@ -218,109 +218,109 @@ matrix <img class="math" src="_images/math/937abf0036e3f773123ec44111199b356cf0a
 <span class="n">L</span> <span class="o">+=</span> <span class="n">A</span>
 </pre></div>
 </div>
-<p>Now let us take a look at  <img class="math" src="_images/math/937abf0036e3f773123ec44111199b356cf0ab10.png" alt="A" style="vertical-align: 0px"/> and <img class="math" src="_images/math/53a7d99088c1cbd146ec8640b7c6360998cfa86f.png" alt="L" style="vertical-align: 0px"/>:</p>
-<div class="code python highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">A</span><span class="p">)</span>
+<p>Now let us take a look at  <span class="math">\(A\)</span> and <span class="math">\(L\)</span>:</p>
+<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">A</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-python"><div class="highlight"><pre>[ 1.0  0    0    0    0    0    0  ]
-[ 2.0  4.0  0    0    0    0    0  ]
-[ 0    0    6.0  0    0    0    0  ]
-[ 3.0  0    0    8.0  0    0    0  ]
-[ 0    0    0    9.0 11.0  0    0  ]
-[ 0    5.0  0   10.0 12.0 14.0  0  ]
-[ 0    0    7.0  0   13.0  0   15.0]
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">[</span> <span class="mf">1.0</span>  <span class="mi">0</span>    <span class="mi">0</span>    <span class="mi">0</span>    <span class="mi">0</span>    <span class="mi">0</span>    <span class="mi">0</span>  <span class="p">]</span>
+<span class="p">[</span> <span class="mf">2.0</span>  <span class="mf">4.0</span>  <span class="mi">0</span>    <span class="mi">0</span>    <span class="mi">0</span>    <span class="mi">0</span>    <span class="mi">0</span>  <span class="p">]</span>
+<span class="p">[</span> <span class="mi">0</span>    <span class="mi">0</span>    <span class="mf">6.0</span>  <span class="mi">0</span>    <span class="mi">0</span>    <span class="mi">0</span>    <span class="mi">0</span>  <span class="p">]</span>
+<span class="p">[</span> <span class="mf">3.0</span>  <span class="mi">0</span>    <span class="mi">0</span>    <span class="mf">8.0</span>  <span class="mi">0</span>    <span class="mi">0</span>    <span class="mi">0</span>  <span class="p">]</span>
+<span class="p">[</span> <span class="mi">0</span>    <span class="mi">0</span>    <span class="mi">0</span>    <span class="mf">9.0</span> <span class="mf">11.0</span>  <span class="mi">0</span>    <span class="mi">0</span>  <span class="p">]</span>
+<span class="p">[</span> <span class="mi">0</span>    <span class="mf">5.0</span>  <span class="mi">0</span>   <span class="mf">10.0</span> <span class="mf">12.0</span> <span class="mf">14.0</span>  <span class="mi">0</span>  <span class="p">]</span>
+<span class="p">[</span> <span class="mi">0</span>    <span class="mi">0</span>    <span class="mf">7.0</span>  <span class="mi">0</span>   <span class="mf">13.0</span>  <span class="mi">0</span>   <span class="mf">15.0</span><span class="p">]</span>
 </pre></div>
 </div>
-<div class="code python highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">L</span><span class="p">)</span>
+<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">L</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-python"><div class="highlight"><pre>[ 6.0  0    0    0    0    0    0  ]
-[ 7.0 15.0  0    0    0    0    0  ]
-[ 0   13.0 11.0  0    0    0    0  ]
-[ 0    0    0    4.0  0    0    0  ]
-[ 0    0    9.0  0    8.0  0    0  ]
-[ 0    0   12.0  5.0 10.0 14.0  0  ]
-[ 0    0    0    2.0  3.0  0.0  1.0]
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">[</span> <span class="mf">6.0</span>  <span class="mi">0</span>    <span class="mi">0</span>    <span class="mi">0</span>    <span class="mi">0</span>    <span class="mi">0</span>    <span class="mi">0</span>  <span class="p">]</span>
+<span class="p">[</span> <span class="mf">7.0</span> <span class="mf">15.0</span>  <span class="mi">0</span>    <span class="mi">0</span>    <span class="mi">0</span>    <span class="mi">0</span>    <span class="mi">0</span>  <span class="p">]</span>
+<span class="p">[</span> <span class="mi">0</span>   <span class="mf">13.0</span> <span class="mf">11.0</span>  <span class="mi">0</span>    <span class="mi">0</span>    <span class="mi">0</span>    <span class="mi">0</span>  <span class="p">]</span>
+<span class="p">[</span> <span class="mi">0</span>    <span class="mi">0</span>    <span class="mi">0</span>    <span class="mf">4.0</span>  <span class="mi">0</span>    <span class="mi">0</span>    <span class="mi">0</span>  <span class="p">]</span>
+<span class="p">[</span> <span class="mi">0</span>    <span class="mi">0</span>    <span class="mf">9.0</span>  <span class="mi">0</span>    <span class="mf">8.0</span>  <span class="mi">0</span>    <span class="mi">0</span>  <span class="p">]</span>
+<span class="p">[</span> <span class="mi">0</span>    <span class="mi">0</span>   <span class="mf">12.0</span>  <span class="mf">5.0</span> <span class="mf">10.0</span> <span class="mf">14.0</span>  <span class="mi">0</span>  <span class="p">]</span>
+<span class="p">[</span> <span class="mi">0</span>    <span class="mi">0</span>    <span class="mi">0</span>    <span class="mf">2.0</span>  <span class="mf">3.0</span>  <span class="mf">0.0</span>  <span class="mf">1.0</span><span class="p">]</span>
 </pre></div>
 </div>
-<p>Notice that <img class="math" src="_images/math/53a7d99088c1cbd146ec8640b7c6360998cfa86f.png" alt="L" style="vertical-align: 0px"/> is a reordered lower-triangular representation
-of <img class="math" src="_images/math/937abf0036e3f773123ec44111199b356cf0ab10.png" alt="A" style="vertical-align: 0px"/>. We can convert <img class="math" src="_images/math/53a7d99088c1cbd146ec8640b7c6360998cfa86f.png" alt="L" style="vertical-align: 0px"/> to an <tt class="xref py py-class docutils literal"><span class="pre">spmatrix</span></tt> using
+<p>Notice that <span class="math">\(L\)</span> is a reordered lower-triangular representation
+of <span class="math">\(A\)</span>. We can convert <span class="math">\(L\)</span> to an <code class="xref py py-class docutils literal"><span class="pre">spmatrix</span></code> using
 the <cite>spmatrix()</cite> method:</p>
-<div class="code python highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">L</span><span class="o">.</span><span class="n">spmatrix</span><span class="p">(</span><span class="n">reordered</span> <span class="o">=</span> <span class="bp">False</span><span class="p">))</span>
+<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">L</span><span class="o">.</span><span class="n">spmatrix</span><span class="p">(</span><span class="n">reordered</span> <span class="o">=</span> <span class="kc">False</span><span class="p">))</span>
 </pre></div>
 </div>
-<div class="highlight-python"><div class="highlight"><pre>[ 1.0  0    0    0    0    0    0  ]
-[ 2.0  4.0  0    0    0    0    0  ]
-[ 0    0    6.0  0    0    0    0  ]
-[ 3.0  0    0    8.0  0    0    0  ]
-[ 0    0    0    9.0 11.0  0    0  ]
-[ 0.0  5.0  0   10.0 12.0 14.0  0  ]
-[ 0    0    7.0  0   13.0  0   15.0]
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">[</span> <span class="mf">1.0</span>  <span class="mi">0</span>    <span class="mi">0</span>    <span class="mi">0</span>    <span class="mi">0</span>    <span class="mi">0</span>    <span class="mi">0</span>  <span class="p">]</span>
+<span class="p">[</span> <span class="mf">2.0</span>  <span class="mf">4.0</span>  <span class="mi">0</span>    <span class="mi">0</span>    <span class="mi">0</span>    <span class="mi">0</span>    <span class="mi">0</span>  <span class="p">]</span>
+<span class="p">[</span> <span class="mi">0</span>    <span class="mi">0</span>    <span class="mf">6.0</span>  <span class="mi">0</span>    <span class="mi">0</span>    <span class="mi">0</span>    <span class="mi">0</span>  <span class="p">]</span>
+<span class="p">[</span> <span class="mf">3.0</span>  <span class="mi">0</span>    <span class="mi">0</span>    <span class="mf">8.0</span>  <span class="mi">0</span>    <span class="mi">0</span>    <span class="mi">0</span>  <span class="p">]</span>
+<span class="p">[</span> <span class="mi">0</span>    <span class="mi">0</span>    <span class="mi">0</span>    <span class="mf">9.0</span> <span class="mf">11.0</span>  <span class="mi">0</span>    <span class="mi">0</span>  <span class="p">]</span>
+<span class="p">[</span> <span class="mf">0.0</span>  <span class="mf">5.0</span>  <span class="mi">0</span>   <span class="mf">10.0</span> <span class="mf">12.0</span> <span class="mf">14.0</span>  <span class="mi">0</span>  <span class="p">]</span>
+<span class="p">[</span> <span class="mi">0</span>    <span class="mi">0</span>    <span class="mf">7.0</span>  <span class="mi">0</span>   <span class="mf">13.0</span>  <span class="mi">0</span>   <span class="mf">15.0</span><span class="p">]</span>
 </pre></div>
 </div>
-<p>This returns an <tt class="xref py py-class docutils literal"><span class="pre">spmatrix</span></tt> with the same ordering
-as <img class="math" src="_images/math/937abf0036e3f773123ec44111199b356cf0ab10.png" alt="A" style="vertical-align: 0px"/>, i.e., the inverse permutation is applied to <img class="math" src="_images/math/53a7d99088c1cbd146ec8640b7c6360998cfa86f.png" alt="L" style="vertical-align: 0px"/>.</p>
+<p>This returns an <code class="xref py py-class docutils literal"><span class="pre">spmatrix</span></code> with the same ordering
+as <span class="math">\(A\)</span>, i.e., the inverse permutation is applied to <span class="math">\(L\)</span>.</p>
 <p>The following example illustrates how to use the Cholesky routine:</p>
-<div class="code python highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">cvxopt</span> <span class="kn">import</span> <span class="n">spmatrix</span><span class="p">,</span> <span class="n">amd</span><span class="p">,</span> <span class="n">normal</span>
-<span class="kn">from</span> <span class="nn">chompack</span> <span class="kn">import</span> <span class="n">symbolic</span><span class="p">,</span> <span class="n">cspmatrix</span><span class="p">,</span> <span class="n">cholesky</span>
+<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">cvxopt</span> <span class="k">import</span> <span class="n">spmatrix</span><span class="p">,</span> <span class="n">amd</span><span class="p">,</span> <span class="n">normal</span>
+<span class="kn">from</span> <span class="nn">chompack</span> <span class="k">import</span> <span class="n">symbolic</span><span class="p">,</span> <span class="n">cspmatrix</span><span class="p">,</span> <span class="n">cholesky</span>
 
-<span class="c"># generate sparse matrix and compute symbolic factorization</span>
+<span class="c1"># generate sparse matrix and compute symbolic factorization</span>
 <span class="n">I</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">]</span>
 <span class="n">J</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">]</span>
 <span class="n">A</span> <span class="o">=</span> <span class="n">spmatrix</span><span class="p">([</span><span class="mf">0.1</span><span class="o">*</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">15</span><span class="p">)],</span> <span class="n">I</span><span class="p">,</span> <span class="n">J</span><span class="p">,</span> <span class="p">(</span><span class="mi">7</span><span class="p">,</span><span class="mi">7</span><span class="p">))</span> <span class="o">+</span> <span class="n">spmatrix</span><span class="p">(</span><span class="mf">10.0</span><span class="p">,</span><span class="nb">range</span><span class="p">(</span><span class="mi">7</span><span class="p">),</span><span class="nb">range</span><span class="p">(</span><span class="mi">7</span><span class="p">))</span>
 <span class="n">symb</span> <span class="o">=</span> <span class="n">symbolic</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="n">amd</span><span class="o">.</span><span class="n">order</span><span class="p">)</span>
 
-<span class="c"># create cspmatrix</span>
+<span class="c1"># create cspmatrix</span>
 <span class="n">L</span> <span class="o">=</span> <span class="n">cspmatrix</span><span class="p">(</span><span class="n">symb</span><span class="p">)</span>
 <span class="n">L</span> <span class="o">+=</span> <span class="n">A</span>
 
-<span class="c"># compute numeric factorization</span>
+<span class="c1"># compute numeric factorization</span>
 <span class="n">cholesky</span><span class="p">(</span><span class="n">L</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="code python highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">L</span><span class="p">)</span>
+<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">L</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-python"><div class="highlight"><pre>[ 3.3  0    0    0    0    0    0  ]
-[ 0.2  3.4  0    0    0    0    0  ]
-[ 0    0.4  3.3  0    0    0    0  ]
-[ 0    0    0    3.2  0    0    0  ]
-[ 0    0    0.3  0    3.3  0    0  ]
-[ 0    0    0.4  0.2  0.3  3.3  0  ]
-[ 0    0    0    0.1  0.1 -0.0  3.2]
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">[</span> <span class="mf">3.3</span>  <span class="mi">0</span>    <span class="mi">0</span>    <span class="mi">0</span>    <span class="mi">0</span>    <span class="mi">0</span>    <span class="mi">0</span>  <span class="p">]</span>
+<span class="p">[</span> <span class="mf">0.2</span>  <span class="mf">3.4</span>  <span class="mi">0</span>    <span class="mi">0</span>    <span class="mi">0</span>    <span class="mi">0</span>    <span class="mi">0</span>  <span class="p">]</span>
+<span class="p">[</span> <span class="mi">0</span>    <span class="mf">0.4</span>  <span class="mf">3.3</span>  <span class="mi">0</span>    <span class="mi">0</span>    <span class="mi">0</span>    <span class="mi">0</span>  <span class="p">]</span>
+<span class="p">[</span> <span class="mi">0</span>    <span class="mi">0</span>    <span class="mi">0</span>    <span class="mf">3.2</span>  <span class="mi">0</span>    <span class="mi">0</span>    <span class="mi">0</span>  <span class="p">]</span>
+<span class="p">[</span> <span class="mi">0</span>    <span class="mi">0</span>    <span class="mf">0.3</span>  <span class="mi">0</span>    <span class="mf">3.3</span>  <span class="mi">0</span>    <span class="mi">0</span>  <span class="p">]</span>
+<span class="p">[</span> <span class="mi">0</span>    <span class="mi">0</span>    <span class="mf">0.4</span>  <span class="mf">0.2</span>  <span class="mf">0.3</span>  <span class="mf">3.3</span>  <span class="mi">0</span>  <span class="p">]</span>
+<span class="p">[</span> <span class="mi">0</span>    <span class="mi">0</span>    <span class="mi">0</span>    <span class="mf">0.1</span>  <span class="mf">0.1</span> <span class="o">-</span><span class="mf">0.0</span>  <span class="mf">3.2</span><span class="p">]</span>
 </pre></div>
 </div>
-<p>Given a sparse matrix <img class="math" src="_images/math/937abf0036e3f773123ec44111199b356cf0ab10.png" alt="A" style="vertical-align: 0px"/>, we can check if it is chordal by
-checking whether the permutation <img class="math" src="_images/math/c5b47cd114d1cd218d587260b667ed59b7ace4a0.png" alt="p" style="vertical-align: -4px"/> returned by maximum cardinality
+<p>Given a sparse matrix <span class="math">\(A\)</span>, we can check if it is chordal by
+checking whether the permutation <span class="math">\(p\)</span> returned by maximum cardinality
 search is a perfect elimination ordering:</p>
-<div class="code python highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">cvxopt</span> <span class="kn">import</span> <span class="n">spmatrix</span><span class="p">,</span> <span class="n">printing</span>
-<span class="n">printing</span><span class="o">.</span><span class="n">options</span><span class="p">[</span><span class="s">&#39;width&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
-<span class="kn">import</span> <span class="nn">chompack</span> <span class="kn">as</span> <span class="nn">cp</span>
+<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">cvxopt</span> <span class="k">import</span> <span class="n">spmatrix</span><span class="p">,</span> <span class="n">printing</span>
+<span class="n">printing</span><span class="o">.</span><span class="n">options</span><span class="p">[</span><span class="s1">&#39;width&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+<span class="kn">import</span> <span class="nn">chompack</span> <span class="k">as</span> <span class="nn">cp</span>
 
-<span class="c"># Define chordal sparse matrix</span>
+<span class="c1"># Define chordal sparse matrix</span>
 <span class="n">I</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mi">17</span><span class="p">)</span><span class="o">+</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">14</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">14</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">14</span><span class="p">,</span><span class="mi">15</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">15</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">14</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">14</span><span class="p">,</span><span class="mi">14</span><span class="p">,</span>\
     <span class="mi">15</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">12</span><span class="p">,</span><span class="mi">13</span><span class="p">,</span><span class="mi">16</span><span class="p">,</span><span class="mi">12</span><span class="p">,</span><span class="mi">13</span><span class="p">,</span><span class="mi">16</span><span class="p">,</span><span class="mi">12</span><span class="p">,</span><span class="mi">13</span><span class="p">,</span><span class="mi">15</span><span class="p">,</span><span class="mi">16</span><span class="p">,</span><span class="mi">13</span><span class="p">,</span><span class="mi">15</span><span class="p">,</span><span class="mi">16</span><span class="p">,</span><span class="mi">15</span><span class="p">,</span><span class="mi">16</span><span class="p">,</span><span class="mi">15</span><span class="p">,</span><span class="mi">16</span><span class="p">,</span><span class="mi">16</span><span class="p">]</span>
 <span class="n">J</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mi">17</span><span class="p">)</span><span class="o">+</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span>\
     <span class="mi">8</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">11</span><span class="p">,</span><span class="mi">11</span><span class="p">,</span><span class="mi">11</span><span class="p">,</span><span class="mi">11</span><span class="p">,</span><span class="mi">12</span><span class="p">,</span><span class="mi">12</span><span class="p">,</span><span class="mi">12</span><span class="p">,</span><span class="mi">13</span><span class="p">,</span><span class="mi">13</span><span class="p">,</span><span class="mi">14</span><span class="p">,</span><span class="mi">14</span><span class="p">,</span><span class="mi">15</span><span class="p">]</span>
 <span class="n">A</span> <span class="o">=</span> <span class="n">spmatrix</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span><span class="n">I</span><span class="p">,</span><span class="n">J</span><span class="p">,(</span><span class="mi">17</span><span class="p">,</span><span class="mi">17</span><span class="p">))</span>
 
-<span class="c"># Compute maximum cardinality search</span>
+<span class="c1"># Compute maximum cardinality search</span>
 <span class="n">p</span> <span class="o">=</span> <span class="n">cp</span><span class="o">.</span><span class="n">maxcardsearch</span><span class="p">(</span><span class="n">A</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Is <img class="math" src="_images/math/c5b47cd114d1cd218d587260b667ed59b7ace4a0.png" alt="p" style="vertical-align: -4px"/> a perfect elimination ordering?</p>
-<div class="code python highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">cp</span><span class="o">.</span><span class="n">peo</span><span class="p">(</span><span class="n">A</span><span class="p">,</span><span class="n">p</span><span class="p">)</span>
+<p>Is <span class="math">\(p\)</span> a perfect elimination ordering?</p>
+<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">cp</span><span class="o">.</span><span class="n">peo</span><span class="p">(</span><span class="n">A</span><span class="p">,</span><span class="n">p</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-python"><div class="highlight"><pre><span class="bp">True</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kc">True</span>
 </pre></div>
 </div>
 <p>Let&#8217;s verify that no fill is generated by the symbolic factorization:</p>
-<div class="code python highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">symb</span> <span class="o">=</span> <span class="n">cp</span><span class="o">.</span><span class="n">symbolic</span><span class="p">(</span><span class="n">A</span><span class="p">,</span><span class="n">p</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">symb</span><span class="o">.</span><span class="n">fill</span><span class="p">)</span>
+<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">symb</span> <span class="o">=</span> <span class="n">cp</span><span class="o">.</span><span class="n">symbolic</span><span class="p">(</span><span class="n">A</span><span class="p">,</span><span class="n">p</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">symb</span><span class="o">.</span><span class="n">fill</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-python"><div class="highlight"><pre><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -334,7 +334,7 @@ search is a perfect elimination ordering:</p>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2014-2015, Martin S. Andersen and Lieven Vandenberghe.
+        &copy; Copyright 2014-2016, Martin S. Andersen and Lieven Vandenberghe.
     </p>
   </div>
 
@@ -354,7 +354,7 @@ search is a perfect elimination ordering:</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'2.2.1',
+            VERSION:'2.3.0',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
@@ -363,6 +363,7 @@ search is a perfect elimination ordering:</p>
       <script type="text/javascript" src="_static/jquery.js"></script>
       <script type="text/javascript" src="_static/underscore.js"></script>
       <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 
   
 
