@@ -23,14 +23,19 @@ if type(LAPACK_LIB) is str: LAPACK_LIB = LAPACK_LIB.strip().split(',')
 if type(BLAS_EXTRA_LINK_ARGS) is str: BLAS_EXTRA_LINK_ARGS = BLAS_EXTRA_LINK_ARGS.strip().split(',')
 if BLAS_NOUNDERSCORES: MACROS.append(('BLAS_NO_UNDERSCORE',''))
 
-
 # Install Python-only reference implementation? (default: False)
-py_only = os.environ.get('CHOMPACK_PY_ONLY',False) or os.environ.get('READTHEDOCS', False) == 'True'
-
+py_only = os.environ.get('CHOMPACK_PY_ONLY',False)
 if type(py_only) is str:
     if py_only in ['true','True','1','yes','Yes','Y','y']: py_only = True
     else: py_only = False
 
+if os.environ.get('READTHEDOCS', False) == 'True':
+    requirements = []
+    py_only = True
+else:
+    requirements = ['cvxopt>=1.1.8']
+
+        
 # C extensions
 cbase = Extension('cbase',
                   libraries = BLAS_LIB + LAPACK_LIB,
@@ -66,7 +71,7 @@ setup(name='chompack',
         'Programming Language :: Python :: 3',
         'Topic :: Scientific/Engineering',
         ],
-    install_requires=['cvxopt>=1.1.8'],
+    install_requires=requirements,
     )
 
 
