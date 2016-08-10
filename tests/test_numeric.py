@@ -95,12 +95,12 @@ class TestNumeric(unittest.TestCase):
         
         B = cp.eye(self.symb.n)
         cp.trmm(L, B)
-        diff = list((L.spmatrix(reordered=True) - cp.perm(B,self.symb.p))[:])
+        diff = list((L.spmatrix(reordered=True) - B[self.symb.p,self.symb.p])[:])
         self.assertAlmostEqualLists(diff, len(diff)*[0.0])
 
         B = cp.eye(self.symb.n)
         cp.trmm(L, B, trans = 'T')
-        diff = list((L.spmatrix(reordered=True).T - cp.perm(B,self.symb.p))[:])
+        diff = list((L.spmatrix(reordered=True).T - B[self.symb.p,self.symb.p])[:])
         self.assertAlmostEqualLists(diff, len(diff)*[0.0])
     
     def test_trsm(self):
@@ -109,12 +109,12 @@ class TestNumeric(unittest.TestCase):
         
         B = cp.eye(self.symb.n)
         cp.trsm(L, B)
-        diff = list((L.spmatrix(reordered=True)*cp.perm(B,self.symb.p) - cp.eye(self.symb.n))[:])
+        diff = list((L.spmatrix(reordered=True)*B[self.symb.p,self.symb.p] - cp.eye(self.symb.n))[:])
         self.assertAlmostEqualLists(diff, len(diff)*[0.0])
 
         B = cp.eye(self.symb.n)
         cp.trsm(L, B, trans = 'T')
-        diff = list((L.spmatrix(reordered=True).T*cp.perm(B,self.symb.p) - cp.eye(self.symb.n))[:])
+        diff = list((L.spmatrix(reordered=True).T*B[self.symb.p,self.symb.p] - cp.eye(self.symb.n))[:])
         self.assertAlmostEqualLists(diff, len(diff)*[0.0])
         
     def test_pfcholesky(self):

@@ -44,17 +44,18 @@ EXT_MODULES = []
 if not py_only: EXT_MODULES.append(cbase)
     
 setup(name='chompack',
-    version='2.2.1',
+    version='2.3.0',
     description='Library for chordal matrix computations',
     author='Martin S. Andersen, Lieven Vandenberghe',
     author_email='martin.skovgaard.andersen@gmail.com, vandenbe@ee.ucla.edu',
     url='http://cvxopt.github.io/chompack/',
-    download_url='https://github.com/cvxopt/chompack/archive/v2.2.1.tar.gz',
+    download_url='https://github.com/cvxopt/chompack/archive/v2.3.0.tar.gz',
     license = 'GNU GPL version 3',
     package_dir = {"chompack": "src/python"},
     packages = ["chompack","chompack.pybase"],
     ext_package = "chompack",
     ext_modules = EXT_MODULES,
+    zip_safe = False,
     classifiers=[
         'Development Status :: 4 - Beta',
         'Intended Audience :: Science/Research',
@@ -65,7 +66,7 @@ setup(name='chompack',
         'Programming Language :: Python :: 3',
         'Topic :: Scientific/Engineering',
         ],
-    install_requires=['cvxopt>=1.1.7'],
+    install_requires=['cvxopt>=1.1.8'],
     )
 
 

@@ -26,5 +26,6 @@ from chompack.pybase.trsm import trsm
 from chompack.pybase.trmm import trmm
 from chompack.pybase.psdcompletion import psdcompletion
 from chompack.pybase.edmcompletion import edmcompletion
+from chompack.pybase.mrcompletion import mrcompletion
     
-__all__ = ['cholesky','llt','competion','projected_inverse','hessian','trsm','trmm','psdcompletion','edmcompletion']
+__all__ = ['cholesky','llt','competion','projected_inverse','hessian','trsm','trmm','psdcompletion','edmcompletion','mrcompletion']

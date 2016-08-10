@@ -289,9 +289,7 @@ def amalgamate(colcount, snode, snptr, snpar, snpost, merge_function):
         if snpar[j] in ch: ch[snpar[j]].append(j)
         else: ch[snpar[j]] = [j]
 
-    snlist = []
-    for k in range(N):
-        snlist.append(snode[snptr[k]:snptr[k+1]])
+    snlist = [snode[snptr[k]:snptr[k+1]] for k in range(N)]
 
     snpar_ = +snpar
     colcount_ = +colcount
@@ -315,7 +313,7 @@ def amalgamate(colcount, snode, snptr, snpar, snpost, merge_function):
                 snpar_[k] = k
 
     L = [i for i,s in enumerate(snlist) if s is not None]
-    snptr_ = +snptr
+    snptr_ = matrix(0,(len(L)+1,1))
     snode_ = +snode
     for i,l in enumerate(L):
         snptr_[i+1] = snptr_[i] + len(snlist[l])
@@ -323,8 +321,7 @@ def amalgamate(colcount, snode, snptr, snpar, snpost, merge_function):
 
     snpar_ = snpar_[L]
     for i in range(len(snpar_)):
-        if snpar_[i] != i:
-            snpar_[i] = L.index(snpar_[i])
+        snpar_[i] = L.index(snpar_[i])
     snpost_ = post_order(snpar_)
     return colcount_, snode_, snptr_, snpar_, snpost_
 
@@ -1034,7 +1031,9 @@ class cspmatrix(object):
         """
         Converts the :py:class:`cspmatrix` :math:`A` to a sparse matrix. A reordered
         matrix is returned if the optional argument `reordered` is
-        `True`, and otherwise the inverse permutation is applied.
+        `True` (default), and otherwise the inverse permutation is applied. Only the
+        default options are allowed if the :py:class:`cspmatrix` :math:`A` represents
+        a Cholesky factor. 
 
         :param reordered:  boolean (default: True)
         :param symmetric:  boolean (default: False)			   
@@ -1049,6 +1048,8 @@ class cspmatrix(object):
         blkval = self.blkval
         
         if self.is_factor:
+            if symmetric: raise ValueError("'symmetric = True' not implemented for Cholesky factors")
+            if not reordered: raise ValueError("'reordered = False' not implemented for Cholesky factors")
             snpost = self.symb.snpost
             blkval = +blkval
             for k in snpost:
@@ -1102,7 +1103,7 @@ class cspmatrix(object):
             if not symmetric: return tmp
             else: return symmetrize(tmp)
         else:
-            # apply inverse permutation
+            # apply inverse permutation            
             tmp = perm(symmetrize(tmp), self.symb.ip)
             if symmetric: return tmp
             else: return tril(tmp) 
@@ -1169,3 +1170,39 @@ class cspmatrix(object):
 
                 blkval[I] += alpha*val[cp[j]:cp[j+1]]
         return
+
+    def add_projection(self, A, alpha = 1.0, beta = 1.0, reordered=False):
+        """
+        Add projection of a dense matrix :math:`A` to :py:class:`cspmatrix`.
+
+            X := alpha*proj(A) + beta*X
+        """
+        assert self.is_factor is False, "cannot project matrix onto a cspmatrix factor"
+        assert isinstance(A, matrix), "argument A must be a dense matrix"
+        
+        symb = self.symb
+        blkval = self.blkval
+
+        n = symb.n
+        snptr = symb.snptr
+        snode = symb.snode
+        relptr = symb.relptr
+        snrowidx = symb.snrowidx
+        sncolptr = symb.sncolptr
+        blkptr = symb.blkptr
+
+        if self.symb.p is not None and reordered is False:
+            A = tril(A)
+            A = A+A.T
+            A[::A.size[0]+1] *= 0.5
+            A = A[self.symb.p,self.symb.p]
+
+        # for each block ...
+        for k in range(self.symb.Nsn):
+            nn = snptr[k+1]-snptr[k]
+            na = relptr[k+1]-relptr[k]
+            nj = nn + na
+             
+            blkval[blkptr[k]:blkptr[k+1]] = beta*blkval[blkptr[k]:blkptr[k+1]] + alpha*(A[snrowidx[sncolptr[k]:sncolptr[k+1]],snode[snptr[k]:snptr[k+1]]][:])
+        
+        return 

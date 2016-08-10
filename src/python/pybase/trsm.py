@@ -8,8 +8,7 @@ def trsm(L, B, alpha = 1.0, trans = 'N', nrhs = None, offsetB = 0, ldB = None):
 
     .. math::
 
-       B &:= \alpha L^{-1} B  \text{ if trans is 'N'}
-
+       B &:= \alpha L^{-1} B  \text{ if trans is 'N'} \\
        B &:= \alpha L^{-T} B  \text{ if trans is 'T'} 
 
     where :math:`L` is a :py:class:`cspmatrix` factor.

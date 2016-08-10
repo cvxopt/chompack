@@ -1,7 +1,7 @@
 Copyright and License
 =====================
 
-© 2014-2015 M. Andersen and L. Vandenberghe. 
+© 2014-2016 M. Andersen and L. Vandenberghe. 
 
 CHOMPACK is free software; you can redistribute it and/or modify it under 
 the terms of the 
