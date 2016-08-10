@@ -65,7 +65,7 @@ if __nx__ and __mpl__:
         layout = kwargs.get('layout',None)
         G = nx.DiGraph()
         G.add_nodes_from(range(symb.Nsn))
-        G.add_edges_from([(symb.snpar[k],k) for k in range(symb.Nsn) if symb.snpar[k] <> k ])
+        G.add_edges_from([(symb.snpar[k],k) for k in range(symb.Nsn) if symb.snpar[k] != k ])
         if layout is None:
             pos=nx.graphviz_layout(G, prog='dot')
         else:

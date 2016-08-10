@@ -41,7 +41,7 @@ def post_order(parent):
         head[parent[j]] = j
 
     for j in range(n):
-        if (parent[j] <> j): continue
+        if (parent[j] != j): continue
         k = __tdfs(j, k, head, next, p, stack)
 
     return p
@@ -116,7 +116,7 @@ def counts(A, parent, post):
     cp,ri,_ = A.CCS
     for k in range(n):
         j = post[k]
-        if parent[j] <> j:
+        if parent[j] != j:
             colcount[parent[j]] -= 1
         for p in range(cp[j],cp[j+1]):
             i = ri[p]
@@ -124,9 +124,9 @@ def counts(A, parent, post):
             q, jleaf = __leaf(i, j, first, maxfirst, prevleaf, ancestor)
             if jleaf >= 1: colcount[j] += 1
             if jleaf == 2: colcount[q] -= 1
-        if parent[j] <> j: ancestor[j] = parent[j]
+        if parent[j] != j: ancestor[j] = parent[j]
     for j in range(n):
-        if parent[j] <> j: colcount[parent[j]] += colcount[j]
+        if parent[j] != j: colcount[parent[j]] += colcount[j]
 
     return colcount
 
@@ -163,7 +163,7 @@ def pothen_sun(par, post, colcount):
 
         mdeg = colcount[j] - 1
 
-        if par[j] <> j:
+        if par[j] != j:
             if mdeg == colcount[par[j]] and flag[par[j]] == -1:
                 # par[j] not assigned to supernode
                 snodes -= 1
@@ -297,7 +297,7 @@ def amalgamate(colcount, snode, snptr, snpar, snpost, merge_function):
     colcount_ = +colcount
     Ns = N
     for k in snpost:
-        if snpar_[k] <> k:
+        if snpar_[k] != k:
             colk = colcount_[snlist[k][0]]
             colp = colcount_[snlist[snpar_[k]][0]]
             nk = len(snlist[k])
@@ -323,7 +323,7 @@ def amalgamate(colcount, snode, snptr, snpar, snpost, merge_function):
 
     snpar_ = snpar_[L]
     for i in range(len(snpar_)):
-        if snpar_[i] <> i:
+        if snpar_[i] != i:
             snpar_[i] = L.index(snpar_[i])
     snpost_ = post_order(snpar_)
     return colcount_, snode_, snptr_, snpar_, snpost_
@@ -381,7 +381,7 @@ def embed(A, colcount, snode, snptr, snpar, snpost):
     for k in snpost:
         p = snptr[k]
         Nk = snptr[k+1]-p
-        if snpar[k] <> k:
+        if snpar[k] != k:
             cnnz[snpar[k]] = lmerge(rowidx,rowidx,colptr[snpar[k]], colptr[k]+Nk,cnnz[snpar[k]], cnnz[k]-Nk)
 
     return colptr, rowidx
@@ -536,7 +536,8 @@ class symbolic(object):
 
         # Symmetrize A
         Ap = symmetrize(A)
-        nnz_Ap = (len(Ap)+Ap.size[0])/2   # number of lower triangular nonzeros
+        nnz_Ap = (len(Ap)+Ap.size[0])/2   # number of nonzeros in lower triangle        
+        assert len([i for i,j in zip(Ap.I,Ap.J) if i==j]) == A.size[0], "the sparsity pattern of A must include diagonal elements" 
 
         # Permute if permutation vector p or ordering routine is specified
         if p is not None:
@@ -590,7 +591,7 @@ class symbolic(object):
         # build chptr
         chptr = matrix(0, (len(snpar)+1,1))
         for j in snpost: 
-            if snpar[j] <> j: chptr[snpar[j]+1] += 1
+            if snpar[j] != j: chptr[snpar[j]+1] += 1
         for j in range(1,len(chptr)):
             chptr[j] += chptr[j-1]
 
@@ -598,7 +599,7 @@ class symbolic(object):
         tmp = +chptr
         chidx = matrix(0,(chptr[-1],1))
         for j in snpost:
-            if snpar[j] <> j: 
+            if snpar[j] != j: 
                 chidx[tmp[snpar[j]]] = j
                 tmp[snpar[j]] += 1
         del tmp

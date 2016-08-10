@@ -17,7 +17,7 @@ You should have received a copy of the GNU General Public License
 along with Chompack.  If not, see <http://www.gnu.org/licenses/>.    
 """
 
-__version__ = '2.2.0'
+__version__ = '2.2.1'
 from chompack.symbolic import symbolic, cspmatrix, merge_size_fill, peo
 from cvxopt import spmatrix
 
