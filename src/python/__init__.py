@@ -23,7 +23,7 @@ from cvxopt import spmatrix
 
 try:
     from chompack.cbase import cholesky,llt,completion,projected_inverse,hessian,trsm
-    from chompack.pybase import trmm, psdcompletion, edmcompletion
+    from chompack.pybase import trmm, psdcompletion, edmcompletion, mrcompletion
     __py_only__ = False
 except:
     from chompack.pybase import cholesky,llt,completion,projected_inverse,hessian,trsm,trmm,psdcompletion,edmcompletion
@@ -37,5 +37,5 @@ from chompack.maxchord import maxchord
 from chompack.mcs import maxcardsearch
 
 __all__ = ["__version__","cspmatrix","spmatrix","symbolic","peo","maxcardsearch","maxchord",\
-           "cholesky", "llt", "completion", "psdcompletion", "edmcompletion", "projected_inverse", "hessian",\
+           "cholesky", "llt", "completion", "psdcompletion", "edmcompletion", "mrcompletion","projected_inverse", "hessian",\
            "trsm", "trmm", "tril", "triu", "convert_block", "convert_conelp", "dot", "syr2"]

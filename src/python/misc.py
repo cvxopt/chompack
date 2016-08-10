@@ -47,6 +47,7 @@ def perm(A, p):
     :param p:    :py:class:`matrix` or :class:`list` of length `A.size[0]`
 
     """
+    assert isinstance(A,spmatrix), "argument must be a sparse matrix"
     assert A.size[0] == A.size[1], "A must be a square matrix"
     assert A.size[0] == len(p), "length of p must be equal to the order of A"
     return A[p,p]

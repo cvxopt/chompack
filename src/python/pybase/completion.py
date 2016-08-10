@@ -44,7 +44,7 @@ def completion(X, factored_updates = True):
         na = relptr[k+1]-relptr[k]     # |Ak|
         nj = na + nn
 
-        # allocate F and copy L_{Jk,Nk} to leading columns of F
+        # allocate F and copy X_{Jk,Nk} to leading columns of F
         F = matrix(0.0, (nj,nj))
         lapack.lacpy(blkval, F, offsetA = blkptr[k], ldA = nj, m = nj, n = nn, uplo = 'L')
 

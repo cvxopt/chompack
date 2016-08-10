@@ -39,13 +39,20 @@ def mrcompletion(A, reordered=True):
     blkval = A.blkval
 
     stack = []
+    r = 0 
 
     maxr = symb.clique_number
-    Y = matrix(0.0,(n,maxr))     # storage for factorization
-    Z = matrix(0.0,(maxr,maxr))  # storage for EVD of cliques
-    w = matrix(0.0,(maxr,1))     # storage for EVD of cliques
+    Y = matrix(0.0,(n,maxr))       # storage for factorization
+    Z = matrix(0.0,(maxr,maxr))    # storage for EVD of cliques
+    w = matrix(0.0,(maxr,1))       # storage for EVD of cliques
 
-    r = 0 
+    P = matrix(0.0,(maxr,maxr))    # storage for left singular vectors
+    Q1t = matrix(0.0,(maxr,maxr))  # storage for right singular vectors (1)
+    Q2t = matrix(0.0,(maxr,maxr))  # storage for right singular vectors (2)
+    S = matrix(0.0,(maxr,1))       # storage for singular values
+
+    V = matrix(0.0,(maxr,maxr))
+    Ya = matrix(0.0,(maxr,maxr))
     
     # visit supernodes in reverse topological order
     for k in range(symb.Nsn-1,-1,-1):
@@ -70,34 +77,30 @@ def mrcompletion(A, reordered=True):
 
         # Compute factorization of F
         lapack.syevr(F, w, jobz='V', range='A', uplo='L', Z=Z, n=nj,ldZ=maxr)
-        lmax = max(w[:nj])
-        rk = sum([1 for wi in w[:nj] if wi > 1e-14*lmax])  # determine rank of clique k
-        r = max(rk,r)                                      # update max rank
+        rk = sum([1 for wi in w[:nj] if wi > 1e-14*w[nj-1]])  # determine rank of clique k
+        r = max(rk,r)                                         # update rank
         
-        # scale last rk cols of Z and copy parts to Yn
+        # Scale last rk cols of Z and copy parts to Yn
         for j in range(nj-rk,nj):
             Z[:nj,j] *= sqrt(w[j])
-        I = symb.snrowidx[symb.sncolptr[k]:symb.sncolptr[k]+nn]
-        Y[I,:rk] = Z[:nn,nj-rk:nj]
+        In = symb.snrowidx[symb.sncolptr[k]:symb.sncolptr[k]+nn]
+        Y[In,:rk] = Z[:nn,nj-rk:nj]
 
-                    
         # if supernode k is not a root node:
         if na > 0:
-            V = matrix([[Z[nn:nj,nj-rk:nj]],[matrix(0.0,(na,r-rk))]])
-            Ya = Y[symb.snrowidx[symb.sncolptr[k]+nn:symb.sncolptr[k+1]],:r]
-
+            # Extract data
+            Ia = symb.snrowidx[symb.sncolptr[k]+nn:symb.sncolptr[k+1]]
+            Ya[:na,:r] = Y[Ia,:r]
+            V[:na,:rk] = Z[nn:nj,nj-rk:nj]
+            V[:na,rk:r] *= 0.0            
             # Compute SVDs: V = P*S*Q1t and Ya = P*S*Q2t
-            P = matrix(0.0,(na,na))
-            Q1t = matrix(0.0,(r,r))
-            Q2t = matrix(0.0,(r,r))
-            S = matrix(0.0,(max(na,r),1))
-            lapack.gesvd(V,S,jobu='A',jobvt='A',U=P,Vt=Q1t)
-            lapack.gesvd(+Ya,S,jobu='N',jobvt='A',Vt=Q2t)
+            lapack.gesvd(V,S,jobu='A',jobvt='A',U=P,Vt=Q1t,ldU=maxr,ldVt=maxr,m=na,n=r,ldA=maxr)
+            lapack.gesvd(Ya,S,jobu='N',jobvt='A',Vt=Q2t,ldVt=maxr,m=na,n=r,ldA=maxr)
+            # Scale Q2t 
             for i in range(min(na,rk)):
-                if S[i] > 1e-14*S[0]: Q2t[i,:] = P[:,i].T*Ya/S[i]
-
+                if S[i] > 1e-14*S[0]: Q2t[i,:r] = P[:na,i].T*Y[Ia,:r]/S[i]
             # Scale Yn            
-            Y[I,:r] = Y[I,:r]*Q1t.T*Q2t
+            Y[In,:r] = Y[In,:r]*Q1t[:r,:r].T*Q2t[:r,:r]
                         
     if reordered:
         return Y[:,:r]

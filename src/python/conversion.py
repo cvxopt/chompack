@@ -237,7 +237,7 @@ def convert_block(G, h, dim, **kwargs):
             else:
                 iv.append((blk_idx[0], val[cp[j]+i].conjugate()))
                 iv.append((blk_idx[1], val[cp[j]+i]))                    
-        iv.sort()
+        iv.sort(key=lambda x: x[0])
         IV.extend(iv)
         J.extend(len(iv)*[j])
                     
@@ -264,7 +264,7 @@ def convert_block(G, h, dim, **kwargs):
             iv.append((blk_idx[0], val[i].conjugate()))
             iv.append((blk_idx[1], val[i]))
     
-    iv.sort()
+    iv.sort(key=lambda x: x[0])
     if iv:
         I, V = zip(*iv)
     else:
@@ -288,7 +288,7 @@ def convert_block(G, h, dim, **kwargs):
             if tc == 'z':
                 iv.extend([(i1, complex(0.0,1.0)), (i2, complex(0.0,-1.0)),
                            (j1, complex(0.0,-1.0)), (j2, complex(0.0,1.0))])
-        iv.sort()
+        iv.sort(key=lambda x: x[0])
         IV.extend(iv)
         J.extend(len(iv)*[j])
                 

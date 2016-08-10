@@ -25,7 +25,7 @@ except:
                 val += 2.0*blas.dot(X.blkval,Y.blkval,offsetx=offset+ck*j+j,offsety=offset+ck*j+j,n=ck-j)
         return val
 
-def syr2(X, u, v, alpha = 1.0, beta = 1.0):
+def syr2(X, u, v, alpha = 1.0, beta = 1.0, reordered=False):
     r"""
     Computes the projected rank 2 update of a cspmatrix X
 
@@ -33,23 +33,24 @@ def syr2(X, u, v, alpha = 1.0, beta = 1.0):
          X := \alpha*P(u v^T + v u^T) + \beta X.
     """
     assert X.is_factor is False, "cspmatrix factor object"
-    n = X.size[0]
-    snptr = X.symb.snptr
-    snode = X.symb.snode
+    symb = X.symb
+    n = symb.n
+    snptr = symb.snptr
+    snode = symb.snode
     blkval = X.blkval
-    blkptr = X.symb.blkptr
-    relptr = X.symb.relptr
-    snrowidx = X.symb.snrowidx
-    sncolptr = X.symb.sncolptr
+    blkptr = symb.blkptr
+    relptr = symb.relptr
+    snrowidx = symb.snrowidx
+    sncolptr = symb.sncolptr
 
-    if X.symb.p is not None:
-        up = u[X.symb.p]
-        vp = v[X.symb.p]
+    if symb.p is not None and reordered is False:
+        up = u[symb.p]
+        vp = v[symb.p]
     else:
         up = u
         vp = v
             
-    for k in range(X.symb.Nsn):
+    for k in range(symb.Nsn):
         nn = snptr[k+1]-snptr[k]     
         na = relptr[k+1]-relptr[k] 
         nj = na + nn

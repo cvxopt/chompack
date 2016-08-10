@@ -55,6 +55,7 @@ setup(name='chompack',
     packages = ["chompack","chompack.pybase"],
     ext_package = "chompack",
     ext_modules = EXT_MODULES,
+    zip_safe = False,
     classifiers=[
         'Development Status :: 4 - Beta',
         'Intended Audience :: Science/Research',
@@ -65,7 +66,7 @@ setup(name='chompack',
         'Programming Language :: Python :: 3',
         'Topic :: Scientific/Engineering',
         ],
-    install_requires=['cvxopt>=1.1.7'],
+    install_requires=['cvxopt>=1.1.8'],
     )
 
 
