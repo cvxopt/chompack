@@ -5,9 +5,9 @@ from cvxopt import sqrt
 
 def mrcompletion(A, reordered=True):
     """
-    Minimum rank positive semidefinite completion. The routine takes a \
+    Minimum rank positive semidefinite completion. The routine takes a 
     positive semidefinite cspmatrix :math:`A` and returns a dense
-    matrix :math:`Y` of size :math:`n \times r` that satisfies
+    matrix :math:`Y` that satisfies
 
     .. math::
          P( YY^T ) = A
