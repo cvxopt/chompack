@@ -26,7 +26,7 @@ try:
     from chompack.pybase import trmm, psdcompletion, edmcompletion, mrcompletion
     __py_only__ = False
 except:
-    from chompack.pybase import cholesky,llt,completion,projected_inverse,hessian,trsm,trmm,psdcompletion,edmcompletion
+    from chompack.pybase import cholesky,llt,completion,projected_inverse,hessian,trsm,trmm,psdcompletion,mrcompletion,edmcompletion
     __py_only__ = True
     
 from chompack.pfcholesky import pfcholesky
