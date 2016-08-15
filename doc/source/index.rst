@@ -20,10 +20,10 @@ described in these papers:
 .. seealso::
       
       L. Vandenberghe and M. S. Andersen, `Chordal Graphs and 
-      Semidefinite Optimization <http://seas.ucla.edu/~vandenbe/publications/chordalsdp.pdf>`_, *Foundations and Trends in Optimization*, 2015.
+      Semidefinite Optimization <http://seas.ucla.edu/~vandenbe/publications/chordalsdp.pdf>`_, *Foundations and Trends in Optimization*, 2015. [`doi <http://dx.doi.org/10.1561/2400000006>`__ | `bib <http://www.doi2bib.org/#/doi/10.1561/2400000006>`__ ]
       
       M. S. Andersen, J. Dahl, and L. Vandenberghe, `Logarithmic barriers
-      for sparse matrix cones <http://arxiv.org/abs/1203.2742>`_, *Optimization Methods and Software*, 2013.
+      for sparse matrix cones <http://arxiv.org/abs/1203.2742>`_, *Optimization Methods and Software*, 2013. [`doi <http://dx.doi.org/10.1080/10556788.2012.684353>`__ | `bib <http://www.doi2bib.org/#/doi/10.1080/10556788.2012.684353>`__ ]
 
 Applications of these algorithms in optimization include sparse matrix cone programs,
 covariance selection, graphical models, and decomposition and relaxation methods.
