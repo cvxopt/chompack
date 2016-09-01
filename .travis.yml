@@ -18,7 +18,7 @@ env:
   - CVXOPT_SUITESPARSE_INC_DIR=/usr/include/suitesparse/
   
 install:
-  - pip install git+https://github.com/cvxopt/cvxopt/tree/dev
+  - pip install https://github.com/cvxopt/cvxopt/tree/dev
   - python setup.py -q install
 
 script: nosetests
