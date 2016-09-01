@@ -3,9 +3,9 @@
 #include "chompack.h"
 #include "cvxopt.h"
 
-PyDoc_STRVAR(cbase__doc__, "Wrappers for C routines."); 
+PyDoc_STRVAR(cbase__doc__, "Wrappers for C routines.");
 
-static char doc_frontal_add_update[] = 
+static char doc_frontal_add_update[] =
   "frontal_add_update(F, U, relidx, relptr, i, alpha = 1.0)\n";
 
 static PyObject* frontal_add_update
@@ -19,7 +19,7 @@ static PyObject* frontal_add_update
   double alpha = 1.0;
 
   if (!PyArg_ParseTupleAndKeywords(args, kwrds, "OOOOi|d", kwlist, &F, &U, &relidx, &relptr, &idx, &alpha)) return NULL;
-  
+
   nf = MAT_NROWS(F);
   offset = MAT_BUFI(relptr)[idx];
   N = MAT_BUFI(relptr)[idx+1] - offset;
@@ -29,22 +29,22 @@ static PyObject* frontal_add_update
     for (i=j; i<N; i++)
       MAT_BUFD(F)[nf*MAT_BUFI(relidx)[offset + j] + MAT_BUFI(relidx)[offset + i]] += alpha*MAT_BUFD(U)[N*j + i];
   }
- 
+
   Py_RETURN_NONE;
 }
 
-static char doc_frontal_get_update[] = 
+static char doc_frontal_get_update[] =
   "U = frontal_get_update(F, relidx, relptr, i)\n";
 
 static PyObject* frontal_get_update
 (PyObject *self, PyObject *args)
 {
-  
+
   int_t i,j,N, nf, offset;
   int idx;
   PyObject *F, *relidx, *relptr;
   matrix *U;
-  
+
   if (!PyArg_ParseTuple(args, "OOOi", &F, &relidx, &relptr, &idx)) return NULL;
   nf = MAT_NROWS(F);
   offset = MAT_BUFI(relptr)[idx];
@@ -52,13 +52,13 @@ static PyObject* frontal_get_update
   if (!(U = Matrix_New(N, N, DOUBLE))) return PyErr_NoMemory();
 
   for (j=0;j<N;j++) {
-    for (i=j;i<N;i++) 
+    for (i=j;i<N;i++)
       MAT_BUFD(U)[j*N+i] = MAT_BUFD(F)[nf*MAT_BUFI(relidx)[offset + j] + MAT_BUFI(relidx)[offset + i]];
   }
   return (PyObject *) U;
 }
 
-static char doc_lmerge[] = 
+static char doc_lmerge[] =
   "lmerge(left, right, offsetl, offsetr , nl, nr)\n";
 
 static PyObject* lmerge
@@ -70,7 +70,7 @@ static PyObject* lmerge
   if (!PyArg_ParseTuple(args, "OOiiii", &left, &right, &offsetl, &offsetr, &nl, &nr)) return NULL;
 
   if(!(tmp = malloc(sizeof(int_t)*(nl+nr)))) return NULL;
-  
+
   il = 0; ir = 0; k = 0;
   while (il < nl && ir < nr) {
     if (MAT_BUFI(left)[offsetl+il] < MAT_BUFI(right)[offsetr+ir]) {
@@ -83,10 +83,10 @@ static PyObject* lmerge
     }
     else {
       tmp[k] = MAT_BUFI(left)[offsetl+il];
-      il += 1; ir += 1; 
+      il += 1; ir += 1;
     }
     k += 1;
-  }  
+  }
   if (il < nl) {
     for (i=0;i<nl-il;i++) tmp[k+i] = MAT_BUFI(left)[offsetl+il+i];
     k += nl-il;
@@ -123,7 +123,7 @@ static PyObject* cdot
   PyObj = PyObject_GetAttrString(X,str_is_factor);
   if (PyObj == Py_False) {
     Py_DECREF(PyObj);
-  } 
+  }
   else {
     Py_DECREF(PyObj);
     return PyErr_Format(PyExc_ValueError,"X must be a cspmatrix");
@@ -133,7 +133,7 @@ static PyObject* cdot
   PyObj = PyObject_GetAttrString(Y,str_is_factor);
   if (PyObj == Py_False) {
     Py_DECREF(PyObj);
-  } 
+  }
   else {
     Py_DECREF(PyObj);
     return PyErr_Format(PyExc_ValueError,"Y must be a cspmatrix");
@@ -157,7 +157,7 @@ static PyObject* cdot
   Py_blkptr  = PyObject_GetAttrString(symbx, str_blkptr);
   Py_blkvalx  = PyObject_GetAttrString(X, str_blkval);
   Py_blkvaly  = PyObject_GetAttrString(Y, str_blkval);
- 
+
   // compute inner product
   val = dot(&nsn, MAT_BUFI(Py_snptr), MAT_BUFI(Py_sncolptr), MAT_BUFI(Py_blkptr), MAT_BUFD(Py_blkvalx), MAT_BUFD(Py_blkvaly));
 
@@ -191,7 +191,7 @@ static PyObject* cchol
   int_t n, nsn, stack_depth, stack_mem, frontal_mem;
   int_t *upd_size=NULL;
   double * restrict fws=NULL, * restrict upd=NULL;
-  char str_symb[] = "symb", 
+  char str_symb[] = "symb",
     str_snpost[] = "snpost",
     str_snptr[] = "snptr",
     str_relptr[] = "relptr",
@@ -218,7 +218,7 @@ static PyObject* cchol
   PyObj = PyObject_GetAttrString(A,str_is_factor);
   if (PyObj == Py_False) {
     Py_DECREF(PyObj);
-  } 
+  }
   else {
     Py_DECREF(PyObj);
     return PyErr_Format(PyExc_ValueError,"X must be a cspmatrix");
@@ -226,7 +226,7 @@ static PyObject* cchol
 
 
   // extract pointers and values from symbolic object
-  symb = PyObject_GetAttrString(A,str_symb); 
+  symb = PyObject_GetAttrString(A,str_symb);
   Py_snpost = PyObject_GetAttrString(symb, str_snpost);
   Py_snptr  = PyObject_GetAttrString(symb, str_snptr);
   Py_relptr = PyObject_GetAttrString(symb, str_relptr);
@@ -250,13 +250,13 @@ static PyObject* cchol
   if (!(fws = malloc(frontal_mem*sizeof(double)))) {
     free(upd);
     return PyErr_NoMemory();
-  }  
+  }
   if (!(upd_size = malloc(stack_depth*sizeof(int_t)))) {
     free(upd);
     free(fws);
     return PyErr_NoMemory();
   }
-  
+
   // call numerical cholesky
   Py_blkval = PyObject_GetAttrString(A, str_blkval);
   info = cholesky(n,nsn,MAT_BUFI(Py_snpost),MAT_BUFI(Py_snptr),
@@ -266,8 +266,8 @@ static PyObject* cchol
 		  fws,upd,upd_size);
 
   // update reference counts
-  Py_DECREF(Py_snpost); Py_DECREF(Py_snptr); 
-  Py_DECREF(Py_relptr); Py_DECREF(Py_relidx); 
+  Py_DECREF(Py_snpost); Py_DECREF(Py_snptr);
+  Py_DECREF(Py_relptr); Py_DECREF(Py_relidx);
   Py_DECREF(Py_chptr); Py_DECREF(Py_chidx);
   Py_DECREF(Py_blkptr); Py_DECREF(Py_blkval);
 
@@ -301,7 +301,7 @@ static PyObject* cllt
   int_t n, nsn, stack_depth, stack_mem, frontal_mem;
   int_t *upd_size=NULL;
   double * restrict fws=NULL, * restrict upd=NULL;
-  char str_symb[] = "symb", 
+  char str_symb[] = "symb",
     str_snpost[] = "snpost",
     str_snptr[] = "snptr",
     str_relptr[] = "relptr",
@@ -326,7 +326,7 @@ static PyObject* cllt
   Py_blkval = PyObject_GetAttrString(A, str_blkval);
 
   // extract pointers and values from symbolic object
-  symb = PyObject_GetAttrString(A,str_symb); 
+  symb = PyObject_GetAttrString(A,str_symb);
   Py_snpost = PyObject_GetAttrString(symb, str_snpost);
   Py_snptr  = PyObject_GetAttrString(symb, str_snptr);
   Py_relptr = PyObject_GetAttrString(symb, str_relptr);
@@ -349,7 +349,7 @@ static PyObject* cllt
   PyObj = PyObject_GetAttrString(A,str_is_factor);
   if (PyObj == Py_True) {
     Py_DECREF(PyObj);
-  } 
+  }
   else {
     Py_DECREF(PyObj);
     return PyErr_Format(PyExc_ValueError,"X must be a cspmatrix");
@@ -360,13 +360,13 @@ static PyObject* cllt
   if (!(fws = malloc(frontal_mem*sizeof(double)))) {
     free(upd);
     return PyErr_NoMemory();
-  }  
+  }
   if (!(upd_size = malloc(stack_depth*sizeof(int_t)))) {
     free(upd);
     free(fws);
     return PyErr_NoMemory();
   }
-  
+
   // call llt
   llt(n,nsn,MAT_BUFI(Py_snpost),MAT_BUFI(Py_snptr),
       MAT_BUFI(Py_relptr),MAT_BUFI(Py_relidx),
@@ -375,8 +375,8 @@ static PyObject* cllt
       fws,upd,upd_size);
 
   // update reference counts
-  Py_DECREF(Py_snpost); Py_DECREF(Py_snptr); 
-  Py_DECREF(Py_relptr); Py_DECREF(Py_relidx); 
+  Py_DECREF(Py_snpost); Py_DECREF(Py_snptr);
+  Py_DECREF(Py_relptr); Py_DECREF(Py_relidx);
   Py_DECREF(Py_chptr); Py_DECREF(Py_chidx);
   Py_DECREF(Py_blkptr); Py_DECREF(Py_blkval);
 
@@ -408,7 +408,7 @@ static PyObject* cprojected_inverse
   int_t n, nsn, stack_depth, stack_mem, frontal_mem;
   int_t *upd_size=NULL;
   double * restrict fws=NULL, * restrict upd=NULL;
-  char str_symb[] = "symb", 
+  char str_symb[] = "symb",
     str_snpost[] = "snpost",
     str_snptr[] = "snptr",
     str_relptr[] = "relptr",
@@ -433,7 +433,7 @@ static PyObject* cprojected_inverse
   Py_blkval = PyObject_GetAttrString(A, str_blkval);
 
   // extract pointers and values from symbolic object
-  symb = PyObject_GetAttrString(A,str_symb); 
+  symb = PyObject_GetAttrString(A,str_symb);
   Py_snpost = PyObject_GetAttrString(symb, str_snpost);
   Py_snptr  = PyObject_GetAttrString(symb, str_snptr);
   Py_relptr = PyObject_GetAttrString(symb, str_relptr);
@@ -456,7 +456,7 @@ static PyObject* cprojected_inverse
   PyObj = PyObject_GetAttrString(A,str_is_factor);
   if (PyObj == Py_True) {
     Py_DECREF(PyObj);
-  } 
+  }
   else {
     Py_DECREF(PyObj);
     return PyErr_Format(PyExc_ValueError,"X must be a cspmatrix");
@@ -467,23 +467,23 @@ static PyObject* cprojected_inverse
   if (!(fws = malloc(frontal_mem*sizeof(double)))) {
     free(upd);
     return PyErr_NoMemory();
-  }  
+  }
   if (!(upd_size = malloc(stack_depth*sizeof(int_t)))) {
     free(upd);
     free(fws);
     return PyErr_NoMemory();
   }
-  
+
   // call projected_inverse
   info = projected_inverse(n,nsn,MAT_BUFI(Py_snpost),MAT_BUFI(Py_snptr),
 			   MAT_BUFI(Py_relptr),MAT_BUFI(Py_relidx),
 			   MAT_BUFI(Py_chptr),MAT_BUFI(Py_chidx),
 			   MAT_BUFI(Py_blkptr),MAT_BUFD(Py_blkval),
 			   fws,upd,upd_size);
-  
+
   // update reference counts
-  Py_DECREF(Py_snpost); Py_DECREF(Py_snptr); 
-  Py_DECREF(Py_relptr); Py_DECREF(Py_relidx); 
+  Py_DECREF(Py_snpost); Py_DECREF(Py_snptr);
+  Py_DECREF(Py_relptr); Py_DECREF(Py_relidx);
   Py_DECREF(Py_chptr); Py_DECREF(Py_chidx);
   Py_DECREF(Py_blkptr); Py_DECREF(Py_blkval);
 
@@ -525,7 +525,7 @@ static PyObject* ccompletion
   int_t n, nsn, stack_depth, stack_mem, frontal_mem;
   int_t *upd_size=NULL;
   double * restrict fws=NULL, * restrict upd=NULL;
-  char str_symb[] = "symb", 
+  char str_symb[] = "symb",
     str_snpost[] = "snpost",
     str_snptr[] = "snptr",
     str_relptr[] = "relptr",
@@ -554,7 +554,7 @@ static PyObject* ccompletion
   Py_blkval = PyObject_GetAttrString(A, str_blkval);
 
   // extract pointers and values from symbolic object
-  symb = PyObject_GetAttrString(A,str_symb); 
+  symb = PyObject_GetAttrString(A,str_symb);
   Py_snpost = PyObject_GetAttrString(symb, str_snpost);
   Py_snptr  = PyObject_GetAttrString(symb, str_snptr);
   Py_relptr = PyObject_GetAttrString(symb, str_relptr);
@@ -577,7 +577,7 @@ static PyObject* ccompletion
   PyObj = PyObject_GetAttrString(A,str_is_factor);
   if (PyObj == Py_False) {
     Py_DECREF(PyObj);
-  } 
+  }
   else {
     Py_DECREF(PyObj);
     return PyErr_Format(PyExc_ValueError,"X must be a cspmatrix");
@@ -588,23 +588,23 @@ static PyObject* ccompletion
   if (!(fws = malloc(frontal_mem*sizeof(double)))) {
     free(upd);
     return PyErr_NoMemory();
-  }  
+  }
   if (!(upd_size = malloc(stack_depth*sizeof(int_t)))) {
     free(upd);
     free(fws);
     return PyErr_NoMemory();
   }
-  
+
   // call completion
   info = completion(n,nsn,MAT_BUFI(Py_snpost),MAT_BUFI(Py_snptr),
 		    MAT_BUFI(Py_relptr),MAT_BUFI(Py_relidx),
 		    MAT_BUFI(Py_chptr),MAT_BUFI(Py_chidx),
 		    MAT_BUFI(Py_blkptr),MAT_BUFD(Py_blkval),
 		    fws,upd,upd_size,factored_updates);
-  
+
   // update reference counts
-  Py_DECREF(Py_snpost); Py_DECREF(Py_snptr); 
-  Py_DECREF(Py_relptr); Py_DECREF(Py_relidx); 
+  Py_DECREF(Py_snpost); Py_DECREF(Py_snptr);
+  Py_DECREF(Py_relptr); Py_DECREF(Py_relidx);
   Py_DECREF(Py_chptr); Py_DECREF(Py_chidx);
   Py_DECREF(Py_blkptr); Py_DECREF(Py_blkval);
 
@@ -865,7 +865,7 @@ static PyObject* pfchol
 
   int k,n,rc;
   PyObject *V,*L,*B,*alpha;
-  
+
   // extract pointers from arguments
   if (!PyArg_ParseTuple(args, "OOOO", &alpha, &V, &L, &B)) return NULL;
 
@@ -875,7 +875,7 @@ static PyObject* pfchol
   rc = dpftrf(&n,&k,MAT_BUFD(alpha),MAT_BUFD(V),&n,MAT_BUFD(L),&n,MAT_BUFD(B),&n);
   if (rc == 0)
     return Py_BuildValue("");
-  else 
+  else
     return PyErr_Format(PyExc_ArithmeticError,"factorization failed");
 }
 
@@ -892,7 +892,7 @@ static PyObject* pftrsm
   char trans='N';
 
 #if PY_MAJOR_VERSION >= 3
-  int trans_;
+  int trans_ = 'N';
   if (!PyArg_ParseTupleAndKeywords(args, kwrds, "OOOO|C", kwlist, &V, &L, &B, &U, &trans_)) return NULL;
   trans = (char) trans_;
 #else
@@ -904,7 +904,7 @@ static PyObject* pftrsm
   n = MAT_NROWS(V);
   k = MAT_NCOLS(V);
 
-  for (i=0;i<MAT_NCOLS(U);i++) 
+  for (i=0;i<MAT_NCOLS(U);i++)
     dpfsv(&n,&k,&trans,MAT_BUFD(V),&n,MAT_BUFD(L),&n,MAT_BUFD(B),&n,MAT_BUFD(U)+i*MAT_NROWS(U));
 
   return Py_BuildValue("");
@@ -935,7 +935,7 @@ static PyObject* pftrmm
   n = MAT_NROWS(V);
   k = MAT_NCOLS(V);
 
-  for (i=0;i<MAT_NCOLS(U);i++) 
+  for (i=0;i<MAT_NCOLS(U);i++)
     dpfmv(&n,&k,&trans,MAT_BUFD(V),&n,MAT_BUFD(L),&n,MAT_BUFD(B),&n,MAT_BUFD(U)+i*MAT_NROWS(U));
 
   return Py_BuildValue("");
@@ -957,7 +957,7 @@ static char doc_ctrsm[] =
   ":param L:  :py:class:`cspmatrix` factor\n"
   ":param B:  matrix\n"
   ":param alpha:  float (default: 1.0)\n"
-  ":param trans:  'N' or 'T' (default: 'N')\n"   
+  ":param trans:  'N' or 'T' (default: 'N')\n"
   ":param nrhs:   number of right-hand sides (default: number of columns in :math:`B`)\n"
   ":param offsetB: integer (default: 0)\n"
   ":param ldB:   leading dimension of :math:`B` (default: number of rows in :math:`B`)\n";
@@ -969,7 +969,7 @@ static PyObject* ctrsm
   int_t *upd_size=NULL;
   int nrhs = -1, ldb = -1, offsetb = 0;
   double * restrict fws=NULL, * restrict upd=NULL;
-  char str_symb[] = "symb", 
+  char str_symb[] = "symb",
     str_snpost[] = "snpost",
     str_snptr[] = "snptr",
     str_snode[] = "snode",
@@ -996,19 +996,18 @@ static PyObject* ctrsm
   char *kwlist[] = {"L","B","alpha","trans","nrhs","offsetB","ldB",NULL};
 
 #if PY_MAJOR_VERSION >= 3
-  int trans_;
+  int trans_  = 'N';
   if (!PyArg_ParseTupleAndKeywords(args, kwrds, "OO|dCiii", kwlist, &L, &B, &alpha, &trans_, &nrhs, &offsetb, &ldb)) return NULL;
   trans = (char) trans_;
 #else
   if (!PyArg_ParseTupleAndKeywords(args, kwrds, "OO|dciii", kwlist, &L, &B, &alpha, &trans, &nrhs, &offsetb, &ldb)) return NULL;
 #endif
 
-  
   // check that cspmatrix factor flag is True
   PyObj = PyObject_GetAttrString(L,str_is_factor);
   if (PyObj == Py_True) {
     Py_DECREF(PyObj);
-  } 
+  }
   else {
     Py_DECREF(PyObj);
     return PyErr_Format(PyExc_ValueError,"L must be a cspmatrix factor");
@@ -1017,9 +1016,9 @@ static PyObject* ctrsm
   // check optional inputs
   if (nrhs == -1) nrhs = MAT_NCOLS(B); // default value
   if (ldb == -1) ldb = MAT_NROWS(B);   // default value
-  
+
   // extract pointers and values from symbolic object
-  symb = PyObject_GetAttrString(L,str_symb); 
+  symb = PyObject_GetAttrString(L,str_symb);
   Py_snpost = PyObject_GetAttrString(symb, str_snpost);
   Py_snptr  = PyObject_GetAttrString(symb, str_snptr);
   Py_snode  = PyObject_GetAttrString(symb, str_snode);
@@ -1047,13 +1046,13 @@ static PyObject* ctrsm
   if (!(fws = malloc(frontal_mem*sizeof(double)))) {
     free(upd);
     return PyErr_NoMemory();
-  }  
+  }
   if (!(upd_size = malloc(stack_depth*sizeof(int_t)))) {
     free(upd);
     free(fws);
     return PyErr_NoMemory();
   }
-  
+
   // call trsm
   Py_blkval = PyObject_GetAttrString(L, str_blkval);
   trsm(trans,nrhs,alpha,n,nsn,
@@ -1066,7 +1065,7 @@ static PyObject* ctrsm
 
   // update reference counts
   Py_DECREF(Py_snpost); Py_DECREF(Py_snptr); Py_DECREF(Py_snode);
-  Py_DECREF(Py_relptr); Py_DECREF(Py_relidx); 
+  Py_DECREF(Py_relptr); Py_DECREF(Py_relidx);
   Py_DECREF(Py_chptr); Py_DECREF(Py_chidx);
   Py_DECREF(Py_blkptr); Py_DECREF(Py_blkval);
   Py_DECREF(Py_p);
@@ -1079,14 +1078,14 @@ static PyObject* ctrsm
 
 
 
-static PyMethodDef cbase_functions[] = { 
+static PyMethodDef cbase_functions[] = {
 
   {"frontal_add_update", (PyCFunction)frontal_add_update,
    METH_VARARGS|METH_KEYWORDS, doc_frontal_add_update},
 
   {"frontal_get_update", (PyCFunction)frontal_get_update,
    METH_VARARGS, doc_frontal_get_update},
-  
+
   {"lmerge", (PyCFunction)lmerge,
    METH_VARARGS, doc_lmerge},
 
@@ -1119,7 +1118,7 @@ static PyMethodDef cbase_functions[] = {
 
   {"trsm", (PyCFunction)ctrsm,
    METH_VARARGS|METH_KEYWORDS, doc_ctrsm},
-  
+
   {NULL}  /* Sentinel */
 };
 
@@ -1138,7 +1137,7 @@ PyMODINIT_FUNC PyInit_cbase(void) {
   cbase_mod = PyModule_Create(&cbase_module);
   if (cbase_mod == NULL)
     return NULL;
-  if (import_cvxopt() < 0) 
+  if (import_cvxopt() < 0)
     return NULL;
   return cbase_mod;
 }
@@ -1146,11 +1145,8 @@ PyMODINIT_FUNC PyInit_cbase(void) {
 // Python 2.x
 PyMODINIT_FUNC initcbase(void) {
   PyObject *m;
-  m = Py_InitModule3("cbase", cbase_functions, cbase__doc__); 
-  if (import_cvxopt() < 0) 
+  m = Py_InitModule3("cbase", cbase_functions, cbase__doc__);
+  if (import_cvxopt() < 0)
     return;
 }
 #endif
-
-
- 
