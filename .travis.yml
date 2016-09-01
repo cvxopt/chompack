@@ -1,0 +1,20 @@
+before_install:
+  sudo apt-get install python-dev
+  sudo apt-get install libblas-dev
+  sudo apt-get install liblapack-dev
+  sudo apt-get install libatlas-dev
+
+language: python
+python:
+  - "2.7"
+  - "3.2"
+  - "3.3"
+  - "3.4"
+  - "3.5"
+
+# command to run tests
+install:
+  - pip install cvxopt
+  - python setup.py -q install
+
+script: nosetests
