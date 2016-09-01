@@ -13,8 +13,8 @@ python:
   - "3.4"
   - "3.5"
 
-env:  
-  - CVXOPT_SUITESPARSE_EXT_LIB=1 CVXOPT_SUITESPARSE_INC_DIR=/usr/include/suitesparse/
+#env:  
+#  - CVXOPT_SUITESPARSE_EXT_LIB=1 CVXOPT_SUITESPARSE_INC_DIR=/usr/include/suitesparse/
   
 install:
   - pip install git+https://github.com/cvxopt/cvxopt@dev
