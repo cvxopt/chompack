@@ -3,7 +3,7 @@ before_install:
   - sudo apt-get install libblas-dev
   - sudo apt-get install liblapack-dev
   - sudo apt-get install libatlas-dev
-  - sudo apt-get install libsuitesparse-dev
+#  - sudo apt-get install libsuitesparse-dev
   
 language: python
 python:
