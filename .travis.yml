@@ -3,8 +3,7 @@ notifications:
   
 os:
   - linux
-  - osx
-  
+
 before_install:
   - sudo apt-get install python-dev
   - sudo apt-get install libblas-dev
