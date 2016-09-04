@@ -1,3 +1,10 @@
+notifications:
+  email: false
+  
+os:
+  - linux
+  - osx
+  
 before_install:
   - sudo apt-get install python-dev
   - sudo apt-get install libblas-dev
@@ -8,9 +15,6 @@ before_install:
 language: python
 python:
   - "2.7"
-  - "3.2"
-  - "3.3"
-  - "3.4"
   - "3.5"
 
 #env:  
