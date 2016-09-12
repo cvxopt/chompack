@@ -15,18 +15,9 @@ install:
 - pip install git+https://github.com/cvxopt/cvxopt@dev
 - python setup.py -q install
 script: nosetests
+after_success:
+  - coveralls
 deploy:
-  # test
-- provider: pypi
-  server: https://testpypi.python.org/pypi
-  user: msa
-  password:
-    secure: UIMsHEn6qF2az4Mcd5A3Elr3GkXWCEb3gEHQgTDnghZEA4JKGsOvuwuSFnRNKtAiFBwFTKjDrIHAwStRyf6y0Kdfi8j6Y4U9nt5UzqIXq0WHaiu4IfA3flxUSXhtzj8xmhAU/g2EwwR2DXpxou5x9RuwGJKkt/bOJ8MsbLjI+BQLFT9HJmHfRvgCoWEiHFoDl1I8aXXM+VgSXfyeMtZxh+hJ3WbT/W9unyWUSSZTBiupDDTnkFFmmAMWdAbOOdRoQVnY6Y/M9inaJexgbtranFlf0M1UnqjHySzNIeZADs5KjnOmhBuPOI+VrVRM7pyYWdR1+NMfzsPnpY75NP4E4pfSf2lkIsdk4QxgF6ITeabxQG2a1nOrbE+cYym3zczJ7TfpM45DPHZfPnXjwCWFCXZDYFRVgNT52HEp63IUDNQA+gSuhZFVqWdjZFloxrhA4Rh0r5HPY5hKY9QGDPyssX7TX0eNUSFxqFzlWHN79T6DHW115J/89hpLouTkfRxf+/lJq1gz1Xa8tLoQLdLyCBqefzqDHzBYb8QY8KMA+LylfVYu0s47BnJYbo2fugU7/cmUj8fMCd54JIaCLtvKCybur4oBesXhH6GiDYKWlrPJUnIeNYXtzODKo12Fjzs9iFQjeO64NGcreQ+wX37JDAnmixGW2lg/YUZVtrKAH7Y=
-  on:
-    tags: false
-    distributions: sdist bdist_wheel
-    repo: cvxopt/chompack
-    condition: $TRAVIS_PYTHON_VERSION = "2.7"
   # release
 - provider: pypi
   user: msa
@@ -34,5 +25,5 @@ deploy:
     secure: UIMsHEn6qF2az4Mcd5A3Elr3GkXWCEb3gEHQgTDnghZEA4JKGsOvuwuSFnRNKtAiFBwFTKjDrIHAwStRyf6y0Kdfi8j6Y4U9nt5UzqIXq0WHaiu4IfA3flxUSXhtzj8xmhAU/g2EwwR2DXpxou5x9RuwGJKkt/bOJ8MsbLjI+BQLFT9HJmHfRvgCoWEiHFoDl1I8aXXM+VgSXfyeMtZxh+hJ3WbT/W9unyWUSSZTBiupDDTnkFFmmAMWdAbOOdRoQVnY6Y/M9inaJexgbtranFlf0M1UnqjHySzNIeZADs5KjnOmhBuPOI+VrVRM7pyYWdR1+NMfzsPnpY75NP4E4pfSf2lkIsdk4QxgF6ITeabxQG2a1nOrbE+cYym3zczJ7TfpM45DPHZfPnXjwCWFCXZDYFRVgNT52HEp63IUDNQA+gSuhZFVqWdjZFloxrhA4Rh0r5HPY5hKY9QGDPyssX7TX0eNUSFxqFzlWHN79T6DHW115J/89hpLouTkfRxf+/lJq1gz1Xa8tLoQLdLyCBqefzqDHzBYb8QY8KMA+LylfVYu0s47BnJYbo2fugU7/cmUj8fMCd54JIaCLtvKCybur4oBesXhH6GiDYKWlrPJUnIeNYXtzODKo12Fjzs9iFQjeO64NGcreQ+wX37JDAnmixGW2lg/YUZVtrKAH7Y=
   on:
     tags: true
-    distributions: sdist bdist_wheel
+    distributions: sdist
     repo: cvxopt/chompack
