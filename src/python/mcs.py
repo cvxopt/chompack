@@ -35,7 +35,7 @@ def maxcardsearch(A, ve = None):
     # weight array
     w = matrix(0,(n,1))
     max_w = 0
-    S = [range(ve)+range(ve+1,n)+[ve]] + [[] for i in range(n-1)]
+    S = [list(range(ve))+list(range(ve+1,n))+[ve]] + [[] for i in range(n-1)]
         
     for i in range(n-1,-1,-1):
         while True:
