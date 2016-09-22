@@ -108,13 +108,19 @@ class TestNumeric(unittest.TestCase):
         cp.cholesky(L)
         
         B = cp.eye(self.symb.n)
+        Bt = matrix(B)[self.symb.p,:]
+        Lt = matrix(L.spmatrix(reordered=True,symmetric=False))
         cp.trsm(L, B)
-        diff = list((L.spmatrix(reordered=True)*B[self.symb.p,self.symb.p] - cp.eye(self.symb.n))[:])
+        blas.trsm(Lt,Bt)
+        diff = list((B-Bt[self.symb.ip,:])[:])
         self.assertAlmostEqualLists(diff, len(diff)*[0.0])
 
         B = cp.eye(self.symb.n)
+        Bt = matrix(B)[self.symb.p,:]
+        Lt = matrix(L.spmatrix(reordered=True,symmetric=False))
         cp.trsm(L, B, trans = 'T')
-        diff = list((L.spmatrix(reordered=True).T*B[self.symb.p,self.symb.p] - cp.eye(self.symb.n))[:])
+        blas.trsm(Lt,Bt,transA='T')
+        diff = list(B-Bt[self.symb.ip,:])[:]
         self.assertAlmostEqualLists(diff, len(diff)*[0.0])
         
     def test_pfcholesky(self):

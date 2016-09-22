@@ -538,10 +538,12 @@ class symbolic(object):
 
         # Permute if permutation vector p or ordering routine is specified
         if p is not None:
-            if type(p) is BuiltinFunctionType or type(p) is FunctionType:
+            if isinstance(p, BuiltinFunctionType) or isinstance(p, FunctionType):
                 p = p(Ap)
+            elif isinstance(p, list):
+                p = matrix(p)
             assert len(p) == A.size[0], "length of permutation vector must be equal to the order of A"
-            Ap = perm(Ap,p)            
+            Ap = perm(Ap,p)
 
         # Symbolic factorization
         par = etree(Ap)
