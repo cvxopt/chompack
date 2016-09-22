@@ -17,7 +17,10 @@ You should have received a copy of the GNU General Public License
 along with Chompack.  If not, see <http://www.gnu.org/licenses/>.    
 """
 
-__version__ = '2.2.1'
+from ._version import get_versions
+__version__ = get_versions()['version']
+del get_versions
+
 from chompack.symbolic import symbolic, cspmatrix, merge_size_fill, peo
 from cvxopt import spmatrix
 
@@ -39,3 +42,7 @@ from chompack.mcs import maxcardsearch
 __all__ = ["__version__","cspmatrix","spmatrix","symbolic","peo","maxcardsearch","maxchord",\
            "cholesky", "llt", "completion", "psdcompletion", "edmcompletion", "mrcompletion","projected_inverse", "hessian",\
            "trsm", "trmm", "tril", "triu", "convert_block", "convert_conelp", "dot", "syr2"]
+
+from ._version import get_versions
+__version__ = get_versions()['version']
+del get_versions

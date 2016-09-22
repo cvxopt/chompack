@@ -4,6 +4,7 @@ except ImportError:
     from distutils.core import setup, Extension
 from glob import glob
 import os, sys
+import versioneer
 
 BLAS_NOUNDERSCORES = False
 BLAS_LIB_DIR = ['/usr/lib']
@@ -49,7 +50,8 @@ EXT_MODULES = []
 if not py_only: EXT_MODULES.append(cbase)
     
 setup(name='chompack',
-    version='2.3.0',
+    version=versioneer.get_version(),
+    cmdclass=versioneer.get_cmdclass(),
     description='Library for chordal matrix computations',
     author='Martin S. Andersen, Lieven Vandenberghe',
     author_email='martin.skovgaard.andersen@gmail.com, vandenbe@ee.ucla.edu',
