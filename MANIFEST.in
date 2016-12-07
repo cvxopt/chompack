@@ -3,8 +3,7 @@ include README.md
 include src/C/cvxopt.h
 include src/C/blas_redefines.h
 include src/C/chompack.h
-recursive-include examples *
-recursive-include tests *
-recursive-include doc/build/html *include versioneer.py
 include src/python/_version.py
 include versioneer.py
+recursive-include examples *
+recursive-include tests *
