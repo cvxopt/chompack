@@ -7,7 +7,7 @@ def mrcompletion(A, reordered=True):
     """
     Minimum rank positive semidefinite completion. The routine takes a 
     positive semidefinite cspmatrix :math:`A` and returns a dense
-    matrix :math:`Y` that satisfies
+    matrix :math:`Y` with :math:`r` columns that satisfies
 
     .. math::
          P( YY^T ) = A
