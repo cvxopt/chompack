@@ -321,6 +321,10 @@ int _scale(const int_t n,         // order of matrix
       if (!inv) {
 	dtrsm_(&cR, &cL, tr1, &cN, &nj, &nn, &dOne, lblkval+blkptr[k], &nj, ublkvalk+blkptr[k], &nj);
 	dtrsm_(&cL, &cL, tr2, &cN, &nn, &nn, &dOne, lblkval+blkptr[k], &nj, ublkvalk+blkptr[k], &nj);
+	// zero-out strict upper triangular part of {Nj,Nj} block 
+	for (j=1;j<nn;j++) {
+	  for (i=0;i<j;i++) ublkvalk[blkptr[k]+j*nj+i] = 0.0;
+	}
 	if (na > 0) {
 	  dtrmm_(&cL, &cL, tr3, &cN, &na, &nn, &dOne, fws+(nj+1)*nn, &nj, ublkvalk+blkptr[k]+nn, &nj);
 	}
@@ -328,6 +332,10 @@ int _scale(const int_t n,         // order of matrix
       else {
 	dtrmm_(&cR, &cL, tr1, &cN, &nj, &nn, &dOne, lblkval+blkptr[k], &nj, ublkvalk+blkptr[k], &nj);
 	dtrmm_(&cL, &cL, tr2, &cN, &nn, &nn, &dOne, lblkval+blkptr[k], &nj, ublkvalk+blkptr[k], &nj);
+	// zero-out strict upper triangular part of {Nj,Nj} block 
+	for (j=1;j<nn;j++) {
+	  for (i=0;i<j;i++) ublkvalk[blkptr[k]+j*nj+i] = 0.0;
+	}
 	if (na > 0) {
 	  dtrsm_(&cL, &cL, tr3, &cN, &na, &nn, &dOne, fws+(nj+1)*nn, &nj, ublkvalk+blkptr[k]+nn, &nj);
 	}

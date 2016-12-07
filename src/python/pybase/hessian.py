@@ -202,6 +202,10 @@ def __scale(L, Y, U, adj = False, inv = False, factored_updates = True):
                 blas.trsm(L.blkval, Ut.blkval, m = nn, n = nn, transA = tr[1],\
                           offsetA = blkptr[k], offsetB = blkptr[k],\
                           ldA = nj, ldB = nj)
+
+                # zero-out strict upper triangular part of {Nj,Nj} block 
+                for i in range(1,nn): blas.scal(0.0, Ut.blkval, offset = blkptr[k] + nj*i, n = i) 
+                
                 if na > 0: blas.trmm(F, Ut.blkval, m = na, n = nn, transA = trns,\
                                      offsetA = nj*nn+nn, ldA = nj,\
                                      offsetB = blkptr[k]+nn, ldB = nj)
@@ -220,6 +224,10 @@ def __scale(L, Y, U, adj = False, inv = False, factored_updates = True):
                 blas.trmm(L.blkval, Ut.blkval, m = nn, n = nn, transA = tr[1],\
                           offsetA = blkptr[k], offsetB = blkptr[k],\
                           ldA = nj, ldB = nj)
+
+                # zero-out strict upper triangular part of {Nj,Nj} block 
+                for i in range(1,nn): blas.scal(0.0, Ut.blkval, offset = blkptr[k] + nj*i, n = i) 
+                
                 if na > 0: blas.trsm(F, Ut.blkval, m = na, n = nn, transA = trns,\
                                      offsetA = nj*nn+nn, ldA = nj,\
                                      offsetB = blkptr[k]+nn, ldB = nj)
