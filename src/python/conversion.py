@@ -277,25 +277,31 @@ def convert_block(G, h, dim, **kwargs):
     
     IV = []   # list of (row, value) tuples
     J = []
+    ncon = 0
     for j in range(len(constraints)):
         iv = []
         if len(constraints[j]) == 2:
             ii, jj = constraints[j]
-            iv.extend([(ii, 1.0), (jj, -1.0)])             
+            iv = sorted([(ii, 1.0), (jj, -1.0)],key=lambda x: x[0])
+            jl = 2*[ncon]
+            ncon += 1
         elif len(constraints[j]) == 4:
             i1,j1,i2,j2 = constraints[j]
-            iv.extend([(i1, 1.0), (i2, 1.0), (j1, -1.0), (j2, -1.0)])
+            iv = sorted([(i1, 1.0), (i2, 1.0), (j1, -1.0), (j2, -1.0)],key=lambda x: x[0])
+            jl = 4*[ncon]
+            ncon += 1
             if tc == 'z':
-                iv.extend([(i1, complex(0.0,1.0)), (i2, complex(0.0,-1.0)),
-                           (j1, complex(0.0,-1.0)), (j2, complex(0.0,1.0))])
-        iv.sort(key=lambda x: x[0])
+                iv.extend(sorted([(i1, complex(0.0,1.0)), (i2, complex(0.0,-1.0)),
+                           (j1, complex(0.0,-1.0)), (j2, complex(0.0,1.0))],key=lambda x: x[0]))
+                jl.extend(4*[ncon])
+                ncon += 1
         IV.extend(iv)
-        J.extend(len(iv)*[j])
+        J.extend(jl)
                 
     # build G_converted
     if IV: I, V = zip(*IV)
     else: I, V = [], []
-    G_coupling = spmatrix(V, I, J, (N, len(constraints)), tc = tc)
+    G_coupling = spmatrix(V, I, J, (N, ncon), tc = tc)
             
     # generate indices for reverse mapping (block_to_sparse)
     idx = []
