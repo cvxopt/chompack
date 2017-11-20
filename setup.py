@@ -19,10 +19,10 @@ BLAS_LIB = os.environ.get("CHOMPACK_BLAS_LIB",BLAS_LIB)
 LAPACK_LIB = os.environ.get("CHOMPACK_LAPACK_LIB",LAPACK_LIB)
 BLAS_LIB_DIR = os.environ.get("CHOMPACK_BLAS_LIB_DIR",BLAS_LIB_DIR)
 BLAS_EXTRA_LINK_ARGS = os.environ.get("CHOMPACK_BLAS_EXTRA_LINK_ARGS",BLAS_EXTRA_LINK_ARGS)
-if type(BLAS_LIB) is str: BLAS_LIB = BLAS_LIB.strip().split(',')
-if type(BLAS_LIB_DIR) is str: BLAS_LIB_DIR = BLAS_LIB_DIR.strip().split(',')
-if type(LAPACK_LIB) is str: LAPACK_LIB = LAPACK_LIB.strip().split(',')
-if type(BLAS_EXTRA_LINK_ARGS) is str: BLAS_EXTRA_LINK_ARGS = BLAS_EXTRA_LINK_ARGS.strip().split(',')
+if type(BLAS_LIB) is str: BLAS_LIB = BLAS_LIB.strip().split(';')
+if type(BLAS_LIB_DIR) is str: BLAS_LIB_DIR = BLAS_LIB_DIR.strip().split(';')
+if type(LAPACK_LIB) is str: LAPACK_LIB = LAPACK_LIB.strip().split(';')
+if type(BLAS_EXTRA_LINK_ARGS) is str: BLAS_EXTRA_LINK_ARGS = BLAS_EXTRA_LINK_ARGS.strip().split(';')
 if BLAS_NOUNDERSCORES: MACROS.append(('BLAS_NO_UNDERSCORE',''))
 
 # Install Python-only reference implementation? (default: False)
@@ -37,19 +37,19 @@ if os.environ.get('READTHEDOCS', False) == 'True':
 else:
     requirements = ['cvxopt>=1.1.8']
 
-        
+
 # C extensions
 cbase = Extension('cbase',
                   libraries = BLAS_LIB + LAPACK_LIB,
                   library_dirs = BLAS_LIB_DIR,
                   define_macros = MACROS,
                   extra_compile_args = EXTRA_COMPILE_ARGS,
-                  extra_link_args = BLAS_EXTRA_LINK_ARGS,               
+                  extra_link_args = BLAS_EXTRA_LINK_ARGS,
                   sources = glob('src/C/*.c'))
 
 EXT_MODULES = []
 if not py_only: EXT_MODULES.append(cbase)
-    
+
 setup(name='chompack',
     version=versioneer.get_version(),
     cmdclass=versioneer.get_cmdclass(),
@@ -76,5 +76,3 @@ setup(name='chompack',
         ],
     install_requires=requirements,
     )
-
-
