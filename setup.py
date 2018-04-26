@@ -37,6 +37,9 @@ if os.environ.get('READTHEDOCS', False) == 'True':
 else:
     requirements = ['cvxopt>=1.1.8']
 
+INSTALL_REQUIRES = os.environ.get("CHOMPACK_INSTALL_REQUIRES",[])
+if type(INSTALL_REQUIRES) is str: INSTALL_REQUIRES = INSTALL_REQUIRES.strip().split(';')
+if INSTALL_REQUIRES: requirements = INSTALL_REQUIRES
 
 # C extensions
 cbase = Extension('cbase',

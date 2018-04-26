@@ -3,41 +3,46 @@ Installation
 
 .. note::
 
-   CHOMPACK requires that CVXOPT 1.1.7 or newer is installed.
+    CHOMPACK requires CVXOPT 1.2.0 or newer.
 
 
-Installation from source
-------------------------
+Installing a pre-built package
+==============================
+
+A pre-built binary wheel package can be installed
+using `pip <https://pip.pypa.io>`_::
+
+     pip install chompack
+
+Wheels for Linux:
+
+* are available for Python 2.7, 3.3, 3.4, 3.5, and 3.6 (32 and 64 bit)
+* are linked against OpenBLAS
+
+Wheels for macOS:
+
+* are available for Python 2.7, 3.4, 3.5, and 3.6 (universal binaries)
+* are linked against Accelerate BLAS/LAPACK
+
+Wheels for Windows:
+
+* are available for Python 2.7, 3.5, and 3.6 (64 bit only)
+* are linked against MKL
+
+
+Building and installing from source
+===================================
 
 The CHOMPACK Python extension can be downloaded, built, and installed by issuing the commands
 
 .. code-block:: bash
 
-   $ git clone https://github.com/cvxopt/chompack.git
-   $ cd chompack
-   $ python setup.py install --user
+    $ git clone https://github.com/cvxopt/chompack.git
+    $ cd chompack
+    $ python setup.py install 
 
 Chompack can also be installed using pip
 
 .. code-block:: bash
-   
-   $ pip install chompack
 
-
-Python-only installation
--------------------------
-A Python-only reference implementation
-of CHOMPACK can be installed by setting the environtment variable `CHOMPACK_PY_ONLY=1`
-
-.. code-block:: bash
-   
-   $ CHOMPACK_PY_ONLY=1 python install --user
-
-or using pip,
-
-.. code-block:: bash
-   
-   $ CHOMPACK_PY_ONLY=1 pip install chompack
-
-Please note that the Python-only reference implementations are significantly slower
-than the C implementations that are available in the standard installation.
+    $ pip install chompack
