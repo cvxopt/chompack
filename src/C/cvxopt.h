@@ -1,9 +1,9 @@
 /*
- * Copyright 2012 M. Andersen and L. Vandenberghe.
+ * Copyright 2012-2018 M. Andersen and L. Vandenberghe.
  * Copyright 2010-2011 L. Vandenberghe.
  * Copyright 2004-2009 J. Dahl and L. Vandenberghe.
  *
- * This file is part of CVXOPT version 1.1.5.
+ * This file is part of CVXOPT.
  *
  * CVXOPT is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,9 +27,13 @@
 
 /* ANSI99 complex is disabled during build of CHOLMOD */
 
-#ifndef NO_ANSI99_COMPLEX
+#if !defined(NO_ANSI99_COMPLEX) 
 #include "complex.h"
+#if !defined(_MSC_VER)
 #define MAT_BUFZ(O)  ((double complex *)((matrix *)O)->buffer)
+#else
+#define MAT_BUFZ(O)  ((_Dcomplex *)((matrix *)O)->buffer)
+#endif
 #endif
 
 #ifndef __CVXOPT__
@@ -73,7 +77,7 @@ typedef struct {
 
 static void **cvxopt_API;
 
-#define Matrix_New (*(matrix * (*)(int_t, int_t, int)) cvxopt_API[0])
+#define Matrix_New (*(matrix * (*)(int, int, int)) cvxopt_API[0])
 #define Matrix_NewFromMatrix (*(matrix * (*)(matrix *, int)) cvxopt_API[1])
 #define Matrix_NewFromList (*(matrix * (*)(PyObject *, int)) cvxopt_API[2])
 #define Matrix_Check (*(int * (*)(void *)) cvxopt_API[3])
@@ -117,8 +121,11 @@ import_cvxopt(void)
 #define MAT_BUF(O)   ((matrix *)O)->buffer
 #define MAT_BUFI(O)  ((int_t *)((matrix *)O)->buffer)
 #define MAT_BUFD(O)  ((double *)((matrix *)O)->buffer)
+#ifndef _MSC_VER
 #define MAT_BUFZ(O)  ((double complex *)((matrix *)O)->buffer)
-
+#else
+#define MAT_BUFZ(O)  ((_Dcomplex *)((matrix *)O)->buffer)
+#endif
 #define MAT_NROWS(O) ((matrix *)O)->nrows
 #define MAT_NCOLS(O) ((matrix *)O)->ncols
 #define MAT_LGT(O)   (MAT_NROWS(O)*MAT_NCOLS(O))
@@ -133,7 +140,11 @@ import_cvxopt(void)
 #define SP_ROW(O)    ((spmatrix *)O)->obj->rowind
 #define SP_VAL(O)    ((spmatrix *)O)->obj->values
 #define SP_VALD(O)   ((double *)((spmatrix *)O)->obj->values)
+#ifndef _MSC_VER
 #define SP_VALZ(O)   ((double complex *)((spmatrix *)O)->obj->values)
+#else
+#define SP_VALZ(O)   ((_Dcomplex *)((spmatrix *)O)->obj->values)
+#endif
 
 #define CCS_NROWS(O) ((ccs *)O)->nrows
 #define CCS_NCOLS(O) ((ccs *)O)->ncols

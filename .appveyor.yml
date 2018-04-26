@@ -1,0 +1,67 @@
+version: 2.3.2-{build}-{branch}
+image: Visual Studio 2017
+init:
+    - choco install wget checksum
+
+environment:
+  global:
+    PYTHON: C:\Miniconda36-x64
+    PYTHON_ARCH: "64"
+    PACKAGE_NAME: "chompack"
+    BUILD_DEPENDS: "mkl"
+    TEST_DEPENDS: "pytest"
+    CHOMPACK_BLAS_LIB: mkl_rt
+    CHOMPACK_LAPACK_LIB: mkl_rt
+    CHOMPACK_INSTALL_REQUIRES: "cvxopt>=1.2.0;mkl"
+
+  matrix:
+    - PYTHON_VERSION: 3.6
+    - PYTHON_VERSION: 3.5
+    - PYTHON_VERSION: 2.7
+      COMPILER: mingwpy
+
+platform:
+    - x64
+
+install:
+    - if [%PYTHON_ARCH%]==[64] (
+        call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvars64.bat"
+      ) else (
+        call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvars32.bat"
+      )
+
+    # Set up miniconda build environment
+    - SET "PATH=%PYTHON%;%PYTHON%\Scripts;%PYTHON%\Library\bin;%ProgramFiles%\7-Zip;%PATH%"
+    - conda info
+    - conda create --yes -n build_env python=%PYTHON_VERSION% %BUILD_DEPENDS%
+    - activate build_env
+    - if [%COMPILER%]==[mingwpy] ( pip install -i https://pypi.anaconda.org/carlkl/simple mingwpy )
+    - SET CHOMPACK_BLAS_LIB_DIR=%PYTHON%\envs\build_env\Library\lib
+
+    # Check that we have the expected version and architecture for Python
+    - python --version
+    - python -c "import struct; print(struct.calcsize('P') * 8)"
+
+build_script:
+    # Build wheel
+    - if [%COMPILER%]==[mingwpy] ( python setup.py build --compiler=mingw32 )
+      else ( python setup.py build --compiler=msvc )
+    - python setup.py bdist_wheel
+    - ls dist/*
+
+test_script:
+    # Create test env
+    - conda create --yes -n test_env python=%PYTHON_VERSION% %TEST_DEPENDS%
+    - activate test_env
+
+    # Install from wheel
+    - pip install cvxopt mkl
+    - pip install --no-index --find-links dist/ %PACKAGE_NAME%
+
+    # Run tests
+    - python --version
+    - python -c "from cvxopt import blas,lapack,cholmod,umfpack"
+    - pytest tests/
+
+artifacts:
+    - path: dist/*.whl

@@ -1,31 +1,51 @@
 notifications:
   email: false
-os:
-- linux
+
+env:
+  global:
+    - BUILD_DEPENDS="cvxopt"
+    - TEST_DEPENDS="pytest pytest-cov coveralls"
+
+matrix:
+  include:
+    - os: linux
+      dist: trusty
+      sudo: required
+      language: python
+      python: '2.7'
+      env: CHOMPACK_LAPACK_LIB=blas
+    - os: linux
+      dist: trusty
+      sudo: required
+      language: python
+      python: '3.6'
+      env: CHOMPACK_LAPACK_LIB=blas
+    - os: osx
+      language: python
+      env: PYVERSION=2.7
+        CHOMPACK_BLAS_LIB_DIR=/usr/local/opt/openblas/lib
+        CHOMPACK_BLAS_LIB=openblas CHOMPACK_LAPACK_LIB=openblas
+      language: generic
+    - os: osx
+      language: python
+      env: PYVERSION=3.6
+        CHOMPACK_BLAS_LIB_DIR=/usr/local/opt/openblas/lib
+        CHOMPACK_BLAS_LIB=openblas CHOMPACK_LAPACK_LIB=openblas
+      language: generic
+
 before_install:
-- sudo apt-get install python-dev
-- sudo apt-get install libblas-dev
-- sudo apt-get install liblapack-dev
-- wget http://faculty.cse.tamu.edu/davis/SuiteSparse/SuiteSparse-4.5.3.tar.gz
-- tar -xf SuiteSparse-4.5.3.tar.gz
-- CVXOPT_SUITESPARSE_SRC_DIR=$(pwd)/SuiteSparse pip install cvxopt
-language: python
-python:
-- '2.7'
-- '3.5'
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install python-dev libopenblas-dev; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew cask uninstall oclint; brew install openblas; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then wget https://repo.continuum.io/miniconda/Miniconda3-latest-MacOSX-x86_64.sh -O miniconda.sh;bash miniconda.sh -b -p $HOME/miniconda; export PATH="$HOME/miniconda/bin:$PATH" ;  fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then conda create -y -n myenv python=$PYVERSION && source $HOME/miniconda/bin/activate myenv; fi
+  - pip install $BUILD_DEPENDS
+
 install:
-- pip install coveralls
-- python setup.py -q install
-script: nosetests --with-coverage --cover-package=chompack
+  - python setup.py install
+
+script:
+  - pip install $TEST_DEPENDS
+  - pytest --cov=chompack tests/
+
 after_success:
   - coveralls
-deploy:
-  # release
-- provider: pypi
-  user: msa
-  password:
-    secure: UIMsHEn6qF2az4Mcd5A3Elr3GkXWCEb3gEHQgTDnghZEA4JKGsOvuwuSFnRNKtAiFBwFTKjDrIHAwStRyf6y0Kdfi8j6Y4U9nt5UzqIXq0WHaiu4IfA3flxUSXhtzj8xmhAU/g2EwwR2DXpxou5x9RuwGJKkt/bOJ8MsbLjI+BQLFT9HJmHfRvgCoWEiHFoDl1I8aXXM+VgSXfyeMtZxh+hJ3WbT/W9unyWUSSZTBiupDDTnkFFmmAMWdAbOOdRoQVnY6Y/M9inaJexgbtranFlf0M1UnqjHySzNIeZADs5KjnOmhBuPOI+VrVRM7pyYWdR1+NMfzsPnpY75NP4E4pfSf2lkIsdk4QxgF6ITeabxQG2a1nOrbE+cYym3zczJ7TfpM45DPHZfPnXjwCWFCXZDYFRVgNT52HEp63IUDNQA+gSuhZFVqWdjZFloxrhA4Rh0r5HPY5hKY9QGDPyssX7TX0eNUSFxqFzlWHN79T6DHW115J/89hpLouTkfRxf+/lJq1gz1Xa8tLoQLdLyCBqefzqDHzBYb8QY8KMA+LylfVYu0s47BnJYbo2fugU7/cmUj8fMCd54JIaCLtvKCybur4oBesXhH6GiDYKWlrPJUnIeNYXtzODKo12Fjzs9iFQjeO64NGcreQ+wX37JDAnmixGW2lg/YUZVtrKAH7Y=
-  on:
-    tags: true
-    distributions: sdist
-    repo: cvxopt/chompack

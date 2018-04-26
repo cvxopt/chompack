@@ -37,6 +37,9 @@ if os.environ.get('READTHEDOCS', False) == 'True':
 else:
     requirements = ['cvxopt>=1.1.8']
 
+INSTALL_REQUIRES = os.environ.get("CHOMPACK_INSTALL_REQUIRES",[])
+if type(INSTALL_REQUIRES) is str: INSTALL_REQUIRES = INSTALL_REQUIRES.strip().split(';')
+if INSTALL_REQUIRES: requirements = INSTALL_REQUIRES
 
 # C extensions
 cbase = Extension('cbase',
@@ -54,6 +57,7 @@ setup(name='chompack',
     version=versioneer.get_version(),
     cmdclass=versioneer.get_cmdclass(),
     description='Library for chordal matrix computations',
+    long_description = '''CHOMPACK is a free software package for chordal matrix computations based on the Python programming language.''',
     author='Martin S. Andersen, Lieven Vandenberghe',
     author_email='martin.skovgaard.andersen@gmail.com, vandenbe@ee.ucla.edu',
     url='http://cvxopt.github.io/chompack/',
