@@ -22,7 +22,7 @@ Wheels for Linux:
 Wheels for macOS:
 
 * are available for Python 2.7, 3.4, 3.5, and 3.6 (universal binaries)
-* are linked against Accelerate BLAS/LAPACK
+* are linked against Accellerate BLAS/LAPACK
 
 Wheels for Windows:
 
