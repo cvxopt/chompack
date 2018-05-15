@@ -43,7 +43,7 @@ if INSTALL_REQUIRES: requirements = INSTALL_REQUIRES
 
 # C extensions
 cbase = Extension('cbase',
-                  libraries = BLAS_LIB + LAPACK_LIB,
+                  libraries = LAPACK_LIB + BLAS_LIB,
                   library_dirs = BLAS_LIB_DIR,
                   define_macros = MACROS,
                   extra_compile_args = EXTRA_COMPILE_ARGS,
