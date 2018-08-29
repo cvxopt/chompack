@@ -23,34 +23,34 @@ def maxchord(A, ve = None):
          P. M. Dearing, D. R. Shier, D. D. Warner, `Maximal chordal
          subgraphs <http://dx.doi.org/10.1016/0166-218X(88)90075-3>`_,
          Discrete Applied Mathematics, 20:3, 1988, pp. 181-190.
-    
+
     """
 
     n = A.size[0]
     assert A.size[1] == n, "A must be a square matrix"
     assert type(A) is spmatrix, "A must be a sparse matrix"
-    if ve is None: 
+    if ve is None:
         ve = n-1
     else:
         assert type(ve) is int and 0<=ve<n,\
-          "ve must be an integer between 0 and A.size[0]-1"    
+          "ve must be an integer between 0 and A.size[0]-1"
     As = symmetrize(A)
     cp,ri,val = As.CCS
 
-    # permutation vector 
+    # permutation vector
     p = matrix(0,(n,1))
-    
+
     # weight array
     w = matrix(0,(n,1))
     max_w = 0
-    S = [range(ve)+range(ve+1,n)+[ve]] + [[] for i in range(n-1)]
+    S = [list(range(ve))+list(range(ve+1,n))+[ve]] + [[] for i in range(n-1)]
 
-    C = [set() for i in range(n)]   
+    C = [set() for i in range(n)]
     E = [[] for i in range(n)]     # edge list
     V = [[] for i in range(n)]     # num. values
-    
+
     for i in range(n-1,-1,-1):
-        # select next node to number        
+        # select next node to number
         while True:
             if len(S[max_w]) > 0:
                 v = S[max_w].pop()
@@ -64,7 +64,7 @@ def maxchord(A, ve = None):
         for ii in range(cp[v],cp[v+1]):
             u = ri[ii]
             d = val[ii]
-            if w[u] >= 0: 
+            if w[u] >= 0:
                 if C[u].issubset(C[v]):
                     C[u].update([v])
                     w[u] += 1
@@ -75,9 +75,9 @@ def maxchord(A, ve = None):
             elif u == v:
                 E[u].append(u)
                 V[u].append(d)
-                    
+
     # build adjacency matrix of reordered max. chordal subgraph
     Am = spmatrix([d for d in chain.from_iterable(V)],[i for i in chain.from_iterable(E)],\
                   [i for i in chain.from_iterable([len(Ej)*[j] for j,Ej in enumerate(E)])],(n,n))
-                        
+
     return Am,p
