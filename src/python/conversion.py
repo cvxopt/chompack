@@ -361,11 +361,11 @@ def convert_conelp(c, G, h, dims, A = None, b = None, **kwargs):
     # extract linear and socp constraints
     offsets = dims['l'] + sum(dims['q'])
     G_lq = G[:offsets,:]
-    h_lq = h[:offsets]
+    h_lq = h[:offsets,0]
 
     # extract semidefinite blocks
     G_s = G[offsets:,:]
-    h_s = h[offsets:]
+    h_s = h[offsets:,0]
 
     G_converted = [G_lq]; h_converted = [h_lq]
     G_coupling = []
@@ -377,7 +377,7 @@ def convert_conelp(c, G, h, dims, A = None, b = None, **kwargs):
     for k, si in enumerate(dims['s']):
         # extract block
         G_b = G_s[offset:offset+si**2,:]
-        h_b = h_s[offset:offset+si**2]
+        h_b = h_s[offset:offset+si**2,0]
         offset += si**2
 
         # convert block
