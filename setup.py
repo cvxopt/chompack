@@ -1,10 +1,6 @@
-try:
-    from setuptools import setup, Extension
-except ImportError:
-    from distutils.core import setup, Extension
+from setuptools import setup, Extension
 from glob import glob
 import os, sys
-import versioneer
 
 BLAS_NOUNDERSCORES = False
 BLAS_LIB_DIR = ['/usr/lib']
@@ -54,14 +50,11 @@ EXT_MODULES = []
 if not py_only: EXT_MODULES.append(cbase)
 
 setup(name='chompack',
-    version=versioneer.get_version(),
-    cmdclass=versioneer.get_cmdclass(),
     description='Library for chordal matrix computations',
     long_description = '''CHOMPACK is a free software package for chordal matrix computations based on the Python programming language.''',
     author='Martin S. Andersen, Lieven Vandenberghe',
     author_email='martin.skovgaard.andersen@gmail.com, vandenbe@ee.ucla.edu',
     url='http://cvxopt.github.io/chompack/',
-    download_url="https://github.com/cvxopt/chompack/archive/%s.tar.gz"%(versioneer.get_version()),
     license = 'GNU GPL version 3',
     package_dir = {"chompack": "src/python"},
     packages = ["chompack","chompack.pybase"],

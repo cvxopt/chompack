@@ -4,6 +4,5 @@ include src/C/cvxopt.h
 include src/C/blas_redefines.h
 include src/C/chompack.h
 include src/python/_version.py
-include versioneer.py
 recursive-include examples *
 recursive-include tests *
