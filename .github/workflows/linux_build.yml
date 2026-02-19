@@ -31,7 +31,8 @@ jobs:
     - name: Build/install CHOMPACK
       run: |
         python -m build --wheel
-        pip install --find-links=${{github.workspace}}/dist chompack
+        pip install cvxopt
+        pip install --no-index --find-links=${{github.workspace}}/dist chompack
 
     - name: Test with pytest
       run: |
