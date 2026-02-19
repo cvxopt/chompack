@@ -1,0 +1,54 @@
+[build-system]
+requires = ["setuptools>=77", "setuptools_scm[toml]>=8"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "chompack"
+dynamic = ["version"]
+description = "Library for chordal matrix computations"
+requires-python = ">=3.8"
+readme = {file = "README.md", content-type = "text/markdown"}
+license = "GPL-3.0-or-later"
+authors = [
+    {name = "Martin S. Andersen", email = "martin.skovgaard.andersen@gmail.com"},
+    {name = "Lieven Vandenberghe", email = "vandenbe@ee.ucla.edu"}
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "Operating System :: OS Independent",
+    "Programming Language :: C",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Topic :: Scientific/Engineering",
+]
+dependencies = [
+    "cvxopt>=1.3.3"
+]
+
+[project.urls]
+Homepage = "https://cvxopt.github.io/chompack/"
+Source = "https://github.com/cvxopt/chompack"
+
+
+[tool.setuptools]
+package-dir = {"chompack" = "src/python"}
+packages = ["chompack", "chompack.pybase"]
+zip-safe = false
+
+[tool.cibuildwheel]
+test-requires = "pytest"
+test-command = "pytest {project}/tests"
+
+[tool.cibuildwheel.linux]
+archs = "x86_64 aarch64"
+manylinux-x86_64-image = "manylinux_2_28"
+manylinux-aarch64-image = "manylinux_2_28"
+musllinux-x86_64-image = "musllinux_1_2"
+musllinux-aarch64-image = "musllinux_1_2"
+
+[tool.cibuildwheel.macos]
+archs = "x86_64 arm64"
+
+[tool.setuptools_scm]
+write_to = "src/python/_version.py"

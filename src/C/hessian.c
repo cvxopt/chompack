@@ -218,11 +218,9 @@ int _scale(const int_t n,         // order of matrix
 
   int nn,na,nj,offset,info,i,j,k,ki,l,N,nup=0,uk=0;
   double * restrict U, * restrict ublkvalk, * restrict ws=NULL;
-  double dOne=1.0,alpha=-1.0;
+  double dOne=1.0;
   char cL='L',cT='T',cR='R',cN='N';
   char *tr1, *tr2, *tr3=NULL;
-
-  if (inv) alpha = 1.0;
 
   U = upd;   // pointer to top of update storage
 
