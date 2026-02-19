@@ -47,8 +47,7 @@ jobs:
       run: |
           wget https://github.com/OpenMathLib/OpenBLAS/releases/download/v${OPENBLAS_VERSION}/OpenBLAS-${OPENBLAS_VERSION}-${{matrix.ARCH}}.zip
           wget https://raw.githubusercontent.com/OpenMathLib/OpenBLAS/v${OPENBLAS_VERSION}/LICENSE -O LICENSE_OpenBLAS-${OPENBLAS_VERSION}
-          echo "${{matrix.OPENBLAS_SHA256}}  OpenBLAS-${OPENBLAS_VERSION}-${{matrix.ARCH}}.zip" > OpenBLAS.sha256
-          cat OpenBLAS.sha256
+          echo "${OPENBLAS_SHA256}  OpenBLAS-${OPENBLAS_VERSION}-${{matrix.ARCH}}.zip" > OpenBLAS.sha256
           sha256sum -c OpenBLAS.sha256
           mkdir src/python/.libs
           mkdir OpenBLAS
