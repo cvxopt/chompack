@@ -23,7 +23,7 @@ classifiers = [
     "Topic :: Scientific/Engineering",
 ]
 dependencies = [
-    "cvxopt >= 1.3"
+    "cvxopt >= 1.3.3"
 ]
 
 [project.urls]

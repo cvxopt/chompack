@@ -14,10 +14,10 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Chompack.  If not, see <http://www.gnu.org/licenses/>.    
+along with Chompack.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from chompack.pybase.cholesky import cholesky    
+from chompack.pybase.cholesky import cholesky
 from chompack.pybase.llt import llt
 from chompack.pybase.completion import completion
 from chompack.pybase.projected_inverse import projected_inverse
@@ -27,5 +27,16 @@ from chompack.pybase.trmm import trmm
 from chompack.pybase.psdcompletion import psdcompletion
 from chompack.pybase.edmcompletion import edmcompletion
 from chompack.pybase.mrcompletion import mrcompletion
-    
-__all__ = ['cholesky','llt','competion','projected_inverse','hessian','trsm','trmm','psdcompletion','edmcompletion','mrcompletion']
+
+__all__ = [
+    "cholesky",
+    "llt",
+    "completion",
+    "projected_inverse",
+    "hessian",
+    "trsm",
+    "trmm",
+    "psdcompletion",
+    "edmcompletion",
+    "mrcompletion",
+]
