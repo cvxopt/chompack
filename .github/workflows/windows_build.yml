@@ -15,8 +15,8 @@ jobs:
         - ARCH: x64
           MSVC_TARGET: 64
           PLAT_NAME: win-amd64
-          OPENBLAS_VERSION: 0.3.31
-          OPENBLAS_SHA256: e7595359700e8bb5a15c41af1920850b1be37078eb22813201b3d4bc5bd9227e
+          OPENBLAS_VERSION: 0.3.30
+          OPENBLAS_SHA256: 8b04387766efc05c627e26d24797ec0d4ed4c105ec14fa7400aa84a02db22b66
 
     steps:
 
@@ -40,6 +40,7 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
+        pip install setuptools setuptools_scm build wheel pytest pytest-cov coveralls
 
     - name: Get OpenBLAS and copy to workspace
       shell: msys2 {0}

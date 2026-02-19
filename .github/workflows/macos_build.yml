@@ -30,6 +30,7 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
+        pip install setuptools setuptools_scm build wheel pytest pytest-cov coveralls
 
     - name: Build/install CHOMPACK
       run: |

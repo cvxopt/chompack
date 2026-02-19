@@ -26,6 +26,7 @@ jobs:
       run: |
         sudo apt install libopenblas-dev
         python -m pip install --upgrade pip
+        pip install setuptools setuptools_scm build wheel pytest pytest-cov coveralls
 
     - name: Build/install CHOMPACK
       run: |
