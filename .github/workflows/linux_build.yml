@@ -1,0 +1,37 @@
+name: Linux build
+
+on: [push, pull_request]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        python-version: ['3.14']
+
+    steps:
+    - name: Checkout source    
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install dependencies
+      run: |
+        sudo apt install libopenblas-dev
+        python -m pip install --upgrade pip
+
+    - name: Build/install CHOMPACK
+      run: |
+        python -m build --wheel
+        pip install --no-index --find-links=${{github.workspace}}/dist chompack
+
+    - name: Test with pytest
+      run: |
+        pytest --cov=chompack tests

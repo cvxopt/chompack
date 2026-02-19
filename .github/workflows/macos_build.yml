@@ -1,0 +1,41 @@
+name: macOS build
+
+on: [push, pull_request]
+
+jobs:
+  build:
+
+    env:
+      CFLAGS: -target arm64-apple-macos15.0
+      CVXOPT_BLAS_LIB_DIR: /usr/lib
+      CVXOPT_BLAS_LIB: blas
+      CVXOPT_LAPACK_LIB: lapack
+
+    strategy:
+      matrix:
+        os: [macos-15-intel, macos-15]
+        python-version: ['3.14']
+
+    steps:
+    - name: Checkout source    
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+
+    - name: Build/install CHOMPACK
+      run: |
+        python -m build --wheel
+        python -m pip install --no-index --find-links=${{github.workspace}}/dist chompack
+
+    - name: Test with pytest
+      run: |
+        pytest --cov=chompack tests
