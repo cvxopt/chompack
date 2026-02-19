@@ -6,17 +6,17 @@ jobs:
   build:
     
     runs-on: windows-2022
+    env:
+      OPENBLAS_VERSION: 0.3.30
+      OPENBLAS_SHA256: 8b04387766efc05c627e26d24797ec0d4ed4c105ec14fa7400aa84a02db22b66
 
     strategy:
       matrix:
-        suitesparse: [src]
         python-version: ['3.14']
         include:
         - ARCH: x64
           MSVC_TARGET: 64
           PLAT_NAME: win-amd64
-          OPENBLAS_VERSION: 0.3.30
-          OPENBLAS_SHA256: 8b04387766efc05c627e26d24797ec0d4ed4c105ec14fa7400aa84a02db22b66
 
     steps:
 

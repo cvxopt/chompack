@@ -5,6 +5,7 @@ on: [push, pull_request]
 jobs:
   build:
 
+    runs-on: macos-latest
     env:
       CFLAGS: -target arm64-apple-macos15.0
       CVXOPT_BLAS_LIB_DIR: /usr/lib
@@ -13,7 +14,6 @@ jobs:
 
     strategy:
       matrix:
-        os: [macos-15-intel, macos-15]
         python-version: ['3.14']
 
     steps:
