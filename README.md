@@ -18,3 +18,6 @@ Documentation available at http://chompack.readthedocs.io
 ```
 pip install chompack
 ```
+
+## License
+CHOMPACK is licensed under the GNU General Public License version 3 (GPL-3.0-or-later). See [LICENSE](LICENSE) for details.

@@ -3,7 +3,7 @@ Installation
 
 .. note::
 
-    CHOMPACK requires CVXOPT 1.2.0 or newer.
+    CHOMPACK requires CVXOPT 1.3.3 or newer.
 
 
 Installing a pre-built package
@@ -16,33 +16,27 @@ using `pip <https://pip.pypa.io>`_::
 
 Wheels for Linux:
 
-* are available for Python 2.7, 3.3, 3.4, 3.5, and 3.6 (32 and 64 bit)
+* are available for Python 3.8-3.14 (64 bit)
 * are linked against OpenBLAS
 
 Wheels for macOS:
 
-* are available for Python 2.7, 3.4, 3.5, and 3.6 (universal binaries)
-* are linked against Accellerate BLAS/LAPACK
+* are available for Python 3.8-3.14 (universal binaries)
+* are linked against Accellerate
 
 Wheels for Windows:
 
-* are available for Python 2.7, 3.5, and 3.6 (64 bit only)
-* are linked against MKL
+* are available for Python 3.8-3.14 (64 bit only)
+* are linked against OpenBLAS
 
 
 Building and installing from source
 ===================================
 
-The CHOMPACK Python extension can be downloaded, built, and installed by issuing the commands
+The CHOMPACK Python extension can be downloaded, built, and installed as follows:
 
 .. code-block:: bash
 
     $ git clone https://github.com/cvxopt/chompack.git
     $ cd chompack
-    $ python setup.py install 
-
-Chompack can also be installed using pip
-
-.. code-block:: bash
-
-    $ pip install chompack
+    $ pip install .

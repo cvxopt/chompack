@@ -1,6 +1,6 @@
 from setuptools import setup, Extension
 from glob import glob
-import os, sys
+import os, platform
 
 BLAS_NOUNDERSCORES = False
 BLAS_LIB_DIR = ['/usr/lib']
@@ -10,66 +10,62 @@ BLAS_EXTRA_LINK_ARGS = []
 EXTRA_COMPILE_ARGS = []
 MACROS = []
 
-BLAS_NOUNDERSCORES = int(os.environ.get("CHOMPACK_BLAS_NOUNDERSCORES",BLAS_NOUNDERSCORES)) == True
-BLAS_LIB = os.environ.get("CHOMPACK_BLAS_LIB",BLAS_LIB)
-LAPACK_LIB = os.environ.get("CHOMPACK_LAPACK_LIB",LAPACK_LIB)
-BLAS_LIB_DIR = os.environ.get("CHOMPACK_BLAS_LIB_DIR",BLAS_LIB_DIR)
-BLAS_EXTRA_LINK_ARGS = os.environ.get("CHOMPACK_BLAS_EXTRA_LINK_ARGS",BLAS_EXTRA_LINK_ARGS)
-if type(BLAS_LIB) is str: BLAS_LIB = BLAS_LIB.strip().split(';')
-if type(BLAS_LIB_DIR) is str: BLAS_LIB_DIR = BLAS_LIB_DIR.strip().split(';')
-if type(LAPACK_LIB) is str: LAPACK_LIB = LAPACK_LIB.strip().split(';')
-if type(BLAS_EXTRA_LINK_ARGS) is str: BLAS_EXTRA_LINK_ARGS = BLAS_EXTRA_LINK_ARGS.strip().split(';')
-if BLAS_NOUNDERSCORES: MACROS.append(('BLAS_NO_UNDERSCORE',''))
+# Guess prefix and library directories for Linux distributions
+if platform.system() == "Linux":
+    PREFIX= '/usr'
+    if glob("/usr/lib/x86_64-linux-gnu/libsuitesparse*"):
+        # Ubuntu/Debian
+        BLAS_LIB_DIR = PREFIX + "/lib/x86_64-linux-gnu"
+    elif glob("/usr/lib/aarch64-linux-gnu/libsuitesparse*"):
+        # Ubuntu/Debian
+        BLAS_LIB_DIR = PREFIX + "/lib/aarch64-linux-gnu"
+    elif glob("/usr/lib64/libsuitesparse*"):
+        # CentOS/Fedora/RedHat/AlmaLinux x86_64
+        BLAS_LIB_DIR = PREFIX + "/lib64"
+    else:
+        BLAS_LIB_DIR = PREFIX + "/lib"
+
+BLAS_NOUNDERSCORES = int(os.environ.get("CHOMPACK_BLAS_NOUNDERSCORES", BLAS_NOUNDERSCORES)) == True
+BLAS_LIB = os.environ.get("CHOMPACK_BLAS_LIB", BLAS_LIB)
+LAPACK_LIB = os.environ.get("CHOMPACK_LAPACK_LIB", LAPACK_LIB)
+BLAS_LIB_DIR = os.environ.get("CHOMPACK_BLAS_LIB_DIR", BLAS_LIB_DIR)
+BLAS_EXTRA_LINK_ARGS = os.environ.get("CHOMPACK_BLAS_EXTRA_LINK_ARGS", BLAS_EXTRA_LINK_ARGS)
+if type(BLAS_LIB) is str:
+    BLAS_LIB = BLAS_LIB.strip().split(';')
+if type(BLAS_LIB_DIR) is str:
+    BLAS_LIB_DIR = BLAS_LIB_DIR.strip().split(';')
+if type(LAPACK_LIB) is str:
+    LAPACK_LIB = LAPACK_LIB.strip().split(';')
+if type(BLAS_EXTRA_LINK_ARGS) is str:
+    BLAS_EXTRA_LINK_ARGS = BLAS_EXTRA_LINK_ARGS.strip().split(';')
+if BLAS_NOUNDERSCORES:
+    MACROS.append(('BLAS_NO_UNDERSCORE', ''))
 
 # Install Python-only reference implementation? (default: False)
-py_only = os.environ.get('CHOMPACK_PY_ONLY',False)
+py_only = os.environ.get('CHOMPACK_PY_ONLY', False)
 if type(py_only) is str:
-    if py_only in ['true','True','1','yes','Yes','Y','y']: py_only = True
-    else: py_only = False
+    if py_only in ['true', 'True', '1', 'yes', 'Yes', 'Y', 'y']:
+        py_only = True
+    else:
+        py_only = False
 
 if os.environ.get('READTHEDOCS', False) == 'True':
-    requirements = []
     py_only = True
-else:
-    requirements = ['cvxopt>=1.1.8']
-
-INSTALL_REQUIRES = os.environ.get("CHOMPACK_INSTALL_REQUIRES",[])
-if type(INSTALL_REQUIRES) is str: INSTALL_REQUIRES = INSTALL_REQUIRES.strip().split(';')
-if INSTALL_REQUIRES: requirements = INSTALL_REQUIRES
 
 # C extensions
 cbase = Extension('cbase',
-                  libraries = LAPACK_LIB + BLAS_LIB,
-                  library_dirs = BLAS_LIB_DIR,
-                  define_macros = MACROS,
-                  extra_compile_args = EXTRA_COMPILE_ARGS,
-                  extra_link_args = BLAS_EXTRA_LINK_ARGS,
-                  sources = glob('src/C/*.c'))
+                  libraries=LAPACK_LIB + BLAS_LIB,
+                  library_dirs=BLAS_LIB_DIR,
+                  define_macros=MACROS,
+                  extra_compile_args=EXTRA_COMPILE_ARGS,
+                  extra_link_args=BLAS_EXTRA_LINK_ARGS,
+                  sources=glob('src/C/*.c'))
 
-EXT_MODULES = []
-if not py_only: EXT_MODULES.append(cbase)
+ext_modules = []
+if not py_only:
+    ext_modules.append(cbase)
 
-setup(name='chompack',
-    description='Library for chordal matrix computations',
-    long_description = '''CHOMPACK is a free software package for chordal matrix computations based on the Python programming language.''',
-    author='Martin S. Andersen, Lieven Vandenberghe',
-    author_email='martin.skovgaard.andersen@gmail.com, vandenbe@ee.ucla.edu',
-    url='http://cvxopt.github.io/chompack/',
-    license = 'GNU GPL version 3',
-    package_dir = {"chompack": "src/python"},
-    packages = ["chompack","chompack.pybase"],
-    ext_package = "chompack",
-    ext_modules = EXT_MODULES,
-    zip_safe = False,
-    classifiers=[
-        'Development Status :: 4 - Beta',
-        'Intended Audience :: Science/Research',
-        'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
-        'Operating System :: OS Independent',
-        'Programming Language :: C',
-        'Programming Language :: Python',
-        'Programming Language :: Python :: 3',
-        'Topic :: Scientific/Engineering',
-        ],
-    install_requires=requirements,
-    )
+setup(
+    ext_modules=ext_modules,
+    ext_package="chompack",
+)
