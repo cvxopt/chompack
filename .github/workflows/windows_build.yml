@@ -64,7 +64,7 @@ jobs:
       run: |
         call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvars${{matrix.MSVC_TARGET}}.bat"
         python -m build --wheel
-        pip install --no-index --find-links=${{github.workspace}}\dist chompack
+        pip install --find-links=${{github.workspace}}\dist chompack
 
     - name: Test
       shell: cmd

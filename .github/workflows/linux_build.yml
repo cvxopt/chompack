@@ -31,7 +31,7 @@ jobs:
     - name: Build/install CHOMPACK
       run: |
         python -m build --wheel
-        pip install --no-index --find-links=${{github.workspace}}/dist chompack
+        pip install --find-links=${{github.workspace}}/dist chompack
 
     - name: Test with pytest
       run: |
