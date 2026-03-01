@@ -4,7 +4,6 @@ on: [push, pull_request]
 
 jobs:
   build:
-    if: false
     
     runs-on: windows-2022
     env:
@@ -54,7 +53,7 @@ jobs:
           mkdir OpenBLAS
           unzip OpenBLAS-${OPENBLAS_VERSION}-${{matrix.ARCH}}.zip -d OpenBLAS/
           cp OpenBLAS/win64/bin/libopenblas.dll src/python/.libs
-          cp OpenBLAS/win64/lib/libopenblas.lib
+          cp OpenBLAS/win64/lib/libopenblas.lib libopenblas.lib
           cp LICENSE_OpenBLAS-${OPENBLAS_VERSION} src/python  
           echo "CHOMPACK_BLAS_LIB_DIR=${{github.workspace}}" >> $GITHUB_ENV
           echo "CHOMPACK_BLAS_LIB=libopenblas" >> $GITHUB_ENV

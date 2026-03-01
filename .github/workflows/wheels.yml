@@ -7,27 +7,43 @@ env:
   OPENBLAS_SHA256: e7595359700e8bb5a15c41af1920850b1be37078eb22813201b3d4bc5bd9227e
 
 jobs:
+  build_sdist:
+    name: Build source distribution
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Build sdist
+        run: pipx run build --sdist
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: cibw-sdist
+          path: dist/*.tar.gz
+
   build_wheels:
     name: Build wheels on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         include:
-          # - os: ubuntu-22.04
-          #   CIBW_ARCHS: x86_64
+          - os: ubuntu-22.04
+            CIBW_ARCHS: x86_64
           - os: macos-15
             CIBW_ARCHS: arm64
           - os: macos-15-intel
             CIBW_ARCHS: x86_64
-          # - os: windows-2022
-          #   CIBW_ARCHS: AMD64
-          #   OPENBLAS_ARCH: x64
+          - os: windows-2022
+            CIBW_ARCHS: AMD64
+            OPENBLAS_ARCH: x64
 
     steps:
       - name: Checkout repo with submodules
         uses: actions/checkout@v4
         with:
-          submodules: recursive
+          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -75,20 +91,20 @@ jobs:
           name: cibw-wheels-${{ matrix.os }}-${{ strategy.job-index }}
           path: ./wheelhouse/*.whl
 
-  # pypi-publish:
-  #   name: Upload release to PyPI
-  #   needs: build_wheels
-  #   runs-on: ubuntu-latest
-  #   environment: pypi
-  #   permissions:
-  #     id-token: write
-  #   steps:
-  #     - uses: actions/download-artifact@v4
-  #       with:
-  #         pattern: cibw-wheels-*
-  #         path: dist
-  #         merge-multiple: true
+  pypi-publish:
+    name: Upload release to PyPI
+    needs: [build_sdist, build_wheels]
+    runs-on: ubuntu-latest
+    environment: pypi
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: cibw-*
+          path: dist
+          merge-multiple: true
 
-  #     - name: Publish to PyPI
-  #       uses: pypa/gh-action-pypi-publish@release/v1
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
 
