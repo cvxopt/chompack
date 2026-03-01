@@ -2,7 +2,7 @@ from setuptools import setup, Extension
 from glob import glob
 import os, platform
 
-BLAS_NOUNDERSCORES = False
+BLAS_NOUNDERSCORES = 0
 BLAS_LIB_DIR = ['/usr/lib']
 BLAS_LIB = ['blas']
 LAPACK_LIB = ['lapack']
@@ -12,20 +12,25 @@ MACROS = []
 
 # Guess prefix and library directories for Linux distributions
 if platform.system() == "Linux":
-    PREFIX= '/usr'
-    if glob("/usr/lib/x86_64-linux-gnu/libsuitesparse*"):
-        # Ubuntu/Debian
-        BLAS_LIB_DIR = PREFIX + "/lib/x86_64-linux-gnu"
-    elif glob("/usr/lib/aarch64-linux-gnu/libsuitesparse*"):
-        # Ubuntu/Debian
-        BLAS_LIB_DIR = PREFIX + "/lib/aarch64-linux-gnu"
-    elif glob("/usr/lib64/libsuitesparse*"):
-        # CentOS/Fedora/RedHat/AlmaLinux x86_64
-        BLAS_LIB_DIR = PREFIX + "/lib64"
+    PREFIX = '/usr'
+    # Map architecture to Debian/Ubuntu multiarch directory name
+    _multiarch = {
+        'x86_64':   'x86_64-linux-gnu',
+        'aarch64':  'aarch64-linux-gnu',
+        'i686':     'i386-linux-gnu',
+        'ppc64le':  'powerpc64le-linux-gnu',
+        's390x':    's390x-linux-gnu',
+    }.get(platform.machine())
+    if _multiarch and os.path.isdir(f"{PREFIX}/lib/{_multiarch}"):
+        # Debian/Ubuntu multiarch layout
+        BLAS_LIB_DIR = f"{PREFIX}/lib/{_multiarch}"
+    elif os.path.isdir(f"{PREFIX}/lib64"):
+        # CentOS/Fedora/RedHat/AlmaLinux layout
+        BLAS_LIB_DIR = f"{PREFIX}/lib64"
     else:
-        BLAS_LIB_DIR = PREFIX + "/lib"
+        BLAS_LIB_DIR = f"{PREFIX}/lib"
 
-BLAS_NOUNDERSCORES = int(os.environ.get("CHOMPACK_BLAS_NOUNDERSCORES", BLAS_NOUNDERSCORES)) == True
+BLAS_NOUNDERSCORES = int(os.environ.get("CHOMPACK_BLAS_NOUNDERSCORES", BLAS_NOUNDERSCORES)) == 1
 BLAS_LIB = os.environ.get("CHOMPACK_BLAS_LIB", BLAS_LIB)
 LAPACK_LIB = os.environ.get("CHOMPACK_LAPACK_LIB", LAPACK_LIB)
 BLAS_LIB_DIR = os.environ.get("CHOMPACK_BLAS_LIB_DIR", BLAS_LIB_DIR)

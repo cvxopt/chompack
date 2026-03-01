@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=77", "setuptools_scm[toml]>=8"]
+requires = ["setuptools>=80", "setuptools_scm[toml]>=9.2"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -34,7 +34,11 @@ Source = "https://github.com/cvxopt/chompack"
 [tool.setuptools]
 package-dir = {"chompack" = "src/python"}
 packages = ["chompack", "chompack.pybase"]
+include-package-data = true
 zip-safe = false
+
+[tool.setuptools.package-data]
+"*" = ["LICENSE*", ".libs/*.dll"]
 
 [tool.cibuildwheel]
 test-requires = "pytest"
@@ -46,9 +50,15 @@ manylinux-x86_64-image = "manylinux_2_28"
 manylinux-aarch64-image = "manylinux_2_28"
 musllinux-x86_64-image = "musllinux_1_2"
 musllinux-aarch64-image = "musllinux_1_2"
+before-all = "if ldd --version 2>&1 | grep -q musl; then apk add --no-cache openblas-dev; else yum install -y openblas-devel; fi"
+environment = {CHOMPACK_BLAS_LIB = "openblas", CHOMPACK_LAPACK_LIB = "openblas"}
 
 [tool.cibuildwheel.macos]
 archs = "x86_64 arm64"
+
+[tool.cibuildwheel.windows]
+archs = "x86_64"
+environment = {CHOMPACK_BLAS_LIB = "libopenblas", CHOMPACK_LAPACK_LIB = "libopenblas", CHOMPACK_BLAS_LIB_DIR = "{project}"}
 
 [tool.setuptools_scm]
 write_to = "src/python/_version.py"

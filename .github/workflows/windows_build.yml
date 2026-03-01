@@ -4,11 +4,12 @@ on: [push, pull_request]
 
 jobs:
   build:
+    if: false
     
     runs-on: windows-2022
     env:
-      OPENBLAS_VERSION: 0.3.30
-      OPENBLAS_SHA256: 8b04387766efc05c627e26d24797ec0d4ed4c105ec14fa7400aa84a02db22b66
+      OPENBLAS_VERSION: 0.3.31
+      OPENBLAS_SHA256: e7595359700e8bb5a15c41af1920850b1be37078eb22813201b3d4bc5bd9227e
 
     strategy:
       matrix:
@@ -52,8 +53,8 @@ jobs:
           mkdir src/python/.libs
           mkdir OpenBLAS
           unzip OpenBLAS-${OPENBLAS_VERSION}-${{matrix.ARCH}}.zip -d OpenBLAS/
-          cp OpenBLAS/bin/libopenblas.dll src/python/.libs
-          cp OpenBLAS/lib/libopenblas.lib libopenblas.lib       
+          cp OpenBLAS/win64/bin/libopenblas.dll src/python/.libs
+          cp OpenBLAS/win64/lib/libopenblas.lib
           cp LICENSE_OpenBLAS-${OPENBLAS_VERSION} src/python  
           echo "CHOMPACK_BLAS_LIB_DIR=${{github.workspace}}" >> $GITHUB_ENV
           echo "CHOMPACK_BLAS_LIB=libopenblas" >> $GITHUB_ENV
