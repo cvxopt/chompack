@@ -1,0 +1,7 @@
+sphinx
+sphinx_rtd_theme
+cvxopt
+chompack
+scipy
+networkx
+matplotlib

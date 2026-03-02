@@ -16,17 +16,17 @@ using `pip <https://pip.pypa.io>`_::
 
 Wheels for Linux:
 
-* are available for Python 3.8-3.14 (64 bit)
+* are available for Python 3.9-3.14 (x86_64 and aarch64)
 * are linked against OpenBLAS
 
 Wheels for macOS:
 
-* are available for Python 3.8-3.14 (universal binaries)
+* are available for Python 3.9-3.14 (x86_64 and arm64)
 * are linked against Accellerate
 
 Wheels for Windows:
 
-* are available for Python 3.8-3.14 (64 bit only)
+* are available for Python 3.9-3.14 (AMD64)
 * are linked against OpenBLAS
 
 
